@@ -4,10 +4,31 @@
             [clj-time.coerce :as tc]
             [clojure.string :as str]))
 
-(defmulti ^:dynamic translate (fn [direction table-name _] [direction table-name]))
-(defmulti ^:dynamic valid? (fn [direction table-name _] [direction table-name]))
+(defmulti ^:dynamic translate
+  "Translate to or from a value from the Interactive Brokers API.
 
-(defmacro translation-table [name vals]
+Examples:
+user> (translate :to-ib :duration-unit :seconds)
+\"S\"
+user> (translate :from-ib :duration-unit \"S\")
+:second"
+  (fn [direction table-name _] [direction table-name]))
+
+(defmulti ^:dynamic valid?
+  "Check to see if a given value is an entry in the translation table.
+
+Examples:
+user> (valid? :to-ib :duration-unit :s)
+false
+user> (valid? :to-ib :duration-unit :seconds)
+true"
+  (fn [direction table-name _] [direction table-name]))
+
+(defmacro translation-table
+  "Creates a table for translating to and from string values from the Interactive
+Brokers API, as well as translate methods to and from the IB value and a method
+to check if if a given value is valid (known)."
+  [name vals]
   (let [table-name (keyword name)]
     `(let [to-table# ~vals
            from-table# (zipmap (vals to-table#) (keys to-table#))]
@@ -19,24 +40,36 @@
 
        (defmethod translate [:to-ib ~table-name] [_# _# val#]
          (when val#
-           (if (valid? :to-ib ~table-name val#)
-             (to-table# val#)
-             (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
-                             {:value val#
-                              :table ~table-name
-                              :valid-values (keys to-table#)})))))
+           (cond
+            (valid? :to-ib ~table-name val#)
+            (to-table# val#)
+
+            (string? val#)
+            val#
+
+            :otherwise
+            (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
+                            {:value val#
+                             :table ~table-name
+                             :valid-values (keys to-table#)})))))
 
        (defmethod valid? [:from-ib ~table-name] [_# _# val#]
          (contains? from-table# val#))
 
        (defmethod translate [:from-ib ~(keyword name)] [_# _# val#]
          (when val#
-           (if (valid? :from-ib ~table-name val#)
-             (from-table# val#)
-             (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
-                             {:value val#
-                              :table ~table-name
-                              :valid-values (vals to-table#)}))))))))
+           (cond
+            (valid? :from-ib ~table-name val#)
+            (from-table# val#)
+
+            (string? val#)
+            val#
+
+            :otherwise
+            (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
+                            {:value val#
+                             :table ~table-name
+                             :valid-values (vals to-table#)}))))))))
 
 (translation-table duration-unit
                    {:second "S"
@@ -72,15 +105,27 @@
                     :cash "CASH"
                     :bag "BAG"})
 
-(translation-table bar-size-unit
-                   {:second "secs"
-                    :seconds "secs"
-                    :minute "min"
-                    :minutes "mins"
-                    :hour "hour"
-                    :hours "hour"
-                    :day "day"
-                    :days "days"})
+(defmethod translate [:to-ib :bar-size-unit] [_ _ unit]
+  (case unit
+    :second "secs"
+    :seconds "secs"
+    :minute "min"
+    :minutes "mins"
+    :hour "hour"
+    :hours "hour"
+    :day "day"
+    :days "days"))
+
+(defmethod translate [:from-ib :bar-size-unit] [_ _ unit]
+  (case unit
+    "sec" :second
+    "secs" :seconds
+    "min" :minute
+    "mins" :minutes
+    "hour" :hour
+    "hours" :hours
+    "day" :day
+    "days" :days))
 
 (translation-table what-to-show
                    {:trades "TRADES"
@@ -109,13 +154,17 @@
                     :ADJUST "ADJUST"
                     :ALERT "ALERT"
                     :ALGO "ALGO"
+                    :ALGOLTH "ALGOLTH"
                     :ALLOC "ALLOC"
                     :AON "AON"
+                    :AUC "AUC"
                     :average-cost "AVGCOST"
                     :basket "BASKET"
+                    :BOARDLOT "BOARDLOT"
                     :box-top "BOXTOP"
                     :COND "COND"
                     :CONDORDER "CONDORDER"
+                    :CONSCOST "CONSCOST"
                     :DARKPOLL "DARKPOLL"
                     :DAY "DAY"
                     :DEACT "DEACT"
@@ -123,6 +172,7 @@
                     :DEACTEOD "DEACTEOD"
                     :DIS "DIS"
                     :EVRULE "EVRULE"
+                    :FOK "FOK"
                     :good-after-time "GAT"
                     :good-till-date "GTD"
                     :good-till-canceled "GTC"
@@ -155,6 +205,7 @@
                     :relative "REL"
                     :request-for-quote "QUOTE"
                     :RTH "RTH"
+                    :RTHIGNOPG "RTHIGNOPG"
                     :scale "SCALE"
                     :SCALERST "SCALERST"
                     :stop "STP"
@@ -551,6 +602,10 @@
                    {true 1
                     false 0})
 
+(translation-table execution-side
+                   {:buy "BOT"
+                    :sell "SLD"})
+
 (defmethod translate [:to-ib :duration] [_ _ [val unit]]
   (str val " " (translate :to-ib :duration-unit unit)))
 
@@ -576,24 +631,25 @@
   (condp instance? val
     java.util.Date (tc/from-date val)
     org.joda.time.DateTime (translate :to-ib :timestamp
-                                      (-> (tf/formatter "yyyyMMdd-hh:mm:ss")
+                                      (-> (tf/formatter "yyyyMMdd-HH:mm:ss")
                                           (tf/unparse val)
                                           (str " UTC")))
     String val))
 
 (defmethod translate [:from-ib :timestamp] [_ _ val]
+
   (cond
    (nil? val) nil
-
-   (every? #(Character/isDigit %) val)
-   (tc/from-long (* (Long/parseLong val) 1000))
 
    (= (.length val) 8)
    (-> (tf/formatter "yyyyMMdd")
        (tf/parse val))
 
+   (every? #(Character/isDigit %) val)
+   (tc/from-long (* (Long/parseLong val) 1000))
+
    (= (.length val) 17)
-   (-> (tf/formatter "yyyyMMdd-hh:mm:ss")
+   (-> (tf/formatter "yyyyMMdd-HH:mm:ss")
        (tf/parse val))
 
    :otherwise val))
@@ -636,6 +692,8 @@
                         {:value val
                          :expected-form "MM/dd/yyyy"}))))))
 
+;;; FIXME: We should turn time of day into some kind of data structure that does
+;;; no have a date component.
 (defmethod translate [:from-ib :time-of-day] [_ _ val]
   (when val
     (try
@@ -694,3 +752,57 @@
         month (int (Math/floor (/ (mod val 10000) 100)))
         day (int (Math/floor (mod 19720427 100)))]
     (time/date-time year month day)))
+
+;; -----
+;; ## Deals with the trading hours reporting.  This is really ugly.
+;; IB uses their timezone definitions incorrectly.  Correct them here.  No, no, they really do.
+(def ib-timezone-map
+  {"EST" "America/New_York"
+   "CST" "America/Chicago"
+   "CTT" "America/Chicago"
+   "JST" "Asia/Tokyo"})
+
+(defn- to-utc
+  "Returns a full date-time in UTC, referring to a particular time at a particular place. Place must be a TZ string such as America/Chicago. Date will only use the year-month-day fields, the min and second come from the parms."
+  ([place date-time]
+     (to-utc place date-time (time/hour date-time) (time/minute date-time) (time/sec date-time)))
+  ([place date hour minute]
+     (to-utc place date hour minute 0))
+  ([place date hour minute second]
+     (let [zone (time/time-zone-for-id (or (ib-timezone-map place) place))]
+       (time/to-time-zone
+        (time/from-time-zone
+         (time/date-time (time/year date) (time/month date) (time/day date) hour minute second)
+         zone)
+        (time/time-zone-for-id "UTC")))))
+
+(defn- th-days
+  "Returns a seq of the days in an interval"
+  [s]
+  (str/split s #";"))
+
+(defn- th-components [s]
+  (str/split s #":"))
+
+;; NB: Closed days are represented as 0 length intervals on that day.
+(defn- th-intervals [[day s]]
+  (if (= s "CLOSED")
+    [[(str day "0000") (str day "0000")]]
+    (map #(mapv (partial str day) (str/split % #"-")) (str/split s #","))))
+
+;; Convert to Joda intervals
+(defn- joda-interval [tz [start end]]
+  [start end]
+  (let [start-dt  (to-utc tz (tf/parse (tf/formatter "yyyyMMddHHmm") start))
+        end-dt    (to-utc tz (tf/parse (tf/formatter "yyyyMMddHHmm") end))
+        mod-start (if (time/after? start-dt end-dt)
+                    (time/minus start-dt (time/days 1))
+                    start-dt)]
+    (time/interval mod-start end-dt)))
+
+(defmethod translate [:from-ib :trading-hours] [_ _ [tz t-string]]
+  (->> t-string
+       th-days
+       (map th-components)
+       (mapcat th-intervals)
+       (map (partial joda-interval tz))))

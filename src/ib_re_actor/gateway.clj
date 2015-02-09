@@ -1,9 +1,38 @@
+;; # The Gateway
+;; The main user interface. Functions for connecting to Interactive Brokers TWS Gateway and sending
+;; requests to it.
+;;
+;; ## Big Picture
+;; The IB API requires consumers to instantate an object of type com.ib.client.EClientSocket
+;; which is a socket client to the gateway, or TWS.  When instantating this object you pass in
+;; another object which must implement the com.ib.client.EWrapper interface.  The EWrapper is a
+;; collection of callbacks. You then invoke
+;; methods (like requesting price data) on the the EClientSocket object and the results
+;; (price update events) is returned by the EWrapper callbacks.
+;; So the typical pattern for dealing with the IB API is to implement an EWrapper type object for each
+;; application, which requires a lot of knowledge of the API.
+;;
+;; This library takes a slightly different approach to try ease that burden.  The library implements a listener framework
+;; around each callback in the EWrapper object.  So what happens is that each time the IB Gateway
+;; calls back to an method in the EWrapper, our object parses the response and packages it up into a tidy Clojure map
+;; which its hands to any registered listeners.
+;;
+;; Consumers of this library thus do not need to care about the mechanics of EWrapper, ESocketClient etc,
+;; they simply need to register a listener and will receive events.
+;;
+;; ## Basic Usage
+;; 1. Connect to a running Gateway of TWS, using the connect function
+;; 2. Register a listener for an event using the subscribe function
+;; 3. Request the generation of the appropriate event using the request-* functions
+;; 4. Cancel the request with the cancel-* when done.
+;;
 (ns ib-re-actor.gateway
-     "Functions for connecting to Interactive Brokers TWS Gateway and sending requests to it."
-     (:use [ib-re-actor.translation :only [translate integer-account-value? numeric-account-value? boolean-account-value?]]
-           [ib-re-actor.mapping])
-     (:require [clojure.xml :as xml]
-               [clojure.tools.logging :as log]))
+  (:use [ib-re-actor.translation :only [translate integer-account-value?
+                                        numeric-account-value?
+                                        boolean-account-value?]]
+        [ib-re-actor.mapping])
+  (:require [clojure.xml :as xml]
+            [clojure.tools.logging :as log]))
 
 (defn- get-stack-trace [ex]
   (let [sw (java.io.StringWriter.)
@@ -16,24 +45,13 @@
      (log/error msg ": " (.getMessage ex))
      (log/error "Stack Trace: " (get-stack-trace ex)))
   ([ex]
-     (log-exception "Error" ex)))
+     (log-exception ex "Error")))
 
 (defonce client-id (atom 100))
 (defonce next-order-id (atom 0))
 (defonce next-request-id (atom 0))
 (defonce default-server-log-level :error)
-(defonce contract->id (atom {}))
-(defonce id->contract (atom {}))
 (defonce last-ticker-id (atom 1))
-
-(defn register-contract [contract]
-  (let [existing (get @contract->id contract)]
-    (or existing
-        (let [id (swap! last-ticker-id inc)]
-          (log/debug "registering id " id " for " contract)
-          (swap! contract->id assoc contract id)
-          (swap! id->contract assoc id contract)
-          id))))
 
 (defonce connection (agent nil))
 
@@ -91,15 +109,65 @@
 (defmethod warning? :default [_]
   false)
 
-(def error? (comp not warning?))
+(def error? (complement warning?))
 
-(defn is-end?
-  "Predicate to determine if a message indicates a tick snapshot is done"
-  [{type :type :as msg}]
+(defn request-level-error? [code-or-message]
   (cond
-   (= :tick-snapshot-end type) true
-   (and (= :error type) (error? msg)) true
-   :otherwise false))
+   (map? code-or-message)
+   (and (= :error (:type code-or-message))
+        (request-level-error? (:code code-or-message)))
+
+   :otherwise
+   (#{200                                ; no security definition
+      } code-or-message)))
+
+(defn connection-level-error? [code-or-message]
+  (cond
+   (map? code-or-message)
+   (and (= :error (:type code-or-message))
+        (connection-level-error? (:code code-or-message)))
+
+   :otherwise
+   (#{504                                ; Not connected
+      1100                               ; Connectivity between IB and TWS has been lost
+      } code-or-message)))
+
+(defn error-end?
+  ([msg]
+     (error-end? nil msg))
+  ([req-order-or-ticker-id {:keys [type request-id order-id ticker-id] :as msg}]
+     (cond
+      (not= :error type)
+      false
+
+      (not (error? msg))
+      false
+
+      (connection-level-error? msg)
+      true
+
+      (and (= req-order-or-ticker-id (or request-id order-id ticker-id))
+           (error? msg))
+      true)))
+
+(def end-message-type? #{:tick-snapshot-end :open-order-end
+                         :account-download-end :contract-details-end
+                         :price-bar-complete
+                         :execution-details-end :scan-end })
+
+(defn request-end?
+  "Predicate to determine if a message indicates a series of responses for a request is done"
+  [req-id {:keys [type request-id] :as msg}]
+  (and (end-message-type? type)
+       (or (nil? req-id)
+           (= request-id req-id))))
+
+(defn end?
+  ([msg]
+     (end? nil msg))
+  ([req-id msg]
+     (or (error-end? req-id msg)
+         (request-end? req-id msg))))
 
 (defn- create-wrapper
   "Creates a wrapper that flattens the Interactive Brokers EWrapper interface,
@@ -111,10 +179,12 @@
 
     ;;; Connection and Server
     (currentTime [this time]
-      (dispatch-message {:type :current-time :value (translate :from-ib :date-time time)}))
+      (dispatch-message {:type :current-time
+                         :value (translate :from-ib :date-time time)}))
 
     (log/error [this requestId errorCode message]
-      (dispatch-message {:type :error :request-id requestId :code errorCode :message message}))
+      (dispatch-message {:type :error :request-id requestId :code errorCode
+                         :message message}))
 
     (^void error [this ^String message]
       (dispatch-message {:type :error :message message}))
@@ -134,20 +204,23 @@
 
     ;;; Market Data
     (tickPrice [this tickerId field price canAutoExecute]
-      (dispatch-message {:type :tick :field (translate :from-ib :tick-field-code field)
-                         :contract (get @id->contract tickerId)
+      (dispatch-message {:type :tick
+                         :field (translate :from-ib :tick-field-code field)
+                         :ticker-id tickerId
                          :value price
                          :can-auto-execute? (= 1 canAutoExecute)}))
 
     (tickSize [this tickerId field size]
-      (dispatch-message {:type :tick :field (translate :from-ib :tick-field-code field)
-                         :contract (get @id->contract tickerId)
-                         :value size}))
-
-    (tickOptionComputation [this tickerId field impliedVol delta optPrice pvDividend gamma vega theta undPrice]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code field)
-                         :contract (get @id->contract tickerId)
+                         :ticker-id tickerId
+                         :value size}))
+
+    (tickOptionComputation [this tickerId field impliedVol delta optPrice
+                            pvDividend gamma vega theta undPrice]
+      (dispatch-message {:type :tick
+                         :field (translate :from-ib :tick-field-code field)
+                         :ticker-id tickerId
                          :implied-volatility impliedVol
                          :option-price optPrice
                          :pv-dividends pvDividend
@@ -157,28 +230,32 @@
     (tickGeneric [this tickerId tickType value]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code tickType)
-                         :contract (get @id->contract tickerId) :value value}))
+                         :ticker-id tickerId :value value}))
 
     (tickString [this tickerId tickType value]
       (let [field (translate :from-ib :tick-field-code tickType)]
         (cond
          (= field :last-timestamp)
-         (dispatch-message {:type :timestamp-tick :field field
-                            :contract (get @id->contract tickerId)
+         (dispatch-message {:type :tick :field field
+                            :ticker-id tickerId
                             :value (translate :from-ib :date-time value)})
 
          :else
-         (dispatch-message {:type :string-tick :field field
-                            :contract (get @id->contract tickerId)
+         (dispatch-message {:type :tick :field field
+                            :ticker-id tickerId
                             :value val}))))
 
-    (tickEFP [this tickerId tickType basisPoints formattedBasisPoints impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
+    (tickEFP [this tickerId tickType basisPoints formattedBasisPoints
+              impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
       (dispatch-message {:type :tick
                          :field (translate :from-ib :tick-field-code tickType)
-                         :contract (get @id->contract tickerId)
-                         :basis-points basisPoints :formatted-basis-points formattedBasisPoints
-                         :implied-future impliedFuture :hold-days holdDays :future-expiry futureExpiry
-                         :dividend-impact dividendImpact :dividends-to-expiry dividendsToExpiry}))
+                         :ticker-id tickerId
+                         :basis-points basisPoints
+                         :formatted-basis-points formattedBasisPoints
+                         :implied-future impliedFuture :hold-days holdDays
+                         :future-expiry futureExpiry
+                         :dividend-impact dividendImpact
+                         :dividends-to-expiry dividendsToExpiry}))
 
     (tickSnapshotEnd [this reqId]
       (dispatch-message {:type :tick-snapshot-end :request-id reqId}))
@@ -189,8 +266,8 @@
                          :market-data-type (translate :from-ib :market-data-type type)}))
 
     ;;; Orders
-    (orderStatus [this orderId status filled remaining avgFillPrice permId parentId lastFillPrice clientId whyHeld
-                  ]
+    (orderStatus [this orderId status filled remaining avgFillPrice permId
+                  parentId lastFillPrice clientId whyHeld]
       (dispatch-message {:type :order-status :order-id orderId
                          :status (translate :from-ib :order-status status)
                          :filled filled :remaining remaining
@@ -219,15 +296,18 @@
                  (numeric-account-value? avk) (Double/parseDouble value)
                  (boolean-account-value? avk) (Boolean/parseBoolean value)
                  :else value)]
-        (dispatch-message {:type :update-account-value :key avk :value val :currency currency :account accountName})))
+        (dispatch-message {:type :update-account-value :key avk :value val
+                           :currency currency :account accountName})))
 
     (accountDownloadEnd [this account-code]
       (dispatch-message {:type :account-download-end :account-code account-code}))
 
-    (updatePortfolio [this contract position marketPrice marketValue averageCost unrealizedPNL realizedPNL accountName]
-      (dispatch-message {:type :update-portfolio :contract (->map contract) :position position
-                         :market-price marketPrice :market-value marketValue
-                         :average-cost averageCost :unrealized-gain-loss unrealizedPNL
+    (updatePortfolio [this contract position marketPrice marketValue averageCost
+                      unrealizedPNL realizedPNL accountName]
+      (dispatch-message {:type :update-portfolio :contract (->map contract)
+                         :position position :market-price marketPrice
+                         :market-value marketValue :average-cost averageCost
+                         :unrealized-gain-loss unrealizedPNL
                          :realized-gain-loss realizedPNL
                          :account accountName}))
 
@@ -237,18 +317,25 @@
 
     ;;; Contract Details
     (contractDetails [this requestId contractDetails]
-      (dispatch-message {:type :contract-details :request-id requestId
-                         :value (->map contractDetails)}))
+      (let [{:keys [trading-hours liquid-hours time-zone-id] :as m} (->map contractDetails)]
+        (dispatch-message {:type :contract-details
+                           :request-id requestId
+                           :value (-> m
+                                      (assoc :trading-hours (translate :from-ib :trading-hours [time-zone-id trading-hours]))
+                                      (assoc :liquid-hours  (translate :from-ib :trading-hours [time-zone-id liquid-hours])))})))
 
     (bondContractDetails [this requestId contractDetails]
-      (dispatch-message {:type :contract-details :request-id requestId :value contractDetails}))
+      (dispatch-message {:type :contract-details :request-id requestId
+                         :value (->map contractDetails)}))
 
     (contractDetailsEnd [this requestId]
       (dispatch-message {:type :contract-details-end :request-id requestId}))
 
     ;;; Execution Details
     (execDetails [this requestId contract execution]
-      (dispatch-message {:type :execution-details :request-id requestId :contract (->map contract) :value execution}))
+      (dispatch-message {:type :execution-details :request-id requestId
+                         :contract (->map contract)
+                         :value (->map execution)}))
 
     (execDetailsEnd [this requestId]
       (dispatch-message {:type :execution-details-end :request-id requestId}))
@@ -259,17 +346,19 @@
     ;;; Market Depth
     (updateMktDepth [this tickerId position operation side price size]
       (dispatch-message {:type :update-market-depth
-                         :contract (get @id->contract tickerId)
+                         :ticker-id tickerId
                          :position position
-                         :operation (translate :from-ib :market-depth-row-operation operation)
+                         :operation (translate :from-ib :market-depth-row-operation
+                                               operation)
                          :side (translate :from-ib :market-depth-side side)
                          :price price :size size}))
 
     (updateMktDepthL2 [this tickerId position marketMaker operation side price size]
       (dispatch-message {:type :update-market-depth-level-2
-                         :contract (get @id->contract tickerId) :position position
+                         :ticker-id tickerId :position position
                          :market-maker marketMaker
-                         :operation (translate :from-ib :market-depth-row-operation operation)
+                         :operation (translate :from-ib :market-depth-row-operation
+                                               operation)
                          :side (translate :from-ib :market-depth-side side)
                          :price price :size size}))
 
@@ -307,11 +396,12 @@
     (scannerParameters [this xml]
       (dispatch-message {:type :scan-parameters :value xml}))
 
-    (scannerData [this requestId rank contractDetails distance benchmark projection legsStr]
+    (scannerData [this requestId rank contractDetails distance benchmark
+                  projection legsStr]
       (dispatch-message {:type :scan-result :request-id requestId :rank rank
-                         :contract-details (->map contractDetails) :distance distance
-                         :benchmark benchmark :projection projection
-                         :legs legsStr}))
+                         :contract-details (->map contractDetails)
+                         :distance distance :benchmark benchmark
+                         :projection projection :legs legsStr}))
 
     (scannerDataEnd [this requestId]
       (dispatch-message {:type :scan-end :request-id requestId}))
@@ -325,8 +415,10 @@
 
     ;;; Fundamental Data
     (fundamentalData [this requestId xml]
-      (dispatch-message {:type :fundamental-data :request-id requestId
-                         :report (xml/parse (java.io.ByteArrayInputStream. (.getBytes xml)))}))))
+      (let [report-xml (-> (java.io.ByteArrayInputStream (.getBytes xml))
+                           xml/parse)]
+        (dispatch-message {:type :fundamental-data :request-id requestId
+                           :report report-xml})))))
 
 (defn subscribe [f]
   (send-off listeners conj f))
@@ -335,6 +427,13 @@
   (send-off listeners
             (fn [fns] (filter (partial not= f) fns))))
 
+(defmacro with-subscription [handler & body]
+  `(try
+     (g/subscribe ~handler)
+     ~@body
+     (finally
+       (g/unsubscribe ~handler))))
+
 (defn get-order-id []
   (swap! next-order-id inc))
 
@@ -342,9 +441,8 @@
   (swap! next-request-id inc))
 
 (defn request-market-data
-  "Call this function to request market data. The market data will be returned by
-   :price-tick, :size-tick, :option-computation-tick, :generic-tick, :string-tick
-   and :efp-tick messages.
+  "Call this function to request market data. The market data will be returned in
+   :tick messages.
 
    For snapshots, a :tick-snapshot-end message will indicate the snapshot is done.
 
@@ -374,19 +472,18 @@
 
      if no tick list is specified, a single snapshot of market data will come back
      and have the market data subscription will be immediately canceled."
-  ([contract tick-list snapshot?]
-     (let [ticker-id (register-contract contract)]
-       (send-connection .reqMktData ticker-id
-                        (map-> com.ib.client.Contract contract)
-                        (translate :to-ib :tick-list tick-list)
-                        snapshot?)))
+  ([contract ticker-id tick-list snapshot?]
+     (send-connection .reqMktData ticker-id
+                      (map-> com.ib.client.Contract contract)
+                      (translate :to-ib :tick-list tick-list)
+                      snapshot?))
   ([contract]
-     (request-market-data contract "" false)))
+     (let [ticker-id (swap! last-ticker-id inc)]
+       (request-market-data contract ticker-id "" false)
+       ticker-id)))
 
-(defn cancel-market-data [contract]
-  (let [ticker-id (@contract->id contract)]
-    (log/info "cancelling " ticker-id)
-    (send-connection .cancelMktData ticker-id)))
+(defn cancel-market-data [ticker-id]
+  (send-connection .cancelMktData ticker-id))
 
 (defn request-historical-data
   "Start receiving historical price bars stretching back <duration> <duration-unit>s back,
@@ -396,29 +493,43 @@
 
    bar-size-unit should be one of :second(s), :minute(s), :hour(s), or :day(s).
 
-   what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask, :historical-volatility,
-   :option-implied-volatility, :option-volume, or :option-open-interest."
-  ([id contract end duration duration-unit bar-size bar-size-unit what-to-show use-regular-trading-hours?]
-     (let [[acceptable-duration acceptable-duration-unit] (translate :to-ib :acceptable-duration [duration duration-unit])]
+   what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask,
+   :historical-volatility, :option-implied-volatility, :option-volume,
+   or :option-open-interest."
+  ([id contract end duration duration-unit bar-size bar-size-unit
+    what-to-show use-regular-trading-hours?]
+     (let [[acceptable-duration acceptable-duration-unit]
+           (translate :to-ib :acceptable-duration [duration duration-unit])]
        (send-connection .reqHistoricalData id
                         (map-> com.ib.client.Contract contract)
                         (translate :to-ib :date-time end)
-                        (translate :to-ib :duration [acceptable-duration acceptable-duration-unit])
+                        (translate :to-ib :duration [acceptable-duration
+                                                     acceptable-duration-unit])
                         (translate :to-ib :bar-size [bar-size bar-size-unit])
                         (translate :to-ib :what-to-show what-to-show)
                         (if use-regular-trading-hours? 1 0)
                         2)))
   ([id contract end duration duration-unit bar-size bar-size-unit what-to-show]
-     (request-historical-data id contract end duration duration-unit bar-size bar-size-unit what-to-show true))
+     (request-historical-data id contract end duration duration-unit
+                              bar-size bar-size-unit what-to-show true))
   ([id contract end duration duration-unit bar-size bar-size-unit]
-     (request-historical-data id contract end duration duration-unit bar-size bar-size-unit :trades true)))
+     (request-historical-data id contract end duration duration-unit
+                              bar-size bar-size-unit :trades true)))
 
 (defn request-real-time-bars
   "Start receiving real time bar results."
   [id contract what-to-show use-regular-trading-hours?]
-  (send-connection .reqRealTimeBars id contract 5
+  (send-connection .reqRealTimeBars
+                   id
+                   (map-> com.ib.client.Contract contract)
+                   5
                    (translate :to-ib :what-to-show what-to-show)
                    use-regular-trading-hours?))
+
+(defn cancel-real-time-bars
+  "Call this function to stop receiving real time bars for the passed in request-id"
+  [id]
+  (send-connection .cancelRealTimeBars id))
 
 (defn request-news-bulletins
   "Call this function to start receiving news bulletins. Each bulletin will
@@ -441,7 +552,8 @@
   ([contract report-type]
      (request-fundamental-data (get-request-id) contract report-type))
   ([request-id contract report-type]
-     (send-connection .reqFundamentalData request-id (map-> com.ib.client.Contract contract)
+     (send-connection .reqFundamentalData request-id
+                      (map-> com.ib.client.Contract contract)
                       (translate :to-ib :report-type report-type))))
 
 (defn cancel-fundamental-data
@@ -457,7 +569,8 @@ message"
      (request-contract-details (get-request-id) contract))
   ([request-id contract]
      (log/debug "Requesting contract details #" request-id " for " (pr-str contract))
-     (send-connection .reqContractDetails request-id (map-> com.ib.client.Contract contract))
+     (send-connection .reqContractDetails request-id
+                      (map-> com.ib.client.Contract contract))
      request-id))
 
 (defn place-order
@@ -512,10 +625,10 @@ message"
                (fn [c]
                  (try
                    (let [connection (com.ib.client.EClientSocket. (create-wrapper))]
-                        (.eConnect connection host port client-id)
-                        (if (not= default-server-log-level :error)
-                          (set-server-log-level connection default-server-log-level))
-                        connection)
+                     (.eConnect connection host port client-id)
+                     (if (not= default-server-log-level :error)
+                       (set-server-log-level connection default-server-log-level))
+                     connection)
                    (catch Exception ex
                      (log/error "Error trying to connect to " host ":" port ": " ex)))))))
 

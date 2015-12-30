@@ -57,7 +57,7 @@
 
 (defn- dispatch-message [ch msg]
   (log/debug "Dispatching: " msg)
-  (go (>! ch msg)))
+  (put! ch msg))
 
 (defn- is-finish? [date-string]
   (.startsWith date-string "finished"))
@@ -337,7 +337,7 @@
                                     0 :news-bulletin
                                     1 :exchange-unavailable
                                     2 :exchange-available)
-                            :id msgId :message message :exchge origExchange}))
+                            :id msgId :message message :exchange origExchange}))
 
     ;;; Financial Advisors
     (managedAccounts [this accountsList]

@@ -800,8 +800,10 @@ to check if if a given value is valid (known)."
                     start-dt)]
     (time/interval mod-start end-dt)))
 
+;;added changed ->> to some->> which apparently is necessary for this to work with
+;;include-expired? contracts, as trading-hours seems to be nil/empty for that
 (defmethod translate [:from-ib :trading-hours] [_ _ [tz t-string]]
-  (->> t-string
+  (some->> t-string
        th-days
        (map th-components)
        (mapcat th-intervals)

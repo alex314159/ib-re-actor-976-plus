@@ -1,5 +1,5 @@
 (ns ib-re-actor.util
-  (:use [ib-re-actor.translation]))
+  (:require [ib-re-actor.translation :as t]))
 
 (def ^:const option-flag-keywords #{:read-only})
 
@@ -14,13 +14,13 @@
                      `(fn
                         ([~this]
                            ~(if translation
-                              `(translate :from-ib ~translation (. ~this ~field))
+                              `(t/translate :from-ib ~translation (. ~this ~field))
                               `(. ~this ~field)))
                         ~@(if (not (option-flags :read-only))
                             `(([~this ~val]
                                  (set! (. ~this ~field)
                                        ~(if translation
-                                          `(translate :to-ib ~translation ~val)
+                                          `(t/translate :to-ib ~translation ~val)
                                           val))
                                  ~this)))))))
           {} property-descriptors))

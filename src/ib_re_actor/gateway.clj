@@ -27,11 +27,11 @@
 ;; 4. Cancel the request with the cancel-* when done.
 ;;
 (ns ib-re-actor.gateway
-  (:use [ib-re-actor.translation :only [translate integer-account-value?
-                                        numeric-account-value?
-                                        boolean-account-value?]]
-        [ib-re-actor.mapping])
-  (:require [clojure.xml :as xml]
+  (:require [ib-re-actor.translation
+             :refer [translate integer-account-value? numeric-account-value?
+                     boolean-account-value?]]
+            [ib-re-actor.mapping :refer [->map map->]]
+            [clojure.xml :as xml]
             [clojure.tools.logging :as log]
             [clojure.core.async :as async
              :refer [>! <! <!! >!! alts! chan put! go]]))

@@ -5,7 +5,8 @@
    interactive context (such as when using the REPL) but probably not what you
    would want to use in an application, as the asynchronous API is a much more
    natural fit for building programs that react to events in market data."
-  (:require [ib-re-actor.gateway :refer [with-subscription end? error-end? request-end?] :as g]
+  (:require [ib-re-actor.gateway :as g
+             :refer [with-subscription end? error-end? request-end?]]
             [clojure.tools.logging :as log]
             [clj-time.core :as t]))
 

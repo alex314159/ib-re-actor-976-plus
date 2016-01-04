@@ -6,8 +6,8 @@ with the Interactive Brokers API.
 In addition to just converting to maps, we also use these functions to translate some
 primitives: strings with constant values into keywords, booleans in strings into booleans,
 date strings into clj-time dates, etc."
-  (:use [clojure.string :only [join]]
-        [ib-re-actor.translation :only [translate]]))
+  (:require [clojure.string :refer [join]]
+            [ib-re-actor.translation :refer [translate]]))
 
 (defprotocol Mappable
   (->map [this]

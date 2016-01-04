@@ -392,9 +392,19 @@ user> (get-open-orders)
 
 ### Other Things
 
+#### Building
+
+1. Download and extract the API jar from Interactive brokers.
+2. `cd IBJts/source/JavaClient`
+3. `mkdir bin`
+4. `javac -d bin -sourcepath . com/ib/*/*.java`
+5. `ant`
+6. You should end up with `javaclient.jar`.
+7. Install it with `lein localrepo`.
+
 ## License
 
-Copyright (C) 2011 Chris Bilson
+Copyright (C) 2011 Chris Bilson, Jean-Sebastien A. Beaudry
 
 Distributed under the Eclipse Public License, the same as Clojure.
 

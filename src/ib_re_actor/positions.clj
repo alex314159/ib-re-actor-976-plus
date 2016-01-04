@@ -1,5 +1,4 @@
-(ns ib-re-actor.positions
-  (:require [ib-re-actor.gateway :as g]))
+(ns ib-re-actor.positions)
 
 (defonce positions (atom nil))
 
@@ -10,5 +9,3 @@
                              :average-cost :unrealized-gain-loss
                              :realized-gain-loss]))))
 
-(do
-  (g/subscribe handle-portfolio-update))

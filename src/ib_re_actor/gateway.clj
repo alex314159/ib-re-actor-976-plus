@@ -142,7 +142,10 @@
 (defn- create-wrapper
   "Creates a wrapper that flattens the Interactive Brokers EWrapper interface,
    calling a single function with maps that all have a :type to indicate what type
-   of messages was received, and the massaged parameters from the event."
+   of messages was received, and the massaged parameters from the event.
+
+   See: https://www.interactivebrokers.com/en/software/api/api.htm
+  "
   [ch]
   (reify
     com.ib.client.EWrapper
@@ -152,12 +155,9 @@
       (dispatch-message ch {:type :current-time
                             :value (translate :from-ib :date-time time)}))
 
-    (log/error [this requestId errorCode message]
+    (^void error [this ^int requestId ^int errorCode ^String message]
       (dispatch-message ch {:type :error :request-id requestId :code errorCode
                             :message message}))
-
-    (^void error [this ^String message]
-     (dispatch-message ch {:type :error :message message}))
 
     (^void error [this ^Exception ex]
      (let [sw (java.io.StringWriter.)
@@ -166,6 +166,9 @@
        (log/error "Error: " (.getMessage ex))
        (log/error "Stack Trace: " sw))
      (dispatch-message ch {:type :error :exception (.toString ex)}))
+
+    (^void error [this ^String message]
+     (dispatch-message ch {:type :error :message message}))
 
     (connectionClosed [this]
       (log/info "Connection closed")
@@ -203,16 +206,11 @@
 
     (tickString [this tickerId tickType value]
       (let [field (translate :from-ib :tick-field-code tickType)]
-        (cond
-          (= field :last-timestamp)
-          (dispatch-message ch {:type :tick :field field
-                                :ticker-id tickerId
-                                :value (translate :from-ib :date-time value)})
-
-          :else
-          (dispatch-message ch {:type :tick :field field
-                                :ticker-id tickerId
-                                :value val}))))
+        {:type :tick :field field
+         :ticker-id tickerId
+         :value (case field
+                  :last-timestamp (translate :from-ib :date-time value)
+                  value)}))
 
     (tickEFP [this tickerId tickType basisPoints formattedBasisPoints
               impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
@@ -253,9 +251,14 @@
       (dispatch-message ch {:type :open-order-end}))
 
     (nextValidId [this orderId]
-      (dosync
-       (reset! next-order-id orderId))
+      (log/info "Next order ID: " orderId)
+      (reset! next-order-id orderId)
       (dispatch-message ch {:type :next-valid-order-id :value orderId}))
+
+    ;; In newer docs
+    (deltaNeutralValidation [this reqId underComp]
+      (dispatch-message ch {:type :delta-neutral-validation :request-id reqId
+                            :underlying-component (->map underComp)}))
 
     ;;; Account and Portfolio
     (updateAccountValue [this key value currency accountName]
@@ -267,9 +270,6 @@
                   :else value)]
         (dispatch-message ch {:type :update-account-value :key avk :value val
                               :currency currency :account accountName})))
-
-    (accountDownloadEnd [this account-code]
-      (dispatch-message ch {:type :account-download-end :account-code account-code}))
 
     (updatePortfolio [this contract position marketPrice marketValue averageCost
                       unrealizedPNL realizedPNL accountName]
@@ -284,6 +284,22 @@
       (dispatch-message ch {:type :update-account-time
                             :value (translate :from-ib :time-of-day timeStamp)}))
 
+    (accountDownloadEnd [this account-code]
+      (dispatch-message ch {:type :account-download-end :account-code account-code}))
+
+    ;; In newer docs
+    (accountSummary [this reqId account tag value currency]
+      (dispatch-message ch {:type :account-summary :request-id reqId :account account :tag tag :value value :currency currency}))
+
+    (accountSummaryEnd [this reqId]
+      (dispatch-message ch {:type :account-summary-end :request-id reqId}))
+
+    (position [this account contract pos avgCost]
+      (dispatch-message ch {:type :position :account account :contract (->map contract) :position pos :average-cost avgCost}))
+
+    (positionEnd [this]
+      (dispatch-message ch {:type :position-end}))
+
     ;;; Contract Details
     (contractDetails [this requestId contractDetails]
       (let [{:keys [trading-hours liquid-hours time-zone-id] :as m} (->map contractDetails)]
@@ -293,12 +309,12 @@
                                          (assoc :trading-hours (translate :from-ib :trading-hours [time-zone-id trading-hours]))
                                          (assoc :liquid-hours  (translate :from-ib :trading-hours [time-zone-id liquid-hours])))})))
 
+    (contractDetailsEnd [this requestId]
+      (dispatch-message ch {:type :contract-details-end :request-id requestId}))
+
     (bondContractDetails [this requestId contractDetails]
       (dispatch-message ch {:type :contract-details :request-id requestId
                             :value (->map contractDetails)}))
-
-    (contractDetailsEnd [this requestId]
-      (dispatch-message ch {:type :contract-details-end :request-id requestId}))
 
     ;;; Execution Details
     (execDetails [this requestId contract execution]
@@ -387,7 +403,15 @@
       (let [report-xml (-> (java.io.ByteArrayInputStream (.getBytes xml))
                            xml/parse)]
         (dispatch-message ch {:type :fundamental-data :request-id requestId
-                              :report report-xml})))))
+                              :report report-xml})))
+
+    ;;; Display Groups
+    (displayGroupList [this reqId groups]
+      (dispatch-message ch {:type :display-group-list :request-id reqId
+                            :groups (->> (.split groups "|") (map #(.trim %)) vec)}))
+
+    (displayGroupUpdated [this reqId contractInfo]
+      (dispatch-message ch {:type :display-group-updated :request-id reqId :contract-info contractInfo}))))
 
 (defn get-order-id []
   (swap! next-order-id inc))

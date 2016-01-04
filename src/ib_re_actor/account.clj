@@ -1,8 +1,7 @@
 ;; # Account details
 ;; This namespace deals monitoring and updating account details.
 ;;
-(ns ib-re-actor.account
-  (:require [ib-re-actor.gateway :as g]))
+(ns ib-re-actor.account)
 
 ;; This atom contains the account details at all times
 (defonce account-details (atom nil))
@@ -19,7 +18,3 @@
 
     :update-account-time
     (swap! account-details assoc :last-updated value)))
-
-;; Subscribe immediately to receiving updates
-(do
-  (g/subscribe update-account-details))

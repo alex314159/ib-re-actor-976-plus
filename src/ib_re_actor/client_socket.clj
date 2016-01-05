@@ -197,8 +197,8 @@
   "Call this function to download all details for a particular
   contract. The contract details will be received in a :contract-details
   message"
-  ([{:keys [ecs]} contract]
-   (request-contract-details ecs (get-request-id) contract))
+  ([connection contract]
+   (request-contract-details connection (get-request-id) contract))
   ([{:keys [ecs]} request-id contract]
    (log/debug "Requesting contract details #" request-id " for " (pr-str contract))
    (.reqContractDetails ecs request-id

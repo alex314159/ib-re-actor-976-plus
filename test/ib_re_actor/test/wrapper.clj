@@ -1,34 +1,35 @@
-(ns ib-re-actor.test.gateway
-  (:use [ib-re-actor.gateway]
-        [ib-re-actor.translation]
-        [ib-re-actor.mapping]
-        [clj-time.core :only [date-time]]
-        [midje.sweet]
-        [midje.util :only [testable-privates]])
-  (:require [clojure.core.async :as async])
+(ns ib-re-actor.test.wrapper
+  (:require [midje.util :refer [testable-privates]]
+            [midje.sweet :refer [fact]]
+            [clj-time.core :refer [date-time]]
+            [ib-re-actor.mapping :refer [->map]]
+            [ib-re-actor.wrapper :refer [create]])
   (:import [com.ib.client Contract Order OrderState ContractDetails Execution]))
 
-(testable-privates ib-re-actor.gateway dispatch-message create-wrapper)
+
+(testable-privates ib-re-actor.wrapper dispatch-message)
 
 (def some-contract {:symbol "SOME TICKER"})
-(def some-contract-id (get-request-id))
+(def some-contract-id 42)
 
 (defn make-order-state []
   (let [ctor (first (.getDeclaredConstructors OrderState))]
     (.setAccessible ctor true)
     (.newInstance ctor nil)))
 
+
 (defmacro wrapper->message
   "Given 1 or more wrapper calls, creates a wrapper and applies the method calls to the
-wrapper, collecting and returning any messages the wrapper dispatched."
+  wrapper, collecting and returning any messages the wrapper dispatched."
   [& calls]
   (let [wrapper (gensym "wrapper")]
     `(let [messages# (atom nil)
-           ~wrapper (create-wrapper nil)]
-       (with-redefs [ib-re-actor.gateway/dispatch-message
+           ~wrapper (create nil)]
+       (with-redefs [ib-re-actor.wrapper/dispatch-message
                      (fn [_# m#] (swap! messages# conj m#))]
          ~@(map #(concat [`. wrapper] %) calls))
        (first @messages#))))
+
 
 (fact "when IB sends the current time, it dispatches a current time message"
       (wrapper->message (currentTime 1000000000))
@@ -263,7 +264,8 @@ wrapper, collecting and returning any messages the wrapper dispatched."
 (fact "getting valid scanner parameters"
       (wrapper->message
        (scannerParameters "<some><scanner><parameters /></scanner></some>"))
-      => {:type :scan-parameters :value "<some><scanner><parameters /></scanner></some>"})
+      => {:type :scan-parameters
+          :value "<some><scanner><parameters /></scanner></some>"})
 
 (fact "getting scanner results"
       (let [cd (ContractDetails.)

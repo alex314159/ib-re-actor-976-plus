@@ -8,8 +8,8 @@
   (:require [clj-time.core :as t]
             [clojure.core.async :as async]
             [clojure.tools.logging :as log]
-            [ib-re-actor.gateway :as g
-             :refer [end? error-end? request-end?]]))
+            [ib-re-actor.client-socket :as cs]
+            [ib-re-actor.wrapper :refer [end? error-end? request-end?]]))
 
 (defmacro with-subscription [connection handler & body]
   `(let [ch# (async/chan)]
@@ -35,14 +35,14 @@
                    (error-end? msg)
                    (deliver result msg)))]
     (with-subscription connection handler
-      (g/request-current-time connection)
+      (cs/request-current-time connection)
       @result)))
 
 (defn get-contract-details
   "Gets details for the specified contract."
   [connection contract]
   (let [responses (atom nil)
-        req-id (g/get-request-id)
+        req-id (cs/get-request-id)
         results (promise)
         handler (fn [{:keys [type request-id value] :as msg}]
                   (cond
@@ -55,14 +55,14 @@
                    (error-end? req-id msg)
                    (deliver results msg)))]
     (with-subscription connection handler
-      (g/request-contract-details connection req-id contract)
+      (cs/request-contract-details connection req-id contract)
       @results)))
 
 (defn get-current-price
   "Gets the current price for the specified contract."
   [connection contract]
   (let [fields (atom nil)
-        req-ticker-id (g/get-request-id)
+        req-ticker-id (cs/get-request-id)
         result (promise)
         handler (fn [{:keys [type ticker-id request-id field value code] :as msg}]
                   (cond
@@ -75,13 +75,13 @@
                    (error-end? req-ticker-id msg)
                    (deliver result msg)))]
     (with-subscription connection handler
-      (g/request-market-data connection contract req-ticker-id "" true)
+      (cs/request-market-data connection contract req-ticker-id "" true)
       @result)))
 
 (defn execute-order
   "Executes an order, returning only when the order is filled or pending."
   [connection contract order]
-  (let [ord-id (g/get-order-id)
+  (let [ord-id (cs/get-order-id)
         market-closed? (atom false)
         updates (atom [])
         result (promise)
@@ -106,14 +106,14 @@
                      this-order
                      (swap! updates conj msg))))]
     (with-subscription connection handler
-      (g/place-order connection ord-id contract order)
+      (cs/place-order connection ord-id contract order)
       @result)))
 
 (defn get-historical-data
   "Gets historical price bars for a contract."
   [connection contract end-time duration duration-unit bar-size bar-size-unit
    what-to-show use-regular-trading-hours?]
-  (let [req-id (g/get-request-id)
+  (let [req-id (cs/get-request-id)
         accum (atom [])
         results (promise)
         handler (fn [{:keys [type request-id] :as msg}]
@@ -124,7 +124,7 @@
                    (and (= req-id request-id) (= type :price-bar))
                    (swap! accum conj msg)))]
     (with-subscription connection handler
-      (g/request-historical-data connection req-id contract end-time duration
+      (cs/request-historical-data connection req-id contract end-time duration
                                  duration-unit bar-size bar-size-unit what-to-show
                                  use-regular-trading-hours?)
       @results)))
@@ -145,9 +145,9 @@
                    (end? msg)
                    (deliver results @accum)))]
     (with-subscription connection handler
-      (g/request-open-orders connection)
+      (cs/request-open-orders connection)
       @results)))
 
 (defn cancel-order [connection order-id]
-  (g/cancel-order connection order-id)
+  (cs/cancel-order connection order-id)
   nil)

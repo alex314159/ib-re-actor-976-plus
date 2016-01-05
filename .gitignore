@@ -10,3 +10,4 @@ pom.xml
 .lein-plugins
 /errors.log
 /ticks.csv
+/.nrepl-port

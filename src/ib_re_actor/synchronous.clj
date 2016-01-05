@@ -5,14 +5,27 @@
    interactive context (such as when using the REPL) but probably not what you
    would want to use in an application, as the asynchronous API is a much more
    natural fit for building programs that react to events in market data."
-  (:require [ib-re-actor.gateway :as g
-             :refer [with-subscription end? error-end? request-end?]]
+  (:require [clj-time.core :as t]
+            [clojure.core.async :as async]
             [clojure.tools.logging :as log]
-            [clj-time.core :as t]))
+            [ib-re-actor.gateway :as g
+             :refer [end? error-end? request-end?]]))
+
+(defmacro with-subscription [connection handler & body]
+  `(let [ch# (async/chan)]
+     (try
+       (async/tap (:mult ~connection) ch#)
+       (async/go-loop []
+         (~handler (async/<! ch#))
+         (recur))
+       ~@body
+       (finally
+         (async/untap (:mult ~connection) ch#)))))
+
 
 (defn get-time
   "Returns the server time"
-  []
+  [connection]
   (let [result (promise)
         handler (fn [{:keys [type value] :as msg}]
                   (cond
@@ -21,13 +34,13 @@
 
                    (error-end? msg)
                    (deliver result msg)))]
-    (with-subscription handler
+    (with-subscription connection handler
       (g/request-current-time)
       @result)))
 
 (defn get-contract-details
   "Gets details for the specified contract."
-  [con]
+  [connection contract]
   (let [responses (atom nil)
         req-id (g/get-request-id)
         results (promise)
@@ -41,13 +54,13 @@
 
                    (error-end? req-id msg)
                    (deliver results msg)))]
-    (with-subscription handler
-      (g/request-contract-details req-id con)
+    (with-subscription connection handler
+      (g/request-contract-details req-id contract)
       @results)))
 
 (defn get-current-price
   "Gets the current price for the specified contract."
-  [con]
+  [connection contract]
   (let [fields (atom nil)
         req-ticker-id (g/get-request-id)
         result (promise)
@@ -61,13 +74,13 @@
 
                    (error-end? req-ticker-id msg)
                    (deliver result msg)))]
-    (with-subscription handler
-      (g/request-market-data con req-ticker-id "" true)
+    (with-subscription connection handler
+      (g/request-market-data contract req-ticker-id "" true)
       @result)))
 
 (defn execute-order
   "Executes an order, returning only when the order is filled or pending."
-  [contract order]
+  [connection contract order]
   (let [ord-id (g/get-order-id)
         market-closed? (atom false)
         updates (atom [])
@@ -92,13 +105,13 @@
 
                      this-order
                      (swap! updates conj msg))))]
-    (with-subscription handler
+    (with-subscription connection handler
       (g/place-order ord-id contract order)
       @result)))
 
 (defn get-historical-data
   "Gets historical price bars for a contract."
-  [contract end-time duration duration-unit bar-size bar-size-unit
+  [connection contract end-time duration duration-unit bar-size bar-size-unit
    what-to-show use-regular-trading-hours?]
   (let [req-id (g/get-request-id)
         accum (atom [])
@@ -110,14 +123,14 @@
 
                    (and (= req-id request-id) (= type :price-bar))
                    (swap! accum conj msg)))]
-    (with-subscription handler
+    (with-subscription connection handler
       (g/request-historical-data req-id contract end-time duration duration-unit
                                  bar-size bar-size-unit what-to-show use-regular-trading-hours?)
       @results)))
 
 (defn get-open-orders
   "Gets all open orders for the current connection."
-  []
+  [connection]
   (let [accum (atom [])
         results (promise)
         handler (fn [{:keys [type] :as msg}]
@@ -130,7 +143,7 @@
 
                    (end? msg)
                    (deliver results @accum)))]
-    (with-subscription handler
+    (with-subscription connection handler
       (g/request-open-orders)
       @results)))
 

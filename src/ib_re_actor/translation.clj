@@ -755,7 +755,8 @@ to check if if a given value is valid (known)."
 
 ;; -----
 ;; ## Deals with the trading hours reporting.  This is really ugly.
-;; IB uses their timezone definitions incorrectly.  Correct them here.  No, no, they really do.
+;; IB uses their timezone definitions incorrectly. Correct them here. No, no,
+;; they really do.
 (def ib-timezone-map
   {"EST" "America/New_York"
    "CST" "America/Chicago"
@@ -763,9 +764,12 @@ to check if if a given value is valid (known)."
    "JST" "Asia/Tokyo"})
 
 (defn- to-utc
-  "Returns a full date-time in UTC, referring to a particular time at a particular place. Place must be a TZ string such as America/Chicago. Date will only use the year-month-day fields, the min and second come from the parms."
+  "Returns a full date-time in UTC, referring to a particular time at a
+  particular place. Place must be a TZ string such as America/Chicago. Date will
+  only use the year-month-day fields, the min and second come from the parms."
   ([place date-time]
-     (to-utc place date-time (time/hour date-time) (time/minute date-time) (time/sec date-time)))
+     (to-utc place date-time
+             (time/hour date-time) (time/minute date-time) (time/second date-time)))
   ([place date hour minute]
      (to-utc place date hour minute 0))
   ([place date hour minute second]

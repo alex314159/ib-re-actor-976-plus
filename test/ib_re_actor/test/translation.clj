@@ -19,58 +19,54 @@
 (tabular
  (fact "it can translate to IB durations"
        (translate :to-ib :duration [?value ?unit]) => ?expected)
- :where
- | ?value | ?unit    | ?expected |
- | 1      | :second  | "1 S"     |
- | 5      | :seconds | "5 S"     |
- | 1      | :day     | "1 D"     |
- | 5      | :days    | "5 D"     |
- | 1      | :week    | "1 W"     |
- | 5      | :weeks   | "5 W"     |
- | 1      | :year    | "1 Y"     |
- | 5      | :years   | "5 Y"     |)
+  ?value  ?unit     ?expected
+  1       :second   "1 S"
+  5       :seconds  "5 S"
+  1       :day      "1 D"
+  5       :days     "5 D"
+  1       :week     "1 W"
+  5       :weeks    "5 W"
+  1       :year     "1 Y"
+  5       :years    "5 Y")
 
 (tabular
  (fact "it can translate to IB security codes"
        (translate :to-ib :security-type ?value) => ?expected)
- :where
- | ?value            | ?expected |
- | :equity           | "STK"     |
- | :option           | "OPT"     |
- | :future           | "FUT"     |
- | :index            | "IND"     |
- | :future-option    | "FOP"     |
- | :cash             | "CASH"    |
- | :bag              | "BAG"     |)
+ ?value             ?expected
+ :equity            "STK"
+ :option            "OPT"
+ :future            "FUT"
+ :index             "IND"
+ :future-option     "FOP"
+ :cash              "CASH"
+ :bag               "BAG")
 
 (tabular
  (fact "it can translate bar sizes"
        (translate :to-ib :bar-size [?value ?unit]) => ?expected)
- :where
- | ?value | ?unit    | ?expected |
- | 1      | :second  | "1 secs"  |
- | 5      | :seconds | "5 secs"  |
- | 1      | :minute  | "1 min"   |
- | 3      | :minutes | "3 mins"  |
- | 1      | :hour    | "1 hour"  |
- | 4      | :hours   | "4 hour"  |
- | 1      | :day     | "1 day"   |
- | 2      | :days    | "2 days"  |)
+ ?value  ?unit     ?expected
+ 1       :second   "1 secs"
+ 5       :seconds  "5 secs"
+ 1       :minute   "1 min"
+ 3       :minutes  "3 mins"
+ 1       :hour     "1 hour"
+ 4       :hours    "4 hour"
+ 1       :day      "1 day"
+ 2       :days     "2 days")
 
 (tabular
  (fact "it can translate what to show strings"
        (translate :to-ib :what-to-show ?value) => ?expected)
- :where
- | ?value                     | ?expected                   |
- | :trades                    | "TRADES"                    |
- | :midpoint                  | "MIDPOINT"                  |
- | :bid                       | "BID"                       |
- | :ask                       | "ASK"                       |
- | :bid-ask                   | "BID_ASK"                   |
- | :historical-volatility     | "HISTORICAL_VOLATILITY"     |
- | :option-implied-volatility | "OPTION_IMPLIED_VOLATILITY" |
- | :option-volume             | "OPTION_VOLUME"             |
- | :option-open-interest      | "OPTION_OPEN_INTEREST"      |)
+ ?value                      ?expected
+ :trades                     "TRADES"
+ :midpoint                   "MIDPOINT"
+ :bid                        "BID"
+ :ask                        "ASK"
+ :bid-ask                    "BID_ASK"
+ :historical-volatility      "HISTORICAL_VOLATILITY"
+ :option-implied-volatility  "OPTION_IMPLIED_VOLATILITY"
+ :option-volume              "OPTION_VOLUME"
+ :option-open-interest       "OPTION_OPEN_INTEREST")
 
 (fact "it can translate from IB date-time values"
       (translate :from-ib :date-time (long 1000000000)) => (date-time 2001 9 9 1 46 40)
@@ -85,12 +81,11 @@
 (tabular
  (fact "it can translate time in force values"
        (translate :to-ib :time-in-force ?value) => ?expected)
- :where
- | ?value               | ?expected |
- | :day                 | "DAY"     |
- | :good-to-close       | "GTC"     |
- | :immediate-or-cancel | "IOC"     |
- | :good-till-date      | "GTD"     |)
+ ?value                ?expected
+ :day                  "DAY"
+ :good-to-close        "GTC"
+ :immediate-or-cancel  "IOC"
+ :good-till-date       "GTD")
 
 (fact "it can translate date-times to the IB format"
       (translate :to-ib :date-time (date-time 2011)) => "20110101 00:00:00 UTC"
@@ -99,65 +94,60 @@
 (tabular
  (fact "it can translate order actions"
        (translate :to-ib :order-action ?action) => ?expected)
- :where
- | ?action     | ?expected |
- | :buy        | "BUY"     |
- | :sell       | "SELL"    |
- | :sell-short | "SSHORT"  |)
+ ?action      ?expected
+ :buy         "BUY"
+ :sell        "SELL"
+ :sell-short  "SSHORT")
 
 (tabular
  (fact "it can translate to IB order types"
        (translate :to-ib :order-type ?type) => ?expected)
- :where
- | ?type  | ?expected |
- | :limit | "LMT"     |)
+ ?type   ?expected
+ :limit  "LMT")
 
 (tabular
  (fact "it can translate security id types"
               (translate :from-ib :security-id-type ?ib-type) => ?re-actor-type
               (translate :to-ib :security-id-type ?re-actor-type) => ?ib-type)
- :where
- | ?re-actor-type | ?ib-type |
- | :isin          | "ISIN"   |
- | :cusip         | "CUSIP"  |
- | :sedol         | "SEDOL"  |
- | :ric           | "RIC"    |)
+ ?re-actor-type  ?ib-type
+ :isin           "ISIN"
+ :cusip          "CUSIP"
+ :sedol          "SEDOL"
+ :ric            "RIC")
 
 (tabular
  (fact "it can translate tick field codes"
               (translate :from-ib :tick-field-code ?ib-code) => ?re-actor-code
               (translate :to-ib :tick-field-code ?re-actor-code) => ?ib-code)
- :where
- | ?re-actor-code | ?ib-code |
- | :bid-size      | 0        |
- | :bid-price     | 1        |
- | :ask-price     | 2        |
- | :ask-size      | 3        |)
+ ?re-actor-code  ?ib-code
+ :bid-size       0
+ :bid-price      1
+ :ask-price      2
+ :ask-size       3)
 
 
 (tabular
  (fact "It can translate IB trading and liquid hours to joda intervals"
        (translate :from-ib :trading-hours [?tz ?ib-string]) => ?intervals)
- :where
- | ?tz    | ?ib-string | ?intervals |
- | "America/Belize"  |  "20130115:1700-1515,1530-1615;20130116:1700-1515,1530-1615" |
+ ?tz     ?ib-string  ?intervals
+ "America/Belize"    "20130115:1700-1515,1530-1615;20130116:1700-1515,1530-1615"
  [(interval (c/to-date-time "2013-01-14T23:00:00.000") (c/to-date-time "2013-01-15T21:15:00.000"))
   (interval (c/to-date-time "2013-01-15T21:30:00.000") (c/to-date-time "2013-01-15T22:15:00.000"))
   (interval (c/to-date-time "2013-01-15T23:00:00.000") (c/to-date-time "2013-01-16T21:15:00.000"))
-  (interval (c/to-date-time "2013-01-16T21:30:00.000") (c/to-date-time "2013-01-16T22:15:00.000"))] |
+  (interval (c/to-date-time "2013-01-16T21:30:00.000") (c/to-date-time "2013-01-16T22:15:00.000"))]
 
-  |"JST"| "20130116:1630-2330,0900-1135,1145-1515;20130117:1630-2330,0900-1135,1145-1515"|
-  [(interval (c/to-date-time "2013-01-16T07:30:00.000") (c/to-date-time "2013-01-16T14:30:00.000"))
-   (interval (c/to-date-time "2013-01-16T00:00:00.000") (c/to-date-time "2013-01-16T02:35:00.000"))
-   (interval (c/to-date-time "2013-01-16T02:45:00.000") (c/to-date-time "2013-01-16T06:15:00.000"))
-   (interval (c/to-date-time "2013-01-17T07:30:00.000") (c/to-date-time "2013-01-17T14:30:00.000"))
-   (interval (c/to-date-time "2013-01-17T00:00:00.000") (c/to-date-time "2013-01-17T02:35:00.000"))
-   (interval (c/to-date-time "2013-01-17T02:45:00.000") (c/to-date-time "2013-01-17T06:15:00.000"))] |
+ "JST" "20130116:1630-2330,0900-1135,1145-1515;20130117:1630-2330,0900-1135,1145-1515"
+ [(interval (c/to-date-time "2013-01-16T07:30:00.000") (c/to-date-time "2013-01-16T14:30:00.000"))
+  (interval (c/to-date-time "2013-01-16T00:00:00.000") (c/to-date-time "2013-01-16T02:35:00.000"))
+  (interval (c/to-date-time "2013-01-16T02:45:00.000") (c/to-date-time "2013-01-16T06:15:00.000"))
+  (interval (c/to-date-time "2013-01-17T07:30:00.000") (c/to-date-time "2013-01-17T14:30:00.000"))
+  (interval (c/to-date-time "2013-01-17T00:00:00.000") (c/to-date-time "2013-01-17T02:35:00.000"))
+  (interval (c/to-date-time "2013-01-17T02:45:00.000") (c/to-date-time "2013-01-17T06:15:00.000"))]
 
-   |"EST" | "20130115:1715-1700;20130116:1715-1700"|
-   [(interval (c/to-date-time "2013-01-14T22:15:00.000") (c/to-date-time "2013-01-15T22:00:00.000"))
-    (interval (c/to-date-time "2013-01-15T22:15:00.000") (c/to-date-time "2013-01-16T22:00:00.000"))] |
+ "EST"  "20130115:1715-1700;20130116:1715-1700"
+ [(interval (c/to-date-time "2013-01-14T22:15:00.000") (c/to-date-time "2013-01-15T22:00:00.000"))
+  (interval (c/to-date-time "2013-01-15T22:15:00.000") (c/to-date-time "2013-01-16T22:00:00.000"))]
 
-   |"EST" | "20130115:CLOSED;20130116:1715-1700"|
-   [(interval (c/to-date-time "2013-01-15T05:00:00.000") (c/to-date-time "2013-01-15T05:00:00.000"))
-    (interval (c/to-date-time "2013-01-15T22:15:00.000") (c/to-date-time "2013-01-16T22:00:00.000"))] |)
+ "EST"  "20130115:CLOSED;20130116:1715-1700"
+ [(interval (c/to-date-time "2013-01-15T05:00:00.000") (c/to-date-time "2013-01-15T05:00:00.000"))
+  (interval (c/to-date-time "2013-01-15T22:15:00.000") (c/to-date-time "2013-01-16T22:00:00.000"))])

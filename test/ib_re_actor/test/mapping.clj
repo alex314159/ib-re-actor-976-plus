@@ -74,23 +74,26 @@ You can have duplicate rows for the same field<->map key to try out different va
 (defmappingtest Contract
   [:contract-id m_conId 1]
   [:symbol m_symbol "some symbol"]
-  [:exchange m_exchange "some exchange"]
-  [:local-symbol m_localSymbol "some local symbol"]
-  [:primary-exchange m_primaryExch "some primary exchange"]
-  [:currency m_currency "some currency"]
   [:type m_secType :equity "STK"]
+  [:expiry m_expiry (date-time 2000 1) "200001"]
+  [:strike m_strike 18.0]
+  [:put-call-right m_right :put "PUT"]
+  [:multiplier m_multiplier 234.567 "234.567"]
+  [:exchange m_exchange "some exchange"]
+  [:currency m_currency "some currency"]
+  [:local-symbol m_localSymbol "some local symbol"]
+  [:trading-class m_tradingClass "some trading class"]
+  [:primary-exchange m_primaryExch "some primary exchange"]
   [:include-expired? m_includeExpired true]
   [:security-id-type m_secIdType :isin "ISIN"]
   [:security-id m_secId "AB1234567890"]
   [:combo-legs-description m_comboLegsDescrip "some description of combo legs"]
-  [:expiry m_expiry (date-time 2000 1) "200001"]
-  [:multiplier m_multiplier 234.567 "234.567"]
-  [:put-call-right m_right :put "PUT"])
+  ;; TODO: Figure out wha to do about m_comboLegs and m_underComp
+  )
 
 (defmappingtest ContractDetails
   ;; TODO: figure out what to do about m_summary
   [:market-name m_marketName "some market name"]
-  [:trading-class m_tradingClass "some trading class"]
   [:min-tick m_minTick 2.]
   [:price-magnifier m_priceMagnifier 4]
   [:order-types m_orderTypes [:limit :market] "LMT,MKT"]

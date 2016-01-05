@@ -206,11 +206,12 @@
 
     (tickString [this tickerId tickType value]
       (let [field (translate :from-ib :tick-field-code tickType)]
-        {:type :tick :field field
-         :ticker-id tickerId
-         :value (case field
-                  :last-timestamp (translate :from-ib :date-time value)
-                  value)}))
+        (dispatch-message ch {:type :tick :field field
+                              :ticker-id tickerId
+                              :value (case field
+                                       :last-timestamp (translate :from-ib
+                                                                  :date-time value)
+                                       value)})))
 
     (tickEFP [this tickerId tickType basisPoints formattedBasisPoints
               impliedFuture holdDays futureExpiry dividendImpact dividendsToExpiry]
@@ -611,9 +612,11 @@
        (log/error "Error trying to connect to " host ":" port ": " ex)))))
 
 (defn connect []
+  "Returns a connection."
   (let [ch (chan)]
     {:ecs (connect-eclientsocket ch (swap! client-id inc))
-     :resp-chan ch}))
+     :resp-chan ch
+     :mult (async/mult ch)}))
 
 (defn disconnect
   "Call this function to terminate the connections with TWS.

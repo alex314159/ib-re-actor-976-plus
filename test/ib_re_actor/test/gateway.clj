@@ -5,6 +5,7 @@
         [clj-time.core :only [date-time]]
         [midje.sweet]
         [midje.util :only [testable-privates]])
+  (:require [clojure.core.async :as async])
   (:import [com.ib.client Contract Order OrderState ContractDetails Execution]))
 
 (testable-privates ib-re-actor.gateway dispatch-message create-wrapper)
@@ -23,9 +24,9 @@ wrapper, collecting and returning any messages the wrapper dispatched."
   [& calls]
   (let [wrapper (gensym "wrapper")]
     `(let [messages# (atom nil)
-           ~wrapper (create-wrapper)]
+           ~wrapper (create-wrapper nil)]
        (with-redefs [ib-re-actor.gateway/dispatch-message
-                     (fn [m#] (swap! messages# conj m#))]
+                     (fn [_# m#] (swap! messages# conj m#))]
          ~@(map #(concat [`. wrapper] %) calls))
        (first @messages#))))
 

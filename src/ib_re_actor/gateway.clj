@@ -611,10 +611,10 @@
      (catch Exception ex
        (log/error "Error trying to connect to " host ":" port ": " ex)))))
 
-(defn connect []
+(defn connect [host port]
   "Returns a connection."
   (let [ch (chan)]
-    {:ecs (connect-eclientsocket ch (swap! client-id inc))
+    {:ecs (connect-eclientsocket ch host port (swap! client-id inc))
      :resp-chan ch
      :mult (async/mult ch)}))
 

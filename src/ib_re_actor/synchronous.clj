@@ -35,7 +35,7 @@
                    (error-end? msg)
                    (deliver result msg)))]
     (with-subscription connection handler
-      (g/request-current-time)
+      (g/request-current-time connection)
       @result)))
 
 (defn get-contract-details
@@ -55,7 +55,7 @@
                    (error-end? req-id msg)
                    (deliver results msg)))]
     (with-subscription connection handler
-      (g/request-contract-details req-id contract)
+      (g/request-contract-details connection req-id contract)
       @results)))
 
 (defn get-current-price
@@ -75,7 +75,7 @@
                    (error-end? req-ticker-id msg)
                    (deliver result msg)))]
     (with-subscription connection handler
-      (g/request-market-data contract req-ticker-id "" true)
+      (g/request-market-data connection contract req-ticker-id "" true)
       @result)))
 
 (defn execute-order
@@ -106,7 +106,7 @@
                      this-order
                      (swap! updates conj msg))))]
     (with-subscription connection handler
-      (g/place-order ord-id contract order)
+      (g/place-order connection ord-id contract order)
       @result)))
 
 (defn get-historical-data
@@ -124,8 +124,9 @@
                    (and (= req-id request-id) (= type :price-bar))
                    (swap! accum conj msg)))]
     (with-subscription connection handler
-      (g/request-historical-data req-id contract end-time duration duration-unit
-                                 bar-size bar-size-unit what-to-show use-regular-trading-hours?)
+      (g/request-historical-data connection req-id contract end-time duration
+                                 duration-unit bar-size bar-size-unit what-to-show
+                                 use-regular-trading-hours?)
       @results)))
 
 (defn get-open-orders
@@ -144,9 +145,9 @@
                    (end? msg)
                    (deliver results @accum)))]
     (with-subscription connection handler
-      (g/request-open-orders)
+      (g/request-open-orders connection)
       @results)))
 
-(defn cancel-order [order-id]
-  (g/cancel-order order-id)
+(defn cancel-order [connection order-id]
+  (g/cancel-order connection order-id)
   nil)

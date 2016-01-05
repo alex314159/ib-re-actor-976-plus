@@ -108,9 +108,9 @@
                 (map-> com.ib.client.Contract contract)
                 (translate :to-ib :tick-list tick-list)
                 snapshot?))
-  ([{:keys [ecs]} contract]
+  ([connection contract]
    (let [ticker-id (swap! last-ticker-id inc)]
-     (request-market-data ecs contract ticker-id "" false)
+     (request-market-data connection contract ticker-id "" false)
      ticker-id)))
 
 (defn cancel-market-data [{:keys [ecs]} ticker-id]
@@ -141,11 +141,12 @@
                          (translate :to-ib :what-to-show what-to-show)
                          (if use-regular-trading-hours? 1 0)
                          2)))
-  ([id contract end duration duration-unit bar-size bar-size-unit what-to-show]
-   (request-historical-data id contract end duration duration-unit
+  ([connection id contract end duration duration-unit bar-size bar-size-unit
+    what-to-show]
+   (request-historical-data connection id contract end duration duration-unit
                             bar-size bar-size-unit what-to-show true))
-  ([id contract end duration duration-unit bar-size bar-size-unit]
-   (request-historical-data id contract end duration duration-unit
+  ([connection id contract end duration duration-unit bar-size bar-size-unit]
+   (request-historical-data connection id contract end duration duration-unit
                             bar-size bar-size-unit :trades true)))
 
 (defn request-real-time-bars
@@ -167,8 +168,8 @@
   "Call this function to start receiving news bulletins. Each bulletin will
    be sent in a :news-bulletin, :exchange-unavailable, or :exchange-available
    message."
-  ([{:keys [ecs]}]
-   (request-news-bulletins ecs true))
+  ([connection]
+   (request-news-bulletins connection true))
   ([{:keys [ecs]} all-messages?]
    (.reqNewsBulletins ecs all-messages?)))
 
@@ -181,8 +182,8 @@
   "Call this function to receive Reuters global fundamental data. There must be a
    subscription to Reuters Fundamental set up in Account Management before you
    can receive this data."
-  ([{:keys [ecs]} contract report-type]
-   (request-fundamental-data ecs (get-request-id) contract report-type))
+  ([connection contract report-type]
+   (request-fundamental-data connection (get-request-id) contract report-type))
   ([{:keys [ecs]} request-id contract report-type]
    (.reqFundamentalData ecs request-id
                         (map-> com.ib.client.Contract contract)
@@ -206,9 +207,9 @@
    request-id))
 
 (defn place-order
-  ([{:keys [ecs]} contract order]
+  ([connection contract order]
    (let [order-id (get-order-id)]
-     (place-order ecs order-id contract (assoc order :order-id order-id))))
+     (place-order connection order-id contract (assoc order :order-id order-id))))
   ([{:keys [ecs]} order-id contract order]
    (.placeOrder ecs order-id
                 (map-> com.ib.client.Contract contract)

@@ -32,10 +32,7 @@
             [ib-re-actor.client-socket :as cs]
             [ib-re-actor.wrapper :as wrapper]))
 
-(defonce client-id (atom 100))
-
-
-(defn connect [host port]
+(defn connect [client-id host port]
   "Returns a connection."
   (let [ch (chan)
         m (mult ch)
@@ -46,9 +43,12 @@
         (log/info "Next order ID:" value)
         (reset! cs/next-order-id value))
       (recur (<! ch-next-order-id)))
-    {:ecs (cs/connect (wrapper/create ch) host port (swap! client-id inc))
-     :resp-chan ch
-     :mult m}))
+    (let [ecs (cs/connect (wrapper/create ch) host port client-id)]
+      (if-not (.isConnected ecs)
+        (log/error "Connection failed for host: \"" host "\" and port:" port ".")
+        {:ecs ecs
+         :resp-chan ch
+         :mult m}))))
 
 (defn disconnect [connection]
   (close! (:resp-chan connection))

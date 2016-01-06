@@ -88,7 +88,7 @@ You can have duplicate rows for the same field<->map key to try out different va
   [:security-id-type m_secIdType :isin "ISIN"]
   [:security-id m_secId "AB1234567890"]
   [:combo-legs-description m_comboLegsDescrip "some description of combo legs"]
-  ;; TODO: Figure out wha to do about m_comboLegs and m_underComp
+  ;; TODO: Figure out what to do about m_comboLegs and m_underComp
   )
 
 (defmappingtest ContractDetails

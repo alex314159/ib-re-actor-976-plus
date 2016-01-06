@@ -218,9 +218,6 @@
       (dispatch-message ch {:type :open-order-end}))
 
     (nextValidId [this orderId]
-      ;; TODO: Move this somewhere more logical
-      ;; (log/info "Next order ID: " orderId)
-      ;; (reset! next-order-id orderId)
       (dispatch-message ch {:type :next-valid-order-id :value orderId}))
 
     ;; In newer docs

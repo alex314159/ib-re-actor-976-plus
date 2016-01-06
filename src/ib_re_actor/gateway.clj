@@ -27,18 +27,29 @@
 ;; 4. Cancel the request with the cancel-* when done.
 ;;
 (ns ib-re-actor.gateway
-  (:require [clojure.core.async :as async]
+  (:require [clojure.tools.logging :as log]
+            [clojure.core.async :refer [chan mult go-loop tap close! <!]]
             [ib-re-actor.client-socket :as cs]
             [ib-re-actor.wrapper :as wrapper]))
 
 (defonce client-id (atom 100))
 
+
 (defn connect [host port]
   "Returns a connection."
-  (let [ch (async/chan)]
+  (let [ch (chan)
+        m (mult ch)
+        ch-next-order-id (chan)]
+    (tap m ch-next-order-id)
+    (go-loop [{:keys [type value]} (<! ch-next-order-id)]
+      (when (= type :next-valid-order-id)
+        (log/info "Next order ID:" value)
+        (reset! cs/next-order-id value))
+      (recur (<! ch-next-order-id)))
     {:ecs (cs/connect (wrapper/create ch) host port (swap! client-id inc))
      :resp-chan ch
-     :mult (async/mult ch)}))
+     :mult m}))
 
 (defn disconnect [connection]
+  (close! (:resp-chan connection))
   (cs/disconnect connection))

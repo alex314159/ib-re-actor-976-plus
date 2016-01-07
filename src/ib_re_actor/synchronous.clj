@@ -8,6 +8,7 @@
   (:require [clj-time.core :as t]
             [clojure.core.async :as async]
             [clojure.tools.logging :as log]
+            [ib-re-actor.gateway :refer [next-id]]
             [ib-re-actor.client-socket :as cs]
             [ib-re-actor.wrapper :refer [end? error-end? request-end?]]))
 
@@ -42,7 +43,7 @@
   "Gets details for the specified contract."
   [connection contract]
   (let [responses (atom nil)
-        req-id (cs/get-request-id)
+        req-id (next-id :request connection)
         results (promise)
         handler (fn [{:keys [type request-id value] :as msg}]
                   (cond
@@ -62,7 +63,7 @@
   "Gets the current price for the specified contract."
   [connection contract]
   (let [fields (atom nil)
-        req-ticker-id (cs/get-request-id)
+        req-ticker-id (next-id :request connection)
         result (promise)
         handler (fn [{:keys [type ticker-id request-id field value code] :as msg}]
                   (cond
@@ -81,7 +82,7 @@
 (defn execute-order
   "Executes an order, returning only when the order is filled or pending."
   [connection contract order]
-  (let [ord-id (cs/get-order-id)
+  (let [ord-id (next-id :order connection)
         market-closed? (atom false)
         updates (atom [])
         result (promise)
@@ -113,7 +114,7 @@
   "Gets historical price bars for a contract."
   [connection contract end-time duration duration-unit bar-size bar-size-unit
    what-to-show use-regular-trading-hours?]
-  (let [req-id (cs/get-request-id)
+  (let [req-id (next-id :request connection)
         accum (atom [])
         results (promise)
         handler (fn [{:keys [type request-id] :as msg}]

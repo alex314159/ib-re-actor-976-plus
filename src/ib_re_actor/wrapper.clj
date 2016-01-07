@@ -328,10 +328,8 @@
                             :accounts (->> (.split accountsList ",") (map #(.trim %)) vec)}))
 
     (receiveFA [this faDataType xml]
-      (dispatch-message ch {:type (condp = faDataType
-                                    1 :financial-advisor-groups
-                                    2 :financial-advisor-profile
-                                    3 :financial-advisor-account-aliases)
+      (dispatch-message ch {:type (translate :from-ib
+                                             :financial-advisor-data-type faDataType)
                             :value xml}))
 
     ;;; Historical Data

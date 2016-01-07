@@ -606,6 +606,11 @@ to check if if a given value is valid (known)."
                    {:buy "BOT"
                     :sell "SLD"})
 
+(translation-table financial-advisor-data-type
+                   {:financial-advisor-groups 1
+                    :financial-advisor-profile 2
+                    :financial-advisor-account-aliases 3})
+
 (defmethod translate [:to-ib :duration] [_ _ [val unit]]
   (str val " " (translate :to-ib :duration-unit unit)))
 

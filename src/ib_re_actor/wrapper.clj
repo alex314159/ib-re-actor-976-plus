@@ -31,68 +31,59 @@
   (.startsWith date-string "finished"))
 
 
-(defmulti warning? class)
+(defn warning-code?
+  "One would think that warnings start at 2100 but there are error codes
+  starting at 10000."
+  [code]
+  (<= 2100 code 2200))
 
-(defmethod warning? java.lang.Integer [code]
-  (>= code 2100))
 
-(defmethod warning? java.lang.Long [code]
-  (>= code 2100))
+(defn error-code? [code]
+  (complement warning-code?))
 
-(defmethod warning? clojure.lang.IPersistentMap [{code :code exception :exception}]
-  (cond
-    (not (nil? exception)) false
-    (nil? code) false
-    :else (warning? code)))
 
-(defmethod warning? :default [_]
-  false)
+(defn connection-error-code? [code]
+  (#{504                                ; Not connected
+     1100                               ; Connectivity between IB and TWS has been lost
+     } code))
+
+
+(defn warning?
+  "A message is a warning if it has :type :error and has a code that is a
+  warning code."
+  [{:keys [type code] :as message}]
+  (and (= :error type)
+       code
+       (warning-code? code)))
+
+
+(defn error? [{:keys [type] :as message}]
+  (and (= :error type)
+       (not (warning? message))))
+
 
 (def error? (complement warning?))
 
-(defn request-level-error? [code-or-message]
-  (cond
-    (map? code-or-message)
-    (and (= :error (:type code-or-message))
-         (request-level-error? (:code code-or-message)))
-
-    :otherwise
-    (#{200                                ; no security definition
-       } code-or-message)))
-
-(defn connection-level-error? [code-or-message]
-  (cond
-    (map? code-or-message)
-    (and (= :error (:type code-or-message))
-         (connection-level-error? (:code code-or-message)))
-
-    :otherwise
-    (#{504                                ; Not connected
-       1100                               ; Connectivity between IB and TWS has been lost
-       } code-or-message)))
-
 (defn error-end?
+  "Determines if a message is an error message that ends a request.
+
+  id is the request, order or ticker id for the request."
   ([msg]
    (error-end? nil msg))
-  ([req-order-or-ticker-id {:keys [type request-id order-id ticker-id] :as msg}]
-   (cond
-     (not= :error type)
-     false
+  ([id {:keys [type code request-id order-id ticker-id] :as msg}]
+   (and (error? msg)
+        (or (connection-error-code? code)
+            (= id (or request-id order-id ticker-id))))))
 
-     (not (error? msg))
-     false
-
-     (connection-level-error? msg)
-     true
-
-     (and (= req-order-or-ticker-id (or request-id order-id ticker-id))
-          (error? msg))
-     true)))
-
-(def end-message-type? #{:tick-snapshot-end :open-order-end
-                         :account-download-end :contract-details-end
+(def end-message-type? #{:tick-snapshot-end
+                         :open-order-end
+                         :account-download-end
+                         :account-summary-end
+                         :position-end
+                         :contract-details-end
+                         :execution-details-end
                          :price-bar-complete
-                         :execution-details-end :scan-end })
+                         :scan-end})
 
 (defn request-end?
   "Predicate to determine if a message indicates a series of responses for a request is done"
@@ -101,7 +92,9 @@
        (or (nil? req-id)
            (= request-id req-id))))
 
+
 (defn end?
+  "Predicate to determine if a message is either an error-end? or a request-end?."
   ([msg]
    (end? nil msg))
   ([req-id msg]

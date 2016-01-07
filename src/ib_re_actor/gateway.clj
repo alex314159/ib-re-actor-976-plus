@@ -101,7 +101,6 @@
          (log/error "Error trying to connect to " host ":" port ": " ex))))))
 
 (defn disconnect [connection]
-  (close! (:resp-chan connection))
   (cs/disconnect (:ecs connection)))
 
 (defn is-connected? [connection]

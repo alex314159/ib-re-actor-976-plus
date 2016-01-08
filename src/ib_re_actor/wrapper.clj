@@ -86,20 +86,23 @@
                          :scan-end})
 
 (defn request-end?
-  "Predicate to determine if a message indicates a series of responses for a request is done"
-  [req-id {:keys [type request-id] :as msg}]
+  "Predicate to determine if a message indicates a series of responses for a
+  request is done"
+  ;;TODO: This is too general as if two simultaneous requests that do not
+  ;;receive an end message that has no request id they will clash
+  [req-id {:keys [type request-id order-id ticker-id] :as msg}]
   (and (end-message-type? type)
        (or (nil? req-id)
-           (= request-id req-id))))
+           (= req-id (or request-id order-id ticker-id)))))
 
 
 (defn end?
   "Predicate to determine if a message is either an error-end? or a request-end?."
   ([msg]
    (end? nil msg))
-  ([req-id msg]
-   (or (error-end? req-id msg)
-       (request-end? req-id msg))))
+  ([id msg]
+   (or (error-end? id msg)
+       (request-end? id msg))))
 
 
 (defn create
@@ -118,9 +121,9 @@
       (dispatch-message ch {:type :current-time
                             :value (translate :from-ib :date-time time)}))
 
-    (^void error [this ^int requestId ^int errorCode ^String message]
-      (dispatch-message ch {:type :error :request-id requestId :code errorCode
-                            :message message}))
+    (^void error [this ^int id ^int errorCode ^String message]
+     (dispatch-message ch {:type :error :id id :code errorCode
+                           :message message}))
 
     (^void error [this ^Exception ex]
      (log-exception ex)

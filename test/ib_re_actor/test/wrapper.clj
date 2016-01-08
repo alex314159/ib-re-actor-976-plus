@@ -104,7 +104,7 @@
 (fact "errors"
       (fact "specific to a particular request"
             (wrapper->message (error 1 99999 "some message"))
-            => {:type :error :request-id 1 :code 99999 :message "some message"})
+            => {:type :error :id 1 :code 99999 :message "some message"})
       (fact "just a message"
             (wrapper->message (error "some message"))
             => {:type :error :message "some message"})

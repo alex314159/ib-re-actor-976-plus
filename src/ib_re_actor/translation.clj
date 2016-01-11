@@ -717,13 +717,24 @@ to check if if a given value is valid (known)."
                         {:value val
                          :expected-form "HH:mm"}))))))
 
+
+(defmulti expiry-to-ib class)
+
+(defmethod expiry-to-ib org.joda.time.DateTime [time]
+  (tf/unparse (tf/formatter "yyyyMMdd") time))
+
+
+(defmethod expiry-to-ib org.joda.time.LocalDate [date]
+  (tf/unparse-local (tf/formatter-local "yyyyMMdd") date))
+
+
+(defmethod expiry-to-ib org.joda.time.YearMonth [ym]
+  (tf/unparse-local (tf/formatter-local "yyyyMM") ym))
+
+
 (defmethod translate [:to-ib :expiry] [_ _ val]
   (when val
-    (let [y (time/year val)
-          ys (.toString y)
-          m (time/month val)
-          ms (format "%02d" m)]
-      (str ys ms))))
+    (expiry-to-ib val)))
 
 (defmethod translate [:from-ib :expiry] [_ _ val]
   (condp = (.length val)

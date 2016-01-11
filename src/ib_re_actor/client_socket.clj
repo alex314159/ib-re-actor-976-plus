@@ -114,7 +114,7 @@
    (.reqMktData ecs ticker-id
                 (map-> com.ib.client.Contract contract)
                 (translate :to-ib :tick-list tick-list)
-                snapshot?)))
+                snapshot? nil)))
 
 
 (defn cancel-market-data

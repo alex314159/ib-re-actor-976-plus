@@ -47,7 +47,7 @@ to check if if a given value is valid (known)."
             (string? val#)
             val#
 
-            :otherwise
+            :else
             (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
                             {:value val#
                              :table ~table-name
@@ -65,7 +65,7 @@ to check if if a given value is valid (known)."
             (string? val#)
             val#
 
-            :otherwise
+            :else
             (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
                             {:value val#
                              :table ~table-name
@@ -656,7 +656,7 @@ to check if if a given value is valid (known)."
    (= (.length val) 17)
    (tf/parse (tf/formatter "yyyyMMdd-HH:mm:ss") val)
 
-   :otherwise val))
+   :else val))
 
 (defmethod translate [:from-ib :time-zone] [_ _ val]
   (case val
@@ -812,7 +812,6 @@ to check if if a given value is valid (known)."
 
 ;; Convert to Joda intervals
 (defn- joda-interval [tz [start end]]
-  [start end]
   (let [start-dt  (to-utc tz (tf/parse (tf/formatter "yyyyMMddHHmm") start))
         end-dt    (to-utc tz (tf/parse (tf/formatter "yyyyMMddHHmm") end))
         mod-start (if (time/after? start-dt end-dt)

@@ -42,7 +42,7 @@ setter or assoc when mapping to and from objects.
     (cond
      (not (nil? translation)) `((assoc-if-val-non-nil ~k (. ~this ~field) ~translation))
      (not (nil? nested)) `((assoc-nested ~k (. ~this ~field)))
-     :otherwise `((assoc-if-val-non-nil ~k (. ~this ~field))))))
+     :else `((assoc-if-val-non-nil ~k (. ~this ~field))))))
 
 (defn emit-map->field
   "When mapping from a clojure map to an object, this creates a call to set the associated
@@ -56,7 +56,7 @@ field on the object."
                 ~(cond
                   (not (nil? translation)) `(translate :to-ib ~translation ~val)
                   (not (nil? nested)) `(map-> ~nested ~val)
-                  :otherwise `~val))
+                  :else `~val))
           (catch ClassCastException ex#
             (throw (ex-info (str "Failed to map field " ~(str field)
                                  ~(when translation

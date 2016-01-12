@@ -570,10 +570,12 @@ to check if if a given value is valid (known)."
                     })
 
 (translation-table report-type
-                   {
-                    :estimates "Estimates"
-                    :financial-statements "Financial Statements"
-                    :summary "Summary"
+                   {:company-overview "ReportSnapshot"
+                    :financial-summary "ReportsFinSummary"
+                    :financial-ratios "ReportRatios"
+                    :financial-statements "ReportsFinStatements"
+                    :analyst-estimates "RESC"
+                    :company-calendar "CalendarReport"
                     })
 
 (translation-table right

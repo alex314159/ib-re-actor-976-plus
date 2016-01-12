@@ -228,7 +228,7 @@
   autobinding that has occurred (which generates new IDs and increments the next
   valid ID therein)."
   [ecs]
-  (.reqIDs ecs 1))
+  (.reqIds ecs 1))
 
 
 (defn exercise-options
@@ -453,7 +453,7 @@
                         (translate :to-ib :bar-size [bar-size bar-size-unit])
                         (translate :to-ib :what-to-show what-to-show)
                         (if use-regular-trading-hours? 1 0)
-                        2)))
+                        2 nil)))
 
 
 (defn cancel-historical-data

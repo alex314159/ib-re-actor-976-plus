@@ -73,34 +73,30 @@
         (or (connection-error-code? code)
             (= id (or request-id order-id ticker-id))))))
 
-(def end-message-type? #{:tick-snapshot-end
-                         :open-order-end
-                         :account-download-end
-                         :account-summary-end
-                         :position-end
-                         :contract-details-end
-                         :execution-details-end
-                         :price-bar-complete
-                         :scan-end})
+
+(def end-message-type {:tick :tick-snapshot-end
+                       :open-order :open-order-end
+                       :update-account-value :account-download-end
+                       :update-portfolio :account-download-end
+                       :account-summary :account-summary-end
+                       :position :position-end
+                       :contract-details :contract-details-end
+                       :execution-details :execution-details-end
+                       :price-bar :price-bar-complete
+                       :scan-result :scan-end})
+
 
 (defn request-end?
   "Predicate to determine if a message indicates a series of responses for a
-  request is done"
-  ;;TODO: This is too general as if two simultaneous requests that do not
-  ;;receive an end message that has no request id they will clash
-  [req-id {:keys [type request-id order-id ticker-id] :as msg}]
-  (and (end-message-type? type)
+  request is done.
+
+  message-type is the type of the data coming in. For example: :price-bar
+  or :open-order."
+  [message-type req-id
+   {:keys [type request-id order-id ticker-id] :as msg}]
+  (and (= type (end-message-type message-type))
        (or (nil? req-id)
            (= req-id (or request-id order-id ticker-id)))))
-
-
-(defn end?
-  "Predicate to determine if a message is either an error-end? or a request-end?."
-  ([msg]
-   (end? nil msg))
-  ([id msg]
-   (or (error-end? id msg)
-       (request-end? id msg))))
 
 
 (defn- dispatch-message [cb msg]

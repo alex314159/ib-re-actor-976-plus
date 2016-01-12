@@ -205,8 +205,8 @@
     (cond
       (= type message-type) (and data (data value))
 
-      (request-end? id msg) (do (and end (end))
-                                (unsubscribe! connection this))
+      (request-end? message-type id msg) (do (and end (end))
+                                             (unsubscribe! connection this))
 
       (error-end? msg) (do (and error (error msg))
                            (and end (end))

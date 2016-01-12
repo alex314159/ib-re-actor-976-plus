@@ -240,8 +240,7 @@ to check if if a given value is valid (known)."
                     :ric "RIC"})
 
 (translation-table tick-field-code
-                   {
-                    :bid-size 0
+                   {:bid-size 0
                     :bid-price 1
                     :ask-price 2
                     :ask-size 3
@@ -250,12 +249,12 @@ to check if if a given value is valid (known)."
                     :high 6
                     :low 7
                     :volume 8
-                    :close-price 9
+                    :close 9
                     :bid-option-computation 10
                     :ask-option-computation 11
                     :last-option-computation 12
                     :model-option-computation 13
-                    :open-tick 14
+                    :open 14
                     :low-13-week 15
                     :high-13-week 16
                     :low-26-week 17

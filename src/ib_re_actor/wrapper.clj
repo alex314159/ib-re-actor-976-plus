@@ -104,7 +104,6 @@
 
 
 (defn- dispatch-message [cb msg]
-  (log/debug "Dispatching: " msg)
   (cb msg))
 
 
@@ -130,14 +129,12 @@
                            :message message}))
 
     (^void error [this ^Exception ex]
-     (log-exception ex)
      (dispatch-message cb {:type :error :exception (.toString ex)}))
 
     (^void error [this ^String message]
      (dispatch-message cb {:type :error :message message}))
 
     (connectionClosed [this]
-      (log/info "Connection closed")
       (dispatch-message cb {:type :connection-closed}))
 
     ;;; Market Data

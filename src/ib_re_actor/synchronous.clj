@@ -1,154 +1,124 @@
 (ns ib-re-actor.synchronous
-  "Functions for doing things with interactive brokers in a synchronous manner.
-   Mostly these are just wrappers that create a temporary handler function,
-   wait for a response, then unsubscribe. These are much easier to use in an
-   interactive context (such as when using the REPL) but probably not what you
-   would want to use in an application, as the asynchronous API is a much more
-   natural fit for building programs that react to events in market data."
-  (:require [clj-time.core :as t]
-            [clojure.core.async :as async]
-            [clojure.tools.logging :as log]
-            [ib-re-actor.gateway :refer [next-id]]
-            [ib-re-actor.client-socket :as cs]
-            [ib-re-actor.wrapper :refer [end? error-end? request-end?]]))
+  "This namespace wraps asynchronous functions with the appropriate magic to
+  make them synchronous.
 
-(defmacro with-subscription [connection handler & body]
-  `(let [ch# (async/chan)]
-     (try
-       (async/tap (:mult ~connection) ch#)
-       (async/go-loop []
-         (~handler (async/<! ch#))
-         (recur))
-       ~@body
-       (finally
-         (async/untap (:mult ~connection) ch#)))))
+  These are much easier to use in an interactive context (such as when using the
+  REPL) but probably not what you would want to use in an application, as the
+  asynchronous API is a much more natural fit for building programs that react
+  to events in market data."
+  (:require [ib-re-actor.gateway :as g]))
 
 
-(defn get-time
+(defn single-value-handlers
+  "This returns a map of handlers suitable for calls that will provide a single
+  response."
+  [result]
+  {:data #(deliver result %)
+   :error #(deliver result %)})
+
+
+(defn resetting-handlers
+  "This returns a map of handlers suitable for calls in which you are interested
+  in the last response."
+  [result]
+  (let [data (atom nil)]
+    {:data #(reset! data %)
+     :end #(deliver result @data)
+     :error #(deliver result %)}))
+
+
+(defn conjing-handlers
+  "This returns a map of handlers suitable for calls that return a collection of
+  items and you want to return them all."
+  [result]
+  (let [data (atom nil)]
+    {:data #(swap! data conj %)
+     :end #(deliver result @data)
+     :error #(deliver result %)}))
+
+
+(defn server-time
   "Returns the server time"
   [connection]
+  (let [result (promise)]
+    (g/request-current-time connection
+                            (single-value-handlers result))
+    @result))
+
+
+(defn market-snapshot
+  "Returns a snapshot of the market for the specified contract."
+  [connection contract]
   (let [result (promise)
-        handler (fn [{:keys [type value] :as msg}]
-                  (cond
-                   (and (= type :current-time))
-                   (deliver result value)
+        data (atom nil)
+        handlers {:data (fn [{:keys [field value]}] (swap! data assoc field value))
+                  :error #(reset! data %)
+                  :end #(deliver result @data)}]
+    (g/request-market-data connection contract nil true handlers)
+    @result))
 
-                   (error-end? msg)
-                   (deliver result msg)))]
-    (with-subscription connection handler
-      (cs/request-current-time connection)
-      @result)))
 
-(defn get-contract-details
-  "Gets details for the specified contract."
-  [connection contract]
-  (let [responses (atom nil)
-        req-id (next-id :request connection)
-        results (promise)
-        handler (fn [{:keys [type request-id value] :as msg}]
-                  (cond
-                   (and (= type :contract-details) (= req-id request-id))
-                   (swap! responses conj value)
+(defn implied-vol
+  "Returns detailed information about an option contract based on its price
+  including implied volatility, greeks, etc."
+  [connection contract option-price underlying-price]
+  (let [result (promise)]
+    (g/calculate-implied-vol connection contract option-price underlying-price
+                             (single-value-handlers result))
+    @result))
 
-                   (request-end? req-id msg)
-                   (deliver results @responses)
 
-                   (error-end? req-id msg)
-                   (deliver results msg)))]
-    (with-subscription connection handler
-      (cs/request-contract-details connection req-id contract)
-      @results)))
+(defn option-price
+  "Returns detailed information about an option contract based on its volatility
+  including implied volatility, greeks, etc."
+  [connection contract option-price underlying-price]
+  (let [result (promise)]
+    (g/calculate-option-price connection contract option-price underlying-price
+                              (single-value-handlers result))
+    @result))
 
-(defn get-current-price
-  "Gets the current price for the specified contract."
-  [connection contract]
-  (let [fields (atom nil)
-        req-ticker-id (next-id :request connection)
-        result (promise)
-        handler (fn [{:keys [type ticker-id request-id field value code] :as msg}]
-                  (cond
-                   (and (= type :tick) (= ticker-id req-ticker-id))
-                   (swap! fields assoc field value)
-
-                   (request-end? req-ticker-id msg)
-                   (deliver result @fields)
-
-                   (error-end? req-ticker-id msg)
-                   (deliver result msg)))]
-    (with-subscription connection handler
-      (cs/request-market-data connection contract req-ticker-id "" true)
-      @result)))
 
 (defn execute-order
-  "Executes an order, returning only when the order is filled or pending."
+  "Executes an order, returning only when the order is filled or canceled."
   [connection contract order]
-  (let [ord-id (next-id :order connection)
-        market-closed? (atom false)
-        updates (atom [])
-        result (promise)
-        handler (fn [{:keys [type request-id order-id status code message] :as msg}]
-                  (let [done (#{:filled :cancelled :inactive} status)
-                        this-order (= ord-id (or order-id request-id))]
-                    (cond
-                     (and this-order done)
-                     (deliver result (conj @updates msg))
+  (let [result (promise)]
+    (g/place-and-monitor-order connection contract order
+                               (resetting-handlers result))
+    @result))
 
-                     (and this-order @market-closed? (= :pre-submitted status))
-                     (deliver result (conj @updates msg))
 
-                     (and this-order (= :error type) (= 399 code))
-                     (do
-                       (reset! market-closed? true)
-                       (swap! updates conj msg))
-
-                     (end? ord-id msg)
-                     (deliver result (conj @updates msg))
-
-                     this-order
-                     (swap! updates conj msg))))]
-    (with-subscription connection handler
-      (cs/place-order connection ord-id contract order)
-      @result)))
-
-(defn get-historical-data
-  "Gets historical price bars for a contract."
-  [connection contract end-time duration duration-unit bar-size bar-size-unit
-   what-to-show use-regular-trading-hours?]
-  (let [req-id (next-id :request connection)
-        accum (atom [])
-        results (promise)
-        handler (fn [{:keys [type request-id] :as msg}]
-                  (cond
-                   (end? req-id msg)
-                   (deliver results (conj @accum msg))
-
-                   (and (= req-id request-id) (= type :price-bar))
-                   (swap! accum conj msg)))]
-    (with-subscription connection handler
-      (cs/request-historical-data connection req-id contract end-time duration
-                                 duration-unit bar-size bar-size-unit what-to-show
-                                 use-regular-trading-hours?)
-      @results)))
-
-(defn get-open-orders
-  "Gets all open orders for the current connection."
+(defn open-orders
+  "Returns open orders"
   [connection]
-  (let [accum (atom [])
-        results (promise)
-        handler (fn [{:keys [type] :as msg}]
-                  (cond
-                   (= :open-order type)
-                   (swap! accum conj msg)
+  (let [result (promise)]
+    (g/request-open-orders connection
+                           (conjing-handlers result))
+    @result))
 
-                   (error-end? msg)
-                   (deliver results (conj @accum msg))
 
-                   (end? msg)
-                   (deliver results @accum)))]
-    (with-subscription connection handler
-      (cs/request-open-orders connection)
-      @results)))
+(defn contract-details
+  "Gets details for the specified contract.
 
-(defn cancel-order [connection order-id]
-  (cs/cancel-order connection order-id)
-  nil)
+  Will return a list of contract details matching the contract description. A
+  non-ambiguous contract will yield a list of one item."
+  [connection contract]
+  (let [result (promise)]
+    (g/request-contract-details connection contract
+                                (conjing-handlers result))
+    @result))
+
+
+(defn historical-data
+  "Gets historical price bars for a contract."
+  ([connection contract end-time duration duration-unit bar-size bar-size-unit
+    what-to-show use-regular-trading-hours?]
+   (let [result (promise)]
+     (g/request-historical-data connection contract end-time
+                                duration duration-unit bar-size bar-size-unit
+                                what-to-show use-regular-trading-hours?
+                                (conjing-handlers result))
+     @result))
+  ([connection contract end
+    duration duration-unit bar-size bar-size-unit]
+   (historical-data connection contract end duration duration-unit
+                    bar-size bar-size-unit :trades true)))

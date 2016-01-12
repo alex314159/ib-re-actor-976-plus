@@ -75,7 +75,7 @@ You can have duplicate rows for the same field<->map key to try out different va
   [:contract-id m_conId 1]
   [:symbol m_symbol "some symbol"]
   [:type m_secType :equity "STK"]
-  [:expiry m_expiry (date-time 2000 1) "200001"]
+  [:expiry m_expiry (year-month 2000 1) "200001"]
   [:strike m_strike 18.0]
   [:put-call-right m_right :put "PUT"]
   [:multiplier m_multiplier 234.567 "234.567"]

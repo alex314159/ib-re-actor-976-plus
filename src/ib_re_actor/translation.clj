@@ -648,15 +648,13 @@ to check if if a given value is valid (known)."
    (nil? val) nil
 
    (= (.length val) 8)
-   (-> (tf/formatter "yyyyMMdd")
-       (tf/parse val))
+   (tf/parse (tf/formatter "yyyyMMdd") val)
 
    (every? #(Character/isDigit %) val)
    (tc/from-long (* (Long/parseLong val) 1000))
 
    (= (.length val) 17)
-   (-> (tf/formatter "yyyyMMdd-HH:mm:ss")
-       (tf/parse val))
+   (tf/parse (tf/formatter "yyyyMMdd-HH:mm:ss") val)
 
    :otherwise val))
 
@@ -677,14 +675,13 @@ to check if if a given value is valid (known)."
       (when timezone-token
         (let [timezone-offset (translate :from-ib :time-zone timezone-token)
               tokens-with-adjusted-timezone (concat (take 2 tokens) [timezone-offset])
-              adjusted-date-time-string (apply str (interpose " " tokens-with-adjusted-timezone))]
-          (-> (tf/formatter "yyyyMMdd HH:mm:ss Z")
-              (tf/parse adjusted-date-time-string)))))))
+              adjusted-date-time-string (clojure.string/join " " tokens-with-adjusted-timezone)]
+          (tf/parse (tf/formatter "yyyyMMdd HH:mm:ss Z")
+                    adjusted-date-time-string))))))
 
 (defmethod translate [:to-ib :connection-time] [_ _ val]
   (when val
-    (-> (tf/formatter "yyyyMMdd HH:mm:ss z")
-        (tf/unparse val))))
+    (tf/unparse (tf/formatter "yyyyMMdd HH:mm:ss z") val)))
 
 (defmethod translate [:to-ib :date] [_ _ val]
   (tf/unparse (tf/formatter "MM/dd/yyyy") val))
@@ -739,8 +736,9 @@ to check if if a given value is valid (known)."
 
 (defmethod translate [:from-ib :expiry] [_ _ val]
   (condp = (.length val)
-    6 (tf/parse (tf/formatter "yyyyMM") val)
-    8 (tf/parse (tf/formatter "yyyyMMdd") val)))
+    6 (org.joda.time.YearMonth.
+       (tf/parse-local-date (tf/formatter "yyyyMM") val))
+    8 (tf/parse-local-date (tf/formatter "yyyyMMdd") val)))
 
 (defmethod translate [:to-ib :bar-size] [_ _ [val unit]]
   (str val " " (translate :to-ib :bar-size-unit unit)))

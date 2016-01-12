@@ -73,10 +73,12 @@
       (translate :from-ib :date-time "1000000000") => (date-time 2001 9 9 1 46 40))
 
 (fact "it can translate date-times to IB expiry strings"
-      (translate :to-ib :expiry (date-time 2011 9 17)) => "201109")
+      (translate :to-ib :expiry (year-month 2011 9)) => "201109"
+      (translate :to-ib :expiry (date-time 2012 10 20)) => "20121020")
 
-(fact "it can translate from IB expiry strings to joda DateTimes"
-      (translate :from-ib :expiry "201109") => (date-time 2011 9))
+(fact "it can translate from IB expiry strings to joda time classes"
+      (translate :from-ib :expiry "201509") => (year-month 2015 9)
+      (translate :from-ib :expiry "20140203") => (local-date 2014 02 03))
 
 (tabular
  (fact "it can translate time in force values"

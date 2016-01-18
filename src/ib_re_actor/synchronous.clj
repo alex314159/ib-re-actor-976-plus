@@ -96,6 +96,14 @@
     @result))
 
 
+(defn positions
+  "Return account positions"
+  [connection]
+  (let [result (promise)]
+    (g/request-positions connection (conjing-handlers result))
+    @result))
+
+
 (defn contract-details
   "Gets details for the specified contract.
 

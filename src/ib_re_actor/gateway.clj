@@ -333,6 +333,18 @@
   connection)
 
 
+(defn request-positions [connection handlers]
+  (subscribe! connection (multiple-messages-handler connection
+                                                    :position nil handlers))
+  (cs/request-positions (:ecs connection))
+  connection)
+
+
+(defn cancel-positions [connection]
+  (cs/cancel-positions (:ecs connection))
+  connection)
+
+
 (defn request-contract-details [connection contract handlers]
   (let [request-id (next-id :request connection)]
     (subscribe! connection :request request-id

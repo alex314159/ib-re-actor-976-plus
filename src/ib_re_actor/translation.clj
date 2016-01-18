@@ -578,12 +578,6 @@ to check if if a given value is valid (known)."
                     :company-calendar "CalendarReport"
                     })
 
-(translation-table right
-                   {:put "PUT"
-                    :call "CALL"
-                    :none "0"
-                    :unknown "?"})
-
 (translation-table rule-80A
                    {:individual "I"
                     :agency "A"
@@ -611,6 +605,36 @@ to check if if a given value is valid (known)."
                    {:financial-advisor-groups 1
                     :financial-advisor-profile 2
                     :financial-advisor-account-aliases 3})
+
+
+(def right-from-ib
+  {"PUT" :put
+   "P" :put
+   "CALL" :call
+   "C" :call
+   "0" :none
+   "?" :unknown})
+
+(def right-to-ib
+  {:put "PUT"
+   :call "CALL"
+   :none "0"
+   :unknown "?"})
+
+
+(defmethod valid? [:from-ib :right] [_ _ val]
+  (right-from-ib val))
+
+(defmethod translate [:from-ib :right] [_ _ val]
+  (right-from-ib val))
+
+
+(defmethod valid? [:to-ib :right] [_ _ val]
+  (right-to-ib val))
+
+(defmethod translate [:to-ib :right] [_ _ val]
+  (right-to-ib val))
+
 
 (defmethod translate [:to-ib :duration] [_ _ [val unit]]
   (str val " " (translate :to-ib :duration-unit unit)))

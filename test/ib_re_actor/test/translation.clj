@@ -42,6 +42,26 @@
  :bag               "BAG")
 
 (tabular
+ (fact "it can translate from IB right"
+       (translate :from-ib :right ?value) => ?expected)
+ ?value ?expected
+ "PUT"  :put
+ "P"    :put
+ "CALL" :call
+ "C"    :call
+ "0"    :none
+ "?"    :unknown)
+
+(tabular
+ (fact "it can translate to IB right"
+       (translate :to-ib :right ?value) => ?expected)
+ ?value   ?expected
+ :put     "PUT"
+ :call    "CALL"
+ :none    "0"
+ :unknown "?")
+
+(tabular
  (fact "it can translate bar sizes"
        (translate :to-ib :bar-size [?value ?unit]) => ?expected)
  ?value  ?unit     ?expected

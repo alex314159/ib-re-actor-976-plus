@@ -78,6 +78,8 @@ to check if if a given value is valid (known)."
                     :days "D"
                     :week "W"
                     :weeks "W"
+                    :month "M"
+                    :months "M"
                     :year "Y"
                     :years "Y"})
 
@@ -93,6 +95,8 @@ to check if if a given value is valid (known)."
     :days [val :days]
     :week [val :week]
     :weeks [val :weeks]
+    :month [val :month]
+    :months [val :months]
     :year [val :year]
     :years [val :years]))
 

@@ -26,6 +26,13 @@
   (.startsWith date-string "finished"))
 
 
+(defn matching-message? [handle-type id
+                         {:keys [type request-id order-id ticker-id] :as message}]
+  (and (= handle-type type)
+       (or (nil? id)
+           (= id (or request-id order-id ticker-id)))))
+
+
 (defn warning-code?
   "One would think that warnings start at 2100 but there are error codes
   starting at 10000."

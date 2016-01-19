@@ -29,7 +29,8 @@
 (ns ib-re-actor.gateway
   (:require [clojure.tools.logging :as log]
             [ib-re-actor.client-socket :as cs]
-            [ib-re-actor.wrapper :as wrapper :refer [error-end? request-end?]]))
+            [ib-re-actor.wrapper :as wrapper
+             :refer [matching-message? error-end? request-end?]]))
 
 ;; Default port for live trading
 (defonce default-port 7496)
@@ -182,33 +183,31 @@
 (defn single-message-handler
   "Handler to wait for a single message, call the appropriate handlers and
   unsubscribe from the connection when there is nothing else to be done."
-  [connection message-type req-id {:keys [data end error]}]
-  (fn this [{:keys [type id value] :as msg}]
+  [connection handle-type id {:keys [data end error]}]
+  (fn this [msg]
     (cond
-      (and (= type message-type)
-           (or (nil? id)
-               (= req-id id))) (do (and data (data value))
-                                   (and end (end))
-                                   (unsubscribe! connection this))
+      (matching-message? handle-type id msg) (do (and data (data (:value msg)))
+                                                 (and end (end))
+                                                 (unsubscribe! connection this))
 
-      (error-end? msg) (do (and error (error msg))
-                           (and end (end))
-                           (unsubscribe! connection this)))))
+      (error-end? id msg) (do (and error (error msg))
+                              (and end (end))
+                              (unsubscribe! connection this)))))
 
 
 (defn multiple-messages-handler
   "Handler to wait for multiple messages and eventually the appropriate end
   message. It will call the appropriate handlers at the time data is received
   and unsubscribe from the connection when there is nothing else to be done."
-  [connection message-type id {:keys [data end error]}]
-  (fn this [{:keys [type value] :as msg}]
+  [connection handle-type id {:keys [data end error]}]
+  (fn this [msg]
     (cond
-      (= type message-type) (and data (data value))
+      (matching-message? handle-type id msg) (and data (data (:value msg)))
 
-      (request-end? message-type id msg) (do (and end (end))
-                                             (unsubscribe! connection this))
+      (request-end? handle-type id msg) (do (and end (end))
+                                            (unsubscribe! connection this))
 
-      (error-end? msg) (do (and error (error msg))
+      (error-end? id msg) (do (and error (error msg))
                            (and end (end))
                            (unsubscribe! connection this)))))
 

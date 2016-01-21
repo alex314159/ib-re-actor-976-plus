@@ -72,7 +72,9 @@
  1       :hour     "1 hour"
  4       :hours    "4 hour"
  1       :day      "1 day"
- 2       :days     "2 days")
+ 2       :days     "2 days"
+ 1       :week      "1 W"
+ 1       :month     "1 M")
 
 (tabular
  (fact "it can translate what to show strings"

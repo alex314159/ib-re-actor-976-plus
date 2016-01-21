@@ -118,7 +118,10 @@ to check if if a given value is valid (known)."
     :hour "hour"
     :hours "hour"
     :day "day"
-    :days "days"))
+    :days "days"
+    :week "W"
+    :month "M"
+    ))
 
 (defmethod translate [:from-ib :bar-size-unit] [_ _ unit]
   (case unit

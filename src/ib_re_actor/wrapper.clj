@@ -75,10 +75,10 @@
   id is the request, order or ticker id for the request."
   ([msg]
    (error-end? nil msg))
-  ([id {:keys [type code request-id order-id ticker-id] :as msg}]
+  ([req-id {:keys [type code id] :as msg}]
    (and (error? msg)
         (or (connection-error-code? code)
-            (= id (or request-id order-id ticker-id))))))
+            (= req-id id)))))
 
 
 (def end-message-type {:tick :tick-snapshot-end

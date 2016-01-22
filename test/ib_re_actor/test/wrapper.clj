@@ -70,9 +70,10 @@
       (wrapper->message
        (tickOptionComputation some-contract-id 10 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))
       => {:type :tick :ticker-id some-contract-id
-          :value {:field :bid-option-computation :implied-volatility 2.0 :delta 3.0
-                  :option-price 4.0 :pv-dividends 5.0 :gamma 6.0 :vega 7.0
-                  :theta 8.0 :underlying-price 9.0}})
+          :value {:field :bid-option-computation
+                  :value {:implied-volatility 2.0 :delta 3.0
+                          :option-price 4.0 :pv-dividends 5.0 :gamma 6.0 :vega 7.0
+                          :theta 8.0 :underlying-price 9.0}}})
 
 (fact "generic ticks"
       (wrapper->message (tickGeneric some-contract-id 50 2.0))

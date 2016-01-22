@@ -156,11 +156,12 @@
                             pvDividend gamma vega theta undPrice]
       (dispatch-message cb {:type :tick :ticker-id tickerId
                             :value {:field (translate :from-ib :tick-field-code field)
-                                    :implied-volatility impliedVol
-                                    :option-price optPrice
-                                    :pv-dividends pvDividend
-                                    :underlying-price undPrice
-                                    :delta delta :gamma gamma :theta theta :vega vega}}))
+                                    :value {:implied-volatility impliedVol
+                                            :option-price optPrice
+                                            :pv-dividends pvDividend
+                                            :underlying-price undPrice
+                                            :delta delta :gamma gamma
+                                            :theta theta :vega vega}}}))
 
     (tickGeneric [this tickerId tickType value]
       (dispatch-message cb {:type :tick :ticker-id tickerId

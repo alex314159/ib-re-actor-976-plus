@@ -61,6 +61,20 @@
     id))
 
 
+(defn error-printer
+  "Subscribe this function to a connection to print error messages."
+  [message]
+  (when (= :error (:type message))
+    (println message)))
+
+
+(defn error-logger
+  "Subscribe this function to a connection to log error messages."
+  [message]
+  (when (= :error (:type message))
+    (log/error message)))
+
+
 (defn subscribe!
   "Adds f to the functions that will get called with every message that is
   received from the server. Subscribing the same function more than once has no

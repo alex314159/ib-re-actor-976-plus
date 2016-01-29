@@ -70,7 +70,7 @@
  1       :minute   "1 min"
  3       :minutes  "3 mins"
  1       :hour     "1 hour"
- 4       :hours    "4 hour"
+ 4       :hours    "4 hours"
  1       :day      "1 day"
  2       :days     "2 days"
  1       :week      "1 W"

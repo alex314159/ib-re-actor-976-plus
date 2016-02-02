@@ -402,6 +402,15 @@ user> (get-open-orders)
 6. You should end up with `javaclient.jar`.
 7. Install it with `lein localrepo`.
 
+
+#### Implementation notes
+
+The IB API appears to differentiate between types of ids such as ticker id,
+order id and request id. At some point, this library kept them independent but a
+problem occurs when an error is received. Indeed, errors specify an id but not
+the type of id. It is thus impossible to know the error concerns which of the
+requests. In order to alleviate this problem ids are not reused.
+
 ## License
 
 Copyright (C) 2011 Chris Bilson, Jean-Sebastien A. Beaudry

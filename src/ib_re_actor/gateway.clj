@@ -40,14 +40,14 @@
 (defonce default-server-log-level :error)
 
 
-(defn next-order-updater
+(defn next-id-updater
   "Returns a function that will take the value from :next-valid-order-id
-  messages and update the next-order-id atom accordingly."
-  [next-order-id]
+  messages and update the next-id atom accordingly."
+  [next-id]
   (fn [{:keys [type value]}]
     (when (= :next-valid-order-id type)
-      (log/info "Next order ID:" value)
-      (reset! next-order-id value))))
+      (log/info "Next ID:" value)
+      (reset! next-id value))))
 
 
 (defn next-id
@@ -55,9 +55,9 @@
 
   type should be one of :order :ticker :request
   "
-  [type connection]
-  (let [id @(get-in connection [:next-id type])]
-    (swap! (get-in connection [:next-id type]) inc)
+  [connection]
+  (let [id @(:next-id connection)]
+    (swap! (:next-id connection) inc)
     id))
 
 
@@ -93,15 +93,15 @@
   ([connection f]
    (swap! (:subscribers connection) conj f)
    connection)
-  ([connection type id f]
-   (swap! (:subscribers-data connection) assoc [type id] f)
+  ([connection id f]
+   (swap! (:subscribers-data connection) assoc id f)
    (subscribe! connection f)))
 
 
 (defn- get-subscriber
   "Get the handler that was saved for that request id."
-  [connection type id]
-  (get @(:subscribers-data connection) [type id]))
+  [connection id]
+  (get @(:subscribers-data connection) id))
 
 
 (defn- del-subscriber!
@@ -119,10 +119,7 @@
   ([connection f]
    (swap! (:subscribers connection) disj f)
    (del-subscriber! connection f)
-   connection)
-  ([connection type id]
-   (unsubscribe! connection
-                 (get-subscriber connection type id))))
+   connection))
 
 
 (defn- message-dispatcher
@@ -156,10 +153,8 @@
   ([client-id host port]
    (let [subscribers (atom #{})
          subscribers-data (atom nil)
-         next-order-id (atom 1)
-         next-request-id (atom 1)
-         next-ticker-id (atom 1)]
-     (swap! subscribers conj (next-order-updater next-order-id))
+         next-id (atom 1)]
+     (swap! subscribers conj (next-id-updater next-id))
      (try
        (let [wr (wrapper/create (message-dispatcher subscribers))
              ecs (cs/connect wr host port client-id)]
@@ -168,9 +163,7 @@
          {:ecs ecs
           :subscribers subscribers
           :subscribers-data subscribers-data
-          :next-id {:order next-order-id
-                    :request next-request-id
-                    :ticker next-ticker-id}})
+          :next-id next-id})
        (catch Exception ex
          (log/error "Error trying to connect to " host ":" port ": " ex))))))
 
@@ -237,8 +230,8 @@
   ([connection contract handlers]
    (request-market-data connection contract "" false handlers))
   ([connection contract tick-list snapshot? handlers]
-   (let [ticker-id (next-id :ticker connection)]
-     (subscribe! connection :ticker ticker-id
+   (let [ticker-id (next-id connection)]
+     (subscribe! connection ticker-id
                  (multiple-messages-handler connection :tick ticker-id handlers))
      (cs/request-market-data (:ecs connection)
                              ticker-id contract tick-list snapshot?)
@@ -247,14 +240,14 @@
 
 (defn cancel-market-data [connection ticker-id]
   (cs/cancel-market-data (:ecs connection) ticker-id)
-  (unsubscribe! connection :ticker ticker-id))
+  (unsubscribe! connection (get-subscriber connection ticker-id)))
 
 
 (defn calculate-implied-vol
   "Returns the ticker-id that can be used to cancel the request."
   [connection contract option-price underlying-price handlers]
-  (let [ticker-id (next-id :ticker connection)]
-    (subscribe! connection :ticker ticker-id
+  (let [ticker-id (next-id connection)]
+    (subscribe! connection ticker-id
                 (single-message-handler connection :tick ticker-id handlers))
     (cs/calculate-implied-volatility (:ecs connection)
                                      ticker-id contract
@@ -265,14 +258,14 @@
 (defn cancel-calculate-implied-vol
   [connection ticker-id]
   (cs/cancel-calculate-implied-volatility (:ecs connection) ticker-id)
-  (unsubscribe! connection :ticker ticker-id))
+  (unsubscribe! connection (get-subscriber connection ticker-id)))
 
 
 (defn calculate-option-price
   "Returns the ticker-id that can be used to cancel the request."
   [connection contract volatility underlying-price handlers]
-  (let [ticker-id (next-id :ticker connection)]
-    (subscribe! connection :ticker ticker-id
+  (let [ticker-id (next-id connection)]
+    (subscribe! connection ticker-id
                 (single-message-handler connection :tick ticker-id handlers))
     (cs/calculate-option-price (:ecs connection)
                                ticker-id contract
@@ -283,7 +276,7 @@
 (defn cancel-calculate-option-price
   [connection ticker-id]
   (cs/cancel-calculate-option-price (:ecs connection) ticker-id)
-  (unsubscribe! connection :ticker ticker-id))
+  (unsubscribe! connection (get-subscriber connection ticker-id)))
 
 
 
@@ -312,8 +305,8 @@
 (defn place-and-monitor-order
   "Returns the order-id that can be used to cancel or modify the order."
   [connection contract order handlers]
-  (let [order-id (next-id :order connection)]
-    (subscribe! connection :order order-id
+  (let [order-id (next-id connection)]
+    (subscribe! connection order-id
                 (order-monitor-handler connection order-id handlers))
     (cs/place-order (:ecs connection)
                     order-id contract (assoc order :order-id order-id))
@@ -328,7 +321,7 @@
 
 (defn cancel-order [connection order-id]
   (cs/cancel-order (:ecs connection) order-id)
-  (unsubscribe! connection :order order-id))
+  (unsubscribe! connection (get-subscriber connection order-id)))
 
 
 (defn request-open-orders [connection handlers]
@@ -359,8 +352,8 @@
 
 
 (defn request-contract-details [connection contract handlers]
-  (let [request-id (next-id :request connection)]
-    (subscribe! connection :request request-id
+  (let [request-id (next-id connection)]
+    (subscribe! connection request-id
                 (multiple-messages-handler connection
                                            :contract-details request-id handlers))
     (cs/request-contract-details (:ecs connection) request-id contract)
@@ -371,8 +364,8 @@
   ([connection contract end
     duration duration-unit bar-size bar-size-unit
     what-to-show use-regular-trading-hours? handlers]
-   (let [request-id (next-id :request connection)]
-     (subscribe! connection :request request-id
+   (let [request-id (next-id connection)]
+     (subscribe! connection request-id
                  (multiple-messages-handler connection :price-bar request-id handlers))
      (cs/request-historical-data (:ecs connection) request-id contract
                                  end duration duration-unit bar-size bar-size-unit
@@ -391,8 +384,8 @@
 
 (defn request-fundamental-data
   [connection contract report-type handlers]
-  (let [request-id (next-id :request connection)]
-    (subscribe! connection :request request-id
+  (let [request-id (next-id connection)]
+    (subscribe! connection request-id
                 (multiple-messages-handler connection :fundamental-data request-id
                                            handlers))
     (cs/request-fundamental-data (:ecs connection) request-id contract report-type)
@@ -402,4 +395,4 @@
 (defn cancel-fundamental-data
   [connection request-id]
   (cs/cancel-fundamental-data (:ecs connection) request-id)
-  (unsubscribe! connection :request request-id))
+  (unsubscribe! connection (get-subscriber connection request-id)))

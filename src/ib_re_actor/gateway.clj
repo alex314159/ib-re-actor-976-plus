@@ -80,9 +80,8 @@
   received from the server. Subscribing the same function more than once has no
   effect.
 
-  If a type and id are passed, keep track of the link between the
-  request/order/ticker id and the subscriber so that it can be removed if the
-  request is canceled.
+  If an id is passed, keep track of the link between the id and the subscriber
+  so that it can be removed if the request is canceled.
 
   Returns the connection.
 
@@ -91,35 +90,39 @@
   down the system.
   "
   ([connection f]
-   (swap! (:subscribers connection) conj f)
-   connection)
+   (subscribe! connection f f))
   ([connection id f]
-   (swap! (:subscribers-data connection) assoc id f)
-   (subscribe! connection f)))
-
-
-(defn- get-subscriber
-  "Get the handler that was saved for that request id."
-  [connection id]
-  (get @(:subscribers-data connection) id))
-
-
-(defn- del-subscriber!
-  "Removes the subscriber from the :subscribers-data."
-  [connection f]
-  (swap! (:subscribers-data connection)
-         #(into {} (filter (comp (partial not= f) second) %))))
-
-
-(defn unsubscribe!
-  "Removes f from the list of functions that will get called with every message
-  from the server.
-
-  If f is also present in :subscriber-data it will be removed."
-  ([connection f]
-   (swap! (:subscribers connection) disj f)
-   (del-subscriber! connection f)
+   (swap! (:subscribers connection) assoc id f)
    connection))
+
+
+(defmulti unsubscribe!
+  "Removes the function passed in or the function associated with the id passed
+  in from the list of functions that will get called with every message from the
+  server."
+  (fn [_ x]
+    (cond
+      (number? x) :number
+      (fn? x) :fn
+      :else :unknown)))
+
+
+(defmethod unsubscribe! :default
+  [_ x]
+  (log/error "Don't know how to unsubscribe" x))
+
+
+(defmethod unsubscribe! :number
+  [connection id]
+  (swap! (:subscribers connection) dissoc id)
+  connection)
+
+
+(defmethod unsubscribe! :fn
+  [connection f]
+  (swap! (:subscribers connection)
+         #(into {} (filter (comp (partial not= f) second) %)))
+  connection)
 
 
 (defn- message-dispatcher
@@ -127,7 +130,7 @@
   passed to it."
   [subscribers]
   (fn [message]
-    (doseq [f @subscribers]
+    (doseq [f (vals @subscribers)]
       (try
         (f message)
         (catch Throwable t
@@ -151,10 +154,10 @@
   ([client-id]
    (connect client-id "localhost" default-paper-port))
   ([client-id host port]
-   (let [subscribers (atom #{})
-         subscribers-data (atom nil)
-         next-id (atom 1)]
-     (swap! subscribers conj (next-id-updater next-id))
+   (let [subscribers (atom {})
+         next-id (atom 1)
+         id-updater (next-id-updater next-id)]
+     (swap! subscribers assoc id-updater id-updater )
      (try
        (let [wr (wrapper/create (message-dispatcher subscribers))
              ecs (cs/connect wr host port client-id)]
@@ -162,7 +165,6 @@
            (cs/set-server-log-level ecs default-server-log-level))
          {:ecs ecs
           :subscribers subscribers
-          :subscribers-data subscribers-data
           :next-id next-id})
        (catch Exception ex
          (log/error "Error trying to connect to " host ":" port ": " ex))))))
@@ -240,7 +242,7 @@
 
 (defn cancel-market-data [connection ticker-id]
   (cs/cancel-market-data (:ecs connection) ticker-id)
-  (unsubscribe! connection (get-subscriber connection ticker-id)))
+  (unsubscribe! connection ticker-id))
 
 
 (defn calculate-implied-vol
@@ -258,7 +260,7 @@
 (defn cancel-calculate-implied-vol
   [connection ticker-id]
   (cs/cancel-calculate-implied-volatility (:ecs connection) ticker-id)
-  (unsubscribe! connection (get-subscriber connection ticker-id)))
+  (unsubscribe! connection ticker-id))
 
 
 (defn calculate-option-price
@@ -276,7 +278,7 @@
 (defn cancel-calculate-option-price
   [connection ticker-id]
   (cs/cancel-calculate-option-price (:ecs connection) ticker-id)
-  (unsubscribe! connection (get-subscriber connection ticker-id)))
+  (unsubscribe! connection ticker-id))
 
 
 
@@ -321,7 +323,7 @@
 
 (defn cancel-order [connection order-id]
   (cs/cancel-order (:ecs connection) order-id)
-  (unsubscribe! connection (get-subscriber connection order-id)))
+  (unsubscribe! connection order-id))
 
 
 (defn request-open-orders [connection handlers]
@@ -395,4 +397,4 @@
 (defn cancel-fundamental-data
   [connection request-id]
   (cs/cancel-fundamental-data (:ecs connection) request-id)
-  (unsubscribe! connection (get-subscriber connection request-id)))
+  (unsubscribe! connection request-id))

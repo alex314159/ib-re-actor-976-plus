@@ -28,48 +28,54 @@ true"
   "Creates a table for translating to and from string values from the Interactive
 Brokers API, as well as translate methods to and from the IB value and a method
 to check if if a given value is valid (known)."
-  [name vals]
-  (let [table-name (keyword name)]
-    `(let [to-table# ~vals
-           from-table# (zipmap (vals to-table#) (keys to-table#))]
 
-       (def ~name to-table#)
+  ([name to-table]
+     `(let [to-table# ~to-table
+            from-table# (zipmap (vals to-table#)
+                                (keys to-table#))]
+        (translation-table ~name to-table# from-table#)))
+  ([name to-table from-table]
+     (let [table-name (keyword name)]
+       `(let [to-table# ~to-table
+              from-table# ~from-table]
 
-       (defmethod valid? [:to-ib ~table-name] [_# _# val#]
-         (contains? to-table# val#))
+          (def ~name to-table#)
 
-       (defmethod translate [:to-ib ~table-name] [_# _# val#]
-         (when val#
-           (cond
-            (valid? :to-ib ~table-name val#)
-            (to-table# val#)
+          (defmethod valid? [:to-ib ~table-name] [_# _# val#]
+            (contains? to-table# val#))
 
-            (string? val#)
-            val#
+          (defmethod translate [:to-ib ~table-name] [_# _# val#]
+            (when val#
+              (cond
+               (valid? :to-ib ~table-name val#)
+               (to-table# val#)
 
-            :else
-            (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
-                            {:value val#
-                             :table ~table-name
-                             :valid-values (keys to-table#)})))))
+               (string? val#)
+               val#
 
-       (defmethod valid? [:from-ib ~table-name] [_# _# val#]
-         (contains? from-table# val#))
+               :else
+               (throw (ex-info (str "Can't translate to IB " ~table-name " " val#)
+                               {:value val#
+                                :table ~table-name
+                                :valid-values (keys to-table#)})))))
 
-       (defmethod translate [:from-ib ~(keyword name)] [_# _# val#]
-         (when val#
-           (cond
-            (valid? :from-ib ~table-name val#)
-            (from-table# val#)
+          (defmethod valid? [:from-ib ~table-name] [_# _# val#]
+            (contains? from-table# val#))
 
-            (string? val#)
-            val#
+          (defmethod translate [:from-ib ~(keyword name)] [_# _# val#]
+            (when val#
+              (cond
+               (valid? :from-ib ~table-name val#)
+               (from-table# val#)
 
-            :else
-            (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
-                            {:value val#
-                             :table ~table-name
-                             :valid-values (vals to-table#)}))))))))
+               (string? val#)
+               val#
+
+               :else
+               (throw (ex-info (str "Can't translate from IB " ~table-name " " val#)
+                               {:value val#
+                                :table ~table-name
+                                :valid-values (vals to-table#)})))))))))
 
 (translation-table duration-unit
                    {:second "S"
@@ -613,35 +619,17 @@ to check if if a given value is valid (known)."
                     :financial-advisor-profile 2
                     :financial-advisor-account-aliases 3})
 
-
-(def right-from-ib
-  {"PUT" :put
-   "P" :put
-   "CALL" :call
-   "C" :call
-   "0" :none
-   "?" :unknown})
-
-(def right-to-ib
-  {:put "PUT"
-   :call "CALL"
-   :none "0"
-   :unknown "?"})
-
-
-(defmethod valid? [:from-ib :right] [_ _ val]
-  (right-from-ib val))
-
-(defmethod translate [:from-ib :right] [_ _ val]
-  (right-from-ib val))
-
-
-(defmethod valid? [:to-ib :right] [_ _ val]
-  (right-to-ib val))
-
-(defmethod translate [:to-ib :right] [_ _ val]
-  (right-to-ib val))
-
+(translation-table right
+                   {:put "PUT",
+                    :call "CALL",
+                    :none "0",
+                    :unknown "?"}
+                   {"PUT" :put
+                    "P" :put
+                    "CALL" :call
+                    "C" :call
+                    "0" :none
+                    "?" :unknown})
 
 (defmethod translate [:to-ib :duration] [_ _ [val unit]]
   (str val " " (translate :to-ib :duration-unit unit)))

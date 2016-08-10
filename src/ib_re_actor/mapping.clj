@@ -50,23 +50,24 @@ field on the object."
   [m this [key field & options]]
   (let [{:keys [translation nested]} (apply hash-map options)
         val (gensym "val")]
-    `((if-let [~val (~key ~m)]
-        (try
-          (set! (. ~this ~field)
-                ~(cond
-                  (not (nil? translation)) `(translate :to-ib ~translation ~val)
-                  (not (nil? nested)) `(map-> ~nested ~val)
-                  :else `~val))
-          (catch ClassCastException ex#
-            (throw (ex-info (str "Failed to map field " ~(str field)
-                                 ~(when translation
-                                    (str ", using translation " translation))
-                                 ", value \"" ~val "\"")
-                            {:class (class ~this)
-                             :key ~key
-                             :field ~(str field)
-                             :translation ~translation}
-                            ex#))))))))
+    `((if (contains? ~m ~key)
+          (let [~val (~key ~m)]
+            (try
+              (set! (. ~this ~field)
+                    ~(cond
+                       (not (nil? translation)) `(translate :to-ib ~translation ~val)
+                       (not (nil? nested)) `(map-> ~nested ~val)
+                       :else `~val))
+              (catch ClassCastException ex#
+                (throw (ex-info (str "Failed to map field " ~(str field)
+                                     ~(when translation
+                                        (str ", using translation " translation))
+                                     ", value \"" ~val "\"")
+                                {:class (class ~this)
+                                 :key ~key
+                                 :field ~(str field)
+                                 :translation ~translation}
+                                ex#)))))))))
 
 (defmacro defmapping
   "This is used to extend an Interactive Brokers API class with a method to convert it into

@@ -153,7 +153,7 @@ You can have duplicate rows for the same field<->map key to try out different va
   [:order-id m_orderId 1]
   [:client-id m_clientId 2]
   [:permanent-id m_permId 3]
-  [:transmit? m_transmit true]
+  [:transmit? m_transmit false]
   [:quantity m_totalQuantity 4]
   [:action m_action :buy "BUY"]
   [:type m_orderType :limit "LMT"]

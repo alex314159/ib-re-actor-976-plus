@@ -77,8 +77,7 @@
    (error-end? nil msg))
   ([req-id {:keys [type code id] :as msg}]
    (and (error? msg)
-        (or (connection-error-code? code)
-            (= req-id id)))))
+        (= req-id id))))
 
 
 (def end-message-type {:tick :tick-snapshot-end

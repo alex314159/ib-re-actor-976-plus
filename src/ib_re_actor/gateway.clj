@@ -217,8 +217,8 @@
                                             (unsubscribe! connection this))
 
       (error-end? id msg) (do (and error (error msg))
-                           (and end (end))
-                           (unsubscribe! connection this)))))
+                              (and end (end))
+                              (unsubscribe! connection this)))))
 
 
 (defn request-current-time [connection handlers]

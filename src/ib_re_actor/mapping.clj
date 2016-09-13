@@ -191,7 +191,7 @@ create instances, we will only map from objects to clojure maps."
   [:good-till-date m_goodTillDate]
   [:outside-regular-trading-hours? m_outsideRth]
   [:hidden? m_hidden]
-  [:all-or-none? m_allOrNone ]
+  [:all-or-none? m_allOrNone]
   [:limit-price m_lmtPrice]
   [:discretionary-amount m_discretionaryAmt]
   [:stop-price m_auxPrice])

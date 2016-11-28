@@ -150,6 +150,7 @@ You can have duplicate rows for the same field<->map key to try out different va
   [:side m_side :buy "BUY"])
 
 (defmappingtest Order
+  [:account-code m_account "some account code"]
   [:order-id m_orderId 1]
   [:client-id m_clientId 2]
   [:permanent-id m_permId 3]

@@ -380,7 +380,7 @@
 
     ;;; Fundamental Data
     (fundamentalData [this requestId xml]
-      (let [report-xml (xml/parse (java.io.ByteArrayInputStream (.getBytes xml)))]
+      (let [report-xml (xml/parse (java.io.ByteArrayInputStream. (.getBytes xml)))]
         (dispatch-message cb {:type :fundamental-data :request-id requestId
                               :value report-xml})))
 

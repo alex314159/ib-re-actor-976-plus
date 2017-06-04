@@ -1,8 +1,9 @@
 (ns ib-re-actor.test.translation
-  (:require [midje.sweet :refer [fact throws tabular]]
-            [clj-time.core :refer [date-time local-date year-month interval]]
-            [clj-time.coerce :as c]
-            [ib-re-actor.translation :refer [translate]]))
+  (:require
+   [clj-time.coerce :as c]
+   [clj-time.core :refer [date-time interval local-date year-month]]
+   [ib-re-actor.translation :refer [translate]]
+   [midje.sweet :refer [fact tabular throws]]))
 
 (fact "unknown string codes just translate into themselves"
       (fact "coming from IB"

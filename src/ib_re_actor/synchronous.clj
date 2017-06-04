@@ -6,8 +6,9 @@
   REPL) but probably not what you would want to use in an application, as the
   asynchronous API is a much more natural fit for building programs that react
   to events in market data."
-  (:require [clojure.tools.logging :as log]
-            [ib-re-actor.gateway :as g]))
+  (:require
+   [clojure.tools.logging :as log]
+   [ib-re-actor.gateway :as g]))
 
 
 (defn single-value-handlers

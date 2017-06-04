@@ -1,12 +1,10 @@
 (ns ib-re-actor.test.mapping
-  (:require [midje.sweet :refer [fact]]
-            [clj-time.core :refer [date-time year-month]]
-            [ib-re-actor.mapping :refer [->map map->]])
-  (:import [com.ib.client
-            Contract ContractDetails
-            Order OrderState
-            Execution ExecutionFilter
-            CommissionReport]))
+  (:require
+   [clj-time.core :refer [date-time year-month]]
+   [ib-re-actor.mapping :refer [->map map->]]
+   [midje.sweet :refer [fact]])
+  (:import
+   (com.ib.client Contract ContractDetails Order OrderState Execution ExecutionFilter CommissionReport)))
 
 (defn invoke-private-ctor [type]
   (let [ctor (first (.getDeclaredConstructors type))]

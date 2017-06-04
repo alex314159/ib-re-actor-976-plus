@@ -1,8 +1,9 @@
 (ns ib-re-actor.translation
-  (:require [clj-time.core :as time]
-            [clj-time.format :as tf]
-            [clj-time.coerce :as tc]
-            [clojure.string :as str]))
+  (:require
+   [clj-time.coerce :as tc]
+   [clj-time.core :as time]
+   [clj-time.format :as tf]
+   [clojure.string :as str]))
 
 (defmulti ^:dynamic translate
   "Translate to or from a value from the Interactive Brokers API.

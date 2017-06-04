@@ -7,4 +7,6 @@
                  [twsapi "9.71.01"]]
   :profiles {:dev {:dependencies [[midje "1.8.3"]]
                    :plugins [[lein-midje "3.2.1"]
-                             [lein-localrepo "0.5.3"]]}})
+                             [lein-localrepo "0.5.3"]
+                             [com.gfredericks/how-to-ns "0.1.6"]]
+                   :how-to-ns {:require-docstring? false}}})

@@ -1,7 +1,6 @@
-;; # Account details
-;; This namespace deals monitoring and updating account details.
-;;
-(ns ib-re-actor.account)
+(ns ib-re-actor.account
+  " Account details
+  This namespace deals monitoring and updating account details.")
 
 ;; This atom contains the account details at all times
 (defonce account-details (atom nil))

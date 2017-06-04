@@ -1,10 +1,12 @@
 (ns ib-re-actor.test.wrapper
-  (:require [midje.util :refer [testable-privates]]
-            [midje.sweet :refer [fact]]
-            [clj-time.core :refer [date-time]]
-            [ib-re-actor.mapping :refer [->map]]
-            [ib-re-actor.wrapper :refer [create]])
-  (:import [com.ib.client Contract Order OrderState ContractDetails Execution]))
+  (:require
+   [clj-time.core :refer [date-time]]
+   [ib-re-actor.mapping :refer [->map]]
+   [ib-re-actor.wrapper :refer [create]]
+   [midje.sweet :refer [fact]]
+   [midje.util :refer [testable-privates]])
+  (:import
+   (com.ib.client Contract Order OrderState ContractDetails Execution)))
 
 
 (testable-privates ib-re-actor.wrapper dispatch-message)

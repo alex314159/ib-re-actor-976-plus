@@ -1,10 +1,9 @@
 (ns ib-re-actor.wrapper
-  (:require [clojure.tools.logging :as log]
-            [ib-re-actor.mapping :refer [->map]]
-            [clojure.xml :as xml]
-            [ib-re-actor.translation
-             :refer [translate integer-account-value? numeric-account-value?
-                     boolean-account-value?]]))
+  (:require
+   [clojure.tools.logging :as log]
+   [clojure.xml :as xml]
+   [ib-re-actor.mapping :refer [->map]]
+   [ib-re-actor.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate]]))
 
 
 (defn- get-stack-trace [ex]

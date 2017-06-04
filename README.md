@@ -2,15 +2,27 @@
 
 A clojure friendly wrapper around the Interactive Brokers java API.
 
-[![Build Status](https://travis-ci.org/cbilson/ib-re-actor.png?branch=master)](https://travis-ci.org/cbilson/ib-re-actor)
-
 ## Usage
+
+### Installing twsapi locally
+
+At this time, IB does not distribute the TWSAPI on maven central so you have to
+download it manually from
+[here](http://interactivebrokers.github.io/downloads/twsapi_macunix.971.01.jar) and
+install it locally using the helper script.
+
+```
+scripts/twsapi-971 ~/somewhere/twsapi_macunix.971.01.jar
+```
+
+### Using ib-re-actor
 
 In project.clj:
 
 ```clojure
 (project my.project "0.0.0"
-   :dependencies [[ib-re-actor "0.1.0"]]
+   :dependencies [[ib-re-actor "0.1.10"]
+                  [twsapi "9.71.01"]]
    ...)
 ```
 
@@ -70,7 +82,7 @@ To disconnect, simply call `disconnect`:
 ```clojure
 user=> (disconnect)
 #<Agent@275997e4: #<EClientSocket com.ib.client.EClientSocket@5fd78173>>
-user=> 
+user=>
 ```
 
 Any commands you issue after that will get back a "Not connected"
@@ -82,7 +94,7 @@ user=> (disconnect)
 user=> (request-current-time)
 #<Agent@275997e4: #<EClientSocket com.ib.client.EClientSocket@5fd78173>>
 {:type :error, :request-id -1, :code 504, :message "Not connected"}
-user=> 
+user=>
 ```
 
 Note that there can be only one connection to the Interactive Brokers
@@ -148,7 +160,7 @@ user>
 ;;; more specifically, if we were interested in trading AAPL on
 ;;; ISLAND:
 
-user> (request-contract-details {:symbol "AAPL" :type :equity :exchange "ISLAND"})   
+user> (request-contract-details {:symbol "AAPL" :type :equity :exchange "ISLAND"})
 
 ;;; only gets the one match
 
@@ -168,15 +180,15 @@ user> (request-contract-details {:symbol "BP" :type :equity})
 ;;; lot's of matches
 ...
 ;;; say we only wanted this one:
-{:type :contract-details, :request-id 11, :value { ... 
+{:type :contract-details, :request-id 11, :value { ...
    :long-name "BANCO POPOLARE SCARL", ...
    :valid-exchanges ["SMART" "BVME" "FWB" "MIBSX" "SWB"], ...
-   :summary {..., :type :equity, :currency "EUR", 
-             :primary-exchange "BVME", 
-             :local-symbol "B8Z", 
-             :exchange "SWB", 
+   :summary {..., :type :equity, :currency "EUR",
+             :primary-exchange "BVME",
+             :local-symbol "B8Z",
+             :exchange "SWB",
              :symbol "BP", ...}, ...}}
-             
+
 ;;; be more specific
 user> (request-contract-details {:symbol "BP" :exchange "SWB" :type :equity})
 
@@ -199,19 +211,19 @@ a built in expiration:
 user> (request-contract-details {:local-symbol "ESH3" :type :future})
 
 {... :value {... :long-name "E-mini S&P 500", :contract-month "201303",
-             :summary {:multiplier 50.0, :expiry #<DateTime 2013-03-15T00:00:00.000Z>, 
-             :type :future, :currency "USD", :local-symbol "ESH3", 
-             :exchange "GLOBEX", :symbol "ES", ..., :contract-id 98770297}, 
+             :summary {:multiplier 50.0, :expiry #<DateTime 2013-03-15T00:00:00.000Z>,
+             :type :future, :currency "USD", :local-symbol "ESH3",
+             :exchange "GLOBEX", :symbol "ES", ..., :contract-id 98770297},
              :market-name "ES", ...}}
 
 user> (request-contract-details {:local-symbol "ZN   DEC 12" :type :future})
 
-{..., :value {... :long-name "10 Year US Treasury Note", :contract-month "201212", 
-              :summary {:multiplier 1000.0, :expiry #<DateTime 2012-12-19T00:00:00.000Z>, 
-              :type :future, :currency "USD", :local-symbol "ZN   DEC 12", 
-              :exchange "ECBOT", :symbol "ZN", :contract-id 94977350}, 
+{..., :value {... :long-name "10 Year US Treasury Note", :contract-month "201212",
+              :summary {:multiplier 1000.0, :expiry #<DateTime 2012-12-19T00:00:00.000Z>,
+              :type :future, :currency "USD", :local-symbol "ZN   DEC 12",
+              :exchange "ECBOT", :symbol "ZN", :contract-id 94977350},
               :market-name "ZN"}}
-              
+
 ;;; alternatively, specify the :symbol and an expiry:
 user> (request-contract-details {:symbol "NQ" :expiry (date-time 2012 12) :type :future})
 
@@ -226,9 +238,9 @@ by Interactive Brokers to identify securities:
 user> (request-contract-details {:contract-id 98770297})
 
 {... :value {... :long-name "E-mini S&P 500", :contract-month "201303",
-             :summary {:multiplier 50.0, :expiry #<DateTime 2013-03-15T00:00:00.000Z>, 
-             :type :future, :currency "USD", :local-symbol "ESH3", 
-             :exchange "GLOBEX", :symbol "ES", ..., :contract-id 98770297}, 
+             :summary {:multiplier 50.0, :expiry #<DateTime 2013-03-15T00:00:00.000Z>,
+             :type :future, :currency "USD", :local-symbol "ESH3",
+             :exchange "GLOBEX", :symbol "ES", ..., :contract-id 98770297},
              :market-name "ES", ...}}
 
 ```
@@ -242,7 +254,7 @@ To get historical bars, use the `request-historical-data` function:
 ;;; response to this request
 user> (request-historical-data 1 {:symbol "AAPL" :type :equity :exchange "ISLAND"}
  (date-time 2012 12 18 20) 1 :day 1 :hour)
- 
+
 {:WAP 524.187, :close 521.69, :has-gaps? false, :trade-count 4538, :low 521.27, :type :price-bar, :time #<DateTime 2012-12-18T14:30:00.000Z>, :open 524.88, :high 526.35, :volume 8260, :request-id 1}
 ...
 {:WAP 529.905, :close 530.79, :has-gaps? false, :trade-count 2563, :low 527.79, :type :price-bar, :time #<DateTime 2012-12-18T19:00:00.000Z>, :open 530.27, :high 531.64, :volume 3293, :request-id 1}
@@ -305,7 +317,7 @@ user> (def end-times (->> (iterate #(plus % (secs 2000)) (date-time 2012 12 18 1
 user> (prn (first end-times) (last end-times))
 #<DateTime 2012-12-18T11:30:00.000Z> #<DateTime 2012-12-18T21:30:00.000Z>
 nil
-user> 
+user>
 ```
 
 In order to avoid pacing violations, we will make each request, then
@@ -356,7 +368,7 @@ creating functions and managing their subscriptions for simple requests.
 
 ```clojure
 ;;; wrap request-historical-data
-user> (get-historical-data {:symbol "AAPL" :type :equity :exchange "ISLAND"} 
+user> (get-historical-data {:symbol "AAPL" :type :equity :exchange "ISLAND"}
                            (date-time 2012 12 20 20) 1 :day 1 :hour :trades true)
 ({:has-gaps? false, :volume 3507, :trade-count 2687, :close 524.77,
 :low 521.14, :high 525.41, :open 522.58, :time #<DateTime
@@ -369,9 +381,9 @@ user> (get-time)
 
 ;;; wrap request-contract-details
 user> (get-contract-details {:symbol "AAPL" :type :equity :exchange "ISLAND"})
-({:type :contract-details, :request-id 38, :value {:next-option-partial false, 
-:time-zone-id "EST", :underlying-contract-id 0, :price-magnifier 1, 
-:industry "Technology", :trading-hours "20121220:0700-2000;20121221:0700-2000", 
+({:type :contract-details, :request-id 38, :value {:next-option-partial false,
+:time-zone-id "EST", :underlying-contract-id 0, :price-magnifier 1,
+:industry "Technology", :trading-hours "20121220:0700-2000;20121221:0700-2000",
 :long-name "APPLE INC", :convertible? false, ...
 
 ;;; wrap getting the current price for a security (request-market-data)
@@ -391,17 +403,6 @@ user> (get-open-orders)
 ```
 
 ### Other Things
-
-#### Building
-
-1. Download and extract the API jar from Interactive brokers.
-2. `cd IBJts/source/JavaClient`
-3. `mkdir bin`
-4. `javac -d bin -sourcepath . com/ib/*/*.java`
-5. `ant`
-6. You should end up with `javaclient.jar`.
-7. Install it with `lein localrepo`.
-
 
 #### Implementation notes
 

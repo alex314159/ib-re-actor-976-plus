@@ -7,7 +7,8 @@ In addition to just converting to maps, we also use these functions to translate
 primitives: strings with constant values into keywords, booleans in strings into booleans,
 date strings into clj-time dates, etc."
   (:require [clojure.string :refer [join]]
-            [ib-re-actor.translation :refer [translate]]))
+            [ib-re-actor.translation :refer [translate]])
+  (:import (com.ib.client Contract)))
 
 (defprotocol Mappable
   (->map [this]

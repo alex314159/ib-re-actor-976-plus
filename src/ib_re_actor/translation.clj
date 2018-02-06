@@ -801,7 +801,8 @@ to check if if a given value is valid (known)."
    "CST" "America/Chicago"
    "CTT" "America/Chicago"
    "JST" "Asia/Tokyo"
-   "PST" "America/Los_Angeles"})
+   "PST" "America/Los_Angeles"
+   "IST" "Asia/Kolkata"})
 
 (defn- to-utc
   "Returns a full date-time in UTC, referring to a particular time at a

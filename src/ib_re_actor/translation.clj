@@ -758,10 +758,11 @@ to check if if a given value is valid (known)."
     (expiry-to-ib val)))
 
 (defmethod translate [:from-ib :expiry] [_ _ val]
-  (condp = (.length val)
-    6 (org.joda.time.YearMonth.
-       (tf/parse-local-date (tf/formatter "yyyyMM") val))
-    8 (tf/parse-local-date (tf/formatter "yyyyMMdd") val)))
+  (if (= val "NOEXP") nil
+      (condp = (.length val)
+        6 (org.joda.time.YearMonth.
+           (tf/parse-local-date (tf/formatter "yyyyMM") val))
+        8 (tf/parse-local-date (tf/formatter "yyyyMMdd") val))))
 
 (defmethod translate [:to-ib :bar-size] [_ _ [val unit]]
   (str val " " (translate :to-ib :bar-size-unit unit)))

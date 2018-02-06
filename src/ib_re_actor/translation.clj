@@ -108,13 +108,16 @@ to check if if a given value is valid (known)."
     :years [val :years]))
 
 (translation-table security-type
-                   {:equity "STK"
-                    :option "OPT"
-                    :future "FUT"
-                    :index "IND"
+                   {:equity        "STK"
+                    :option        "OPT"
+                    :future        "FUT"
+                    :index         "IND"
                     :future-option "FOP"
-                    :cash "CASH"
-                    :bag "BAG"})
+                    :cash          "CASH"
+                    :bag           "BAG"
+                    :warrant       "WAR"
+                    :dutch-warrant "IOPT"
+                    :cfd           "CFD"})
 
 (defmethod translate [:to-ib :bar-size-unit] [_ _ unit]
   (case unit

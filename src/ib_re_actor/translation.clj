@@ -117,7 +117,8 @@ to check if if a given value is valid (known)."
                     :bag           "BAG"
                     :warrant       "WAR"
                     :dutch-warrant "IOPT"
-                    :cfd           "CFD"})
+                    :cfd           "CFD"
+                    :commodity     "CMDTY"})
 
 (defmethod translate [:to-ib :bar-size-unit] [_ _ unit]
   (case unit

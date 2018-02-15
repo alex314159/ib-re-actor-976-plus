@@ -274,13 +274,16 @@
 
     ;;; Contract Details
     (contractDetails [this requestId contractDetails]
-      (let [{:keys [trading-hours liquid-hours time-zone-id] :as m} (->map contractDetails)
+      (let [{:keys[trading-hours liquid-hours time-zone-id
+                   security-id-list] :as m} (->map contractDetails)
             th (translate :from-ib :trading-hours [time-zone-id trading-hours])
-            lh (translate :from-ib :trading-hours [time-zone-id liquid-hours])]
-        (dispatch-message cb {:type :contract-details :request-id requestId
+            lh (translate :from-ib :trading-hours [time-zone-id liquid-hours])
+            sids (translate :from-ib :security-id-list security-id-list)]
+        (dispatch-message cb {:type  :contract-details :request-id requestId
                               :value (merge m
                                             (when th {:trading-hours th})
-                                            (when lh {:liquid-hours lh}))})))
+                                            (when lh {:liquid-hours lh})
+                                            (when sids {:security-id-list sids}))})))
 
     (contractDetailsEnd [this requestId]
       (dispatch-message cb {:type :contract-details-end :request-id requestId}))

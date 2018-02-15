@@ -853,3 +853,10 @@ to check if if a given value is valid (known)."
        (map th-components)
        (mapcat th-intervals)
        (map (partial joda-interval tz))))
+
+(defmethod translate [:from-ib :security-id-list] [_ _ tag-values]
+  (when tag-values
+    (into {}
+          (for [tag-value tag-values]
+            [(translate :from-ib :security-id-type (.m_tag tag-value))
+             (.m_value tag-value)]))))

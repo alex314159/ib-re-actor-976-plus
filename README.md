@@ -1,6 +1,13 @@
-# ib-re-actor
+# ib-re-actor-976-plus
 
 A clojure friendly wrapper around the Interactive Brokers java API.
+
+##Acknowledgements
+
+This is a heavily refactored clone of [] and []. That wrapper was suitable for the 971 version of the API. Interactive Brokers introduced several breaking changes starting with version 972. This main purpose of this wrapper is to update the code to work with subsequent API version. It also introduces some simplifying changes. At the moment it has been tested with version 976. 
+
+## NOTHING IS READY YET - JUST A PLACEHOLDER FOR NOW
+
 
 ## Usage
 
@@ -414,7 +421,7 @@ requests. In order to alleviate this problem ids are not reused.
 
 ## License
 
-Copyright (C) 2011 Chris Bilson, Jean-Sebastien A. Beaudry
+Copyright (C) 2011-2020 Chris Bilson, Jean-Sebastien A. Beaudry, Alexandre Almosni
 
 Distributed under the Eclipse Public License, the same as Clojure.
 

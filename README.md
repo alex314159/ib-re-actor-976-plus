@@ -2,41 +2,36 @@
 
 A clojure friendly wrapper around the Interactive Brokers java API.
 
+## NOTHING IS READY YET - JUST A PLACEHOLDER FOR NOW
+
 ## Acknowledgements
 
-This is a heavily refactored clone of [] and []. That wrapper was suitable for the 971 version of the API. Interactive Brokers introduced several breaking changes starting with version 972. This main purpose of this wrapper is to update the code to work with subsequent API version. It also introduces some simplifying changes. At the moment it has been tested with version 976.
+This is a heavily refactored clone of https://github.com/cbilson/ib-re-actor and https://github.com/jsab/ib-re-actor. That wrapper was suitable for the 971 version of the API. Interactive Brokers introduced several breaking changes starting with version 972. This main purpose of this wrapper is to update the code to work with subsequent API version. It also introduces some simplifying changes. At the moment it has been tested with version 976.
 
 ## IB API changes and rationale for changes in wrapper behaviour
 
 After a long period of stability with version 971, Interactive Brokers introduced several changes to modernize the API starting with version 972. Changes include:
 * a questionable introduction of EReader and ESignal classes to connect to the API, breaking the connection schema used in 971
-* encapsulation of many more results, with for instance historical prices being returned through the Bar class. Furthermore, most class fields used to be public - we now have private fields with getters and setters. For instance m_conId in the Contract class is replaced by a conid() get and conid(integer) set
-* more data (fields in tickPrice) and more call-backs in EWrapper (additional functionality).
+* encapsulation of many more results, with for instance historical prices being returned through the Bar class. Furthermore, most class fields used to be public - we now have private fields with getters and setters. For instance `m_conId` in the Contract class is replaced by a `conid()` get and `conid(integer)` set
+* more data (fields in `tickPrice`) and more call-backs in `EWrapper` (additional functionality).
 
 ## Main changes from ib-re-actor
 
-A great amount of work was done to translate IB outputs into clean Clojure data maps, as well as convert Clojure data maps to Java classes. With the introduction of many more classes, most of which I have no use for (and I'm not sure how to test), I've gone back to basics. In the vast majority of cases, if IB is sending you an Object as a result, you'll get an Object in the wrapper. The code to translate from IB classes and to IB classes is still there and has been updated to the best of my abilities, but it is not fully tested. 
+A great amount of work was originally done to translate IB outputs into clean Clojure data maps, as well as convert Clojure data maps to Java classes. With the introduction of many more classes, most of which I have no use for (and I'm not sure how to test), I've gone back to basics. In the vast majority of cases, if IB is sending you an Object as a result, you'll get an Object in the wrapper. The code to translate from IB classes and to IB classes is still there and has been updated to the best of my abilities, but it is not fully tested. 
 
-## Usage
+## Installation
 
-
-
-## NOTHING IS READY YET - JUST A PLACEHOLDER FOR NOW
-
-
-## Usage
-
-### Installing twsapi locally - tested with Leiningen
+You first need to install the TWS Java API locally. These instructions have been tested with Leiningen.
 
 At this time, IB does not distribute the TWSAPI on maven central and I am not sure I have the legal right to publish myself so you have to download it manually from http://interactivebrokers.github.io/# .
 
-From the download folder, go to IBJts/source/JavaClient and find the TwsAPI.jar file. Rename this file twsapi-version.jar (so for version 9.76.01 it is twsapi-9.76.01.jar) and copy it to  .../.m2/repository/twsapi/twsapi/version/, assuming your maven folder is .m2. So for version 9.76.01 you end up having /home/alex/.m2/repository/twsapi/twsapi/9.76.01/twsapi-9.76.01.jar.
+From the download folder, go to IBJts/source/JavaClient and find the TwsAPI.jar file. Rename this file twsapi-version.jar (so for version 9.76.01 it is twsapi-9.76.01.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 9.76.01 you end up having `.../.m2/repository/twsapi/twsapi/9.76.01/twsapi-9.76.01.jar`.
 
-In [project.clj] add [:plugins [[lein-localrepo "0.5.4"]]] ad the end of the file. Then add [twsapi "version"] in your dependencies.
+In `project.clj` add `:plugins [[lein-localrepo "0.5.4"]]` ad the end of the file. Then add `[twsapi "version"]` in your dependencies.
 
-I then recommend cloning this repo and having direct access to the source code.
+I then recommend cloning this repo and having direct access to the source code instead of using it as a dependency.
 
-## How it works
+## Usage
 
 What the wrapper does:
 * connects to TWS
@@ -44,38 +39,14 @@ What the wrapper does:
 * provides optional syntaxic sugar to convert IB classes to data maps and data maps to IB classes
 * provides some convenience functions.
 
-What the EWrapper implementation does: typically it will emit a map of the form [{:type :calling-function-name-in-snake-case :request-id integer :calling-function-argument-in-snake-case output-which-can-be-data-or-an-IB-class}]
+The EWrapper implementation will typically emit a map of the form `{:type :calling-function-name-in-snake-case :request-id integer :calling-function-argument-in-snake-case output-which-can-be-data-or-an-IB-class}`
 
 What you need to do:
-* provide the connection to listeners that will do things based on call-backs
-* typically you will only listen to a small subset of the events that can be emitted by the wrapper. So if you don't use historical data or options you don't need to listen to these callbacks.
+* provide the connection with listeners that will do things based on call-backs
+* typically you will only need to listen to a small subset of the events that can be emitted by the wrapper. So if you don't use historical data or options you don't need to listen to these callbacks.
 * if you're going to do things that take time, it's a good idea to start them in separate threads so the listener thread is always free.
 
 Check the demo app namespace.
-
-### Using ib-re-actor
-
-In project.clj:
-
-```clojure
-(project my.project "0.0.0"
-   :dependencies [[ib-re-actor "0.1.10"]
-                  [twsapi "9.71.01"]]
-   ...)
-```
-
-You can use ib-re-actor either with IB Trader Workstation or with IB
-Gateway. Personally, I have the gateway running on a linux server that
-I use VNC to connect to when I need to start/restart the gateway
-component. I then run programs on that machine that connect to it
-locally. It would be nice if there were a way to run the gateway
-without X and without having to authenticate, but alas, that's not how
-it works.
-
-Since ib-re-actor is basically a wrapper around Interactive Brokers'
-java API, [the documentation for that library][1] is often useful to have
-around. It describes all the codes, order types, and the types of
-errors you might get when using it.
 
 ## Examples
 

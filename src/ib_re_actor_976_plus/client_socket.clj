@@ -11,14 +11,21 @@
   https://www.interactivebrokers.com/en/software/api/api.htm
   "
   (:require
-   [ib-re-actor-976-plus.mapping :refer [map->]]
-   [ib-re-actor-976-plus.translation :refer [translate]])
+    [clojure.tools.logging :as log]
+    [ib-re-actor-976-plus.mapping :refer [map->]]
+    [ib-re-actor-976-plus.translation :refer [translate]])
   (:import
-   (com.ib.client EClientSocket)))
+    (com.ib.client EClientSocket EReader EJavaSignal)))
 
 ;;;
 ;;; Connection and Server
 ;;;
+
+(defn -process-messages [client reader signal]
+  (while (.isConnected client)
+    (.waitForSignal signal)
+    (.processMsgs reader)))
+
 (defn connect
   "This function must be called before any other. There is no feedback
    for a successful connection, but a subsequent attempt to connect
@@ -31,11 +38,20 @@
    port is the port IB Gateway / TWS is running on.
 
    client-id identifies this client. Only one connection to a gateway can
-   be made per client-id at a time."
-  ([wr host port client-id]
-   (let [ecs (com.ib.client.EClientSocket. wr)]
+   be made per client-id at a time.
+
+   Important note: we are using a Thread for -process-messages instead of a future as somehow
+   the latter can fail silently if the EWrapper isn't correctly implemented.
+   Stacktrace java.lang.AbstractMethodError: Receiver class clibtrader.ib_re_actor.wrapper$create$reify__7992 does not define or inherit an implementation of the resolved method 'abstract void tickReqParams(int, double, java.lang.String, int)' of interface com.ib.client.EWrapper.\n
+   It seems somewhat linked to https://github.com/clojure-emacs/cider/issues/1404
+   "
+  ([wr signal host port client-id]
+   (let [ecs (EClientSocket. wr signal)]
      (.eConnect ecs host port client-id)
-     ecs)))
+     (let [reader (EReader. ecs signal)]
+       (.start reader)
+       (.start (Thread. ^Runnable (fn [] (-process-messages ecs reader signal))))
+       ecs))))
 
 
 (defn disconnect

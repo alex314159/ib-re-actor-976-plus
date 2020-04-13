@@ -3029,11 +3029,11 @@ net.brehaut.ClojureTools = (function (SH) {
   };
 })(SyntaxHighlighter);
 </script><title>ib-re-actor -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">ib-re-actor</h1><h2 class="project-version">0.1.0</h2><br /><p>Clojure friendly wrapper for InteractiveBrokers java API</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.4.0</td></tr><tr><td class="dep-name">clj-time</td><td class="dotted"><hr /></td><td class="dep-version">0.4.4</td></tr><tr><td class="dep-name">com.ib/jtsclient</td><td class="dotted"><hr /></td><td class="dep-version">9.68</td></tr><tr><td class="dep-name">org.clojure/tools.logging</td><td class="dotted"><hr /></td><td class="dep-version">0.2.3</td></tr><tr><td class="dep-name">clj-logging-config</td><td class="dotted"><hr /></td><td class="dep-version">1.9.10</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#ib-re-actor.account">ib-re-actor.account</a></li><li><a href="#ib-re-actor.gateway">ib-re-actor.gateway</a></li><li><a href="#ib-re-actor.mapping">ib-re-actor.mapping</a></li><li><a href="#ib-re-actor.positions">ib-re-actor.positions</a></li><li><a href="#ib-re-actor.synchronous">ib-re-actor.synchronous</a></li><li><a href="#ib-re-actor.translation">ib-re-actor.translation</a></li><li><a href="#ib-re-actor.util">ib-re-actor.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.account" name="ib-re-actor.account"><h1 class="project-name">ib-re-actor.account</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Account details</h1>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.4.0</td></tr><tr><td class="dep-name">clj-time</td><td class="dotted"><hr /></td><td class="dep-version">0.4.4</td></tr><tr><td class="dep-name">com.ib/jtsclient</td><td class="dotted"><hr /></td><td class="dep-version">9.68</td></tr><tr><td class="dep-name">org.clojure/tools.logging</td><td class="dotted"><hr /></td><td class="dep-version">0.2.3</td></tr><tr><td class="dep-name">clj-logging-config</td><td class="dotted"><hr /></td><td class="dep-version">1.9.10</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#ib-re-actor-976-plus.account">ib-re-actor-976-plus.account</a></li><li><a href="#ib-re-actor-976-plus.gateway">ib-re-actor-976-plus.gateway</a></li><li><a href="#ib-re-actor-976-plus.mapping">ib-re-actor-976-plus.mapping</a></li><li><a href="#ib-re-actor-976-plus.positions">ib-re-actor-976-plus.positions</a></li><li><a href="#ib-re-actor-976-plus.synchronous">ib-re-actor-976-plus.synchronous</a></li><li><a href="#ib-re-actor-976-plus.translation">ib-re-actor-976-plus.translation</a></li><li><a href="#ib-re-actor-976-plus.util">ib-re-actor-976-plus.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.account" name="ib-re-actor-976-plus.account"><h1 class="project-name">ib-re-actor-976-plus.account</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Account details</h1>
 
 <p>This namespace deals monitoring and updating account details.</p>
-</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.account
-  (:require [ib-re-actor.gateway :as g]))</pre></td></tr><tr><td class="docs"><p>This atom contains the account details at all times</p>
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor-976-plus.account
+  (:require [ib-re-actor-976-plus.gateway :as g]))</pre></td></tr><tr><td class="docs"><p>This atom contains the account details at all times</p>
 </td><td class="codes"><pre class="brush: clojure">(defonce account-details (atom nil))</pre></td></tr><tr><td class="docs"><p>Update a partical key in the account details</p>
 </td><td class="codes"><pre class="brush: clojure">(defn update-account-details
   [{:keys [type key value currency]}]
@@ -3046,7 +3046,7 @@ net.brehaut.ClojureTools = (function (SH) {
     :update-account-time
     (swap! account-details assoc :last-updated value)))</pre></td></tr><tr><td class="docs"><p>Subscribe immediately to receiving updates</p>
 </td><td class="codes"><pre class="brush: clojure">(do
-  (g/subscribe update-account-details))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.gateway" name="ib-re-actor.gateway"><h1 class="project-name">ib-re-actor.gateway</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>The Gateway</h1>
+  (g/subscribe update-account-details))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.gateway" name="ib-re-actor-976-plus.gateway"><h1 class="project-name">ib-re-actor-976-plus.gateway</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>The Gateway</h1>
 
 <p>The main user interface. Functions for connecting to Interactive Brokers TWS Gateway and sending
 requests to it.</p>
@@ -3078,11 +3078,11 @@ they simply need to register a listener and will receive events.</p>
 <li>Request the generation of the appropriate event using the request-* functions</li>
 <li>Cancel the request with the cancel-* when done.</li>
 </ol>
-</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.gateway
-  (:use [ib-re-actor.translation :only [translate integer-account-value?
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor-976-plus.gateway
+  (:use [ib-re-actor-976-plus.translation :only [translate integer-account-value?
                                         numeric-account-value?
                                         boolean-account-value?]]
-        [ib-re-actor.mapping])
+        [ib-re-actor-976-plus.mapping])
   (:require [clojure.xml :as xml]
             [clojure.tools.logging :as log]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn- get-stack-trace [ex]
@@ -3554,16 +3554,16 @@ message</p>
   (-&gt;&gt; (.TwsConnectionTime @connection)
        (translate :from-ib :connection-time)))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn request-server-version []
-  (send-connection .serverVersion))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.mapping" name="ib-re-actor.mapping"><h1 class="project-name">ib-re-actor.mapping</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Functions for mapping to and from Interactive Brokers classes. It is much easier to work
+  (send-connection .serverVersion))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.mapping" name="ib-re-actor-976-plus.mapping"><h1 class="project-name">ib-re-actor-976-plus.mapping</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Functions for mapping to and from Interactive Brokers classes. It is much easier to work
 with maps in clojure, so we use these functions internally on all the data we exchange
 with the Interactive Brokers API.</p>
 
 <p>In addition to just converting to maps, we also use these functions to translate some
 primitives: strings with constant values into keywords, booleans in strings into booleans,
 date strings into clj-time dates, etc.</p>
-</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.mapping
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor-976-plus.mapping
   (:use [clojure.string :only [join]]
-        [ib-re-actor.translation :only [translate]]))</pre></td></tr><tr><td class="docs">
+        [ib-re-actor-976-plus.translation :only [translate]]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defprotocol Mappable
   (-&gt;map [this]
     &quot;Create a map with the all the non-the non-null properties of object.&quot;))</pre></td></tr><tr><td class="docs">
@@ -3742,9 +3742,9 @@ create instances, we will only map from objects to clojure maps.</p>
   [:execution-id m_execId]
   [:realized-profit-loss m_realizedPNL]
   [:yield m_yield]
-  [:yield-redemption-date m_yieldRedemptionDate :translate :yield-redemption-date])</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.positions" name="ib-re-actor.positions"><h1 class="project-name">ib-re-actor.positions</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.positions
-  (:require [ib-re-actor.gateway :as g]))</pre></td></tr><tr><td class="docs">
+  [:yield-redemption-date m_yieldRedemptionDate :translate :yield-redemption-date])</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.positions" name="ib-re-actor-976-plus.positions"><h1 class="project-name">ib-re-actor-976-plus.positions</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor-976-plus.positions
+  (:require [ib-re-actor-976-plus.gateway :as g]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defonce positions (atom nil))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn handle-portfolio-update [{:keys [type contract] :as msg}]
   (when (= type :update-portfolio)
@@ -3753,14 +3753,14 @@ create instances, we will only map from objects to clojure maps.</p>
                              :average-cost :unrealized-gain-loss
                              :realized-gain-loss]))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(do
-  (g/subscribe handle-portfolio-update))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.synchronous" name="ib-re-actor.synchronous"><h1 class="project-name">ib-re-actor.synchronous</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Functions for doing things with interactive brokers in a synchronous manner.
+  (g/subscribe handle-portfolio-update))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.synchronous" name="ib-re-actor-976-plus.synchronous"><h1 class="project-name">ib-re-actor-976-plus.synchronous</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Functions for doing things with interactive brokers in a synchronous manner.
    Mostly these are just wrappers that create a temporary handler function,
    wait for a response, then unsubscribe. These are much easier to use in an
    interactive context (such as when using the REPL) but probably not what you
    would want to use in an application, as the asynchronous API is a much more
    natural fit for building programs that react to events in market data.</p>
-</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.synchronous
-  (:require [ib-re-actor.gateway :as g]
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor-976-plus.synchronous
+  (:require [ib-re-actor-976-plus.gateway :as g]
             [clojure.tools.logging :as log]
             [clj-time.core :as t]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn- reduce-responses [accept? reduce-fn done? completion-fn subscribe-fn &amp; args]
@@ -3863,8 +3863,8 @@ create instances, we will only map from objects to clojure maps.</p>
            (filter #(= :open-order (:type %)))
            (map #(select-keys % [:order-id :contract :order
                                  :order-state])))
-      errors)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.translation" name="ib-re-actor.translation"><h1 class="project-name">ib-re-actor.translation</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.translation
+      errors)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.translation" name="ib-re-actor-976-plus.translation"><h1 class="project-name">ib-re-actor-976-plus.translation</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor-976-plus.translation
   (:require [clj-time.core :as time]
             [clj-time.format :as tf]
             [clj-time.coerce :as tc]
@@ -4538,9 +4538,9 @@ no have a date component.</p>
   (let [year (int (Math/floor (/ val 10000)))
         month (int (Math/floor (/ (mod val 10000) 100)))
         day (int (Math/floor (mod 19720427 100)))]
-    (time/date-time year month day)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor.util" name="ib-re-actor.util"><h1 class="project-name">ib-re-actor.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor.util
-  (:use [ib-re-actor.translation]))</pre></td></tr><tr><td class="docs">
+    (time/date-time year month day)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.util" name="ib-re-actor-976-plus.util"><h1 class="project-name">ib-re-actor-976-plus.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor-976-plus.util
+  (:use [ib-re-actor-976-plus.translation]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def ^:const option-flag-keywords #{:read-only})</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defmacro field-props [&amp; property-descriptors]
   (reduce (fn [implementation [name field &amp; options]]

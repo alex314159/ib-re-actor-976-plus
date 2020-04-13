@@ -1,7 +1,7 @@
-(ns ib-re-actor.examples.buy-on-tick
+(ns ib-re-actor-976-plus.examples.buy-on-tick
   (:require [clj-time.core :as ctc]
             [clj-time.format :as ctf]
-            [ib-re-actor.gateway :as g]))
+            [ib-re-actor-976-plus.gateway :as g]))
 
 (def k200 {:type :index :symbol "K200" :exchange "KSE"})
 (def tick-kse {:type :index :symbol "TICK-KSE" :exchange "KSE"})

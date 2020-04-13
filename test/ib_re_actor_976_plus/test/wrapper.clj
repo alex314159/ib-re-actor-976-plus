@@ -1,15 +1,15 @@
-(ns ib-re-actor.test.wrapper
+(ns ib-re-actor-976-plus.test.wrapper
   (:require
    [clj-time.core :refer [date-time]]
-   [ib-re-actor.mapping :refer [->map]]
-   [ib-re-actor.wrapper :refer [create]]
+   [ib-re-actor-976-plus.mapping :refer [->map]]
+   [ib-re-actor-976-plus.wrapper :refer [create]]
    [midje.sweet :refer [fact]]
    [midje.util :refer [testable-privates]])
   (:import
    (com.ib.client Contract Order OrderState ContractDetails Execution)))
 
 
-(testable-privates ib-re-actor.wrapper dispatch-message)
+(testable-privates ib-re-actor-976-plus.wrapper dispatch-message)
 
 (def some-contract {:symbol "SOME TICKER"})
 (def some-contract-id 42)
@@ -27,7 +27,7 @@
   (let [wrapper (gensym "wrapper")]
     `(let [messages# (atom nil)
            ~wrapper (create nil)]
-       (with-redefs [ib-re-actor.wrapper/dispatch-message
+       (with-redefs [ib-re-actor-976-plus.wrapper/dispatch-message
                      (fn [_# m#] (swap! messages# conj m#))]
          ~@(map #(concat [`. wrapper] %) calls))
        (first @messages#))))

@@ -1,6 +1,6 @@
-(ns ib-re-actor.util
+(ns ib-re-actor-976-plus.util
   (:require
-   [ib-re-actor.translation :as t]))
+   [ib-re-actor-976-plus.translation :as t]))
 
 (def ^:const option-flag-keywords #{:read-only})
 

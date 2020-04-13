@@ -1,5 +1,5 @@
-(ns ib-re-actor.examples.getting-news
-  (:use [ib-re-actor.connection]))
+(ns ib-re-actor-976-plus.examples.getting-news
+  (:use [ib-re-actor-976-plus.connection]))
 
 (def news-complete? (atom false))
 (defmulti news-handler :type)

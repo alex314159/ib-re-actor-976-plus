@@ -1,5 +1,5 @@
-(ns ib-re-actor.examples.security-lookup
-  (:use [ib-re-actor.securities]
+(ns ib-re-actor-976-plus.examples.security-lookup
+  (:use [ib-re-actor-976-plus.securities]
         [clj-time.core :only [date-time]]
         [clojure.pprint :only [pprint]]))
 

@@ -1,7 +1,7 @@
-(ns ib-re-actor.examples.historical-data-request
+(ns ib-re-actor-976-plus.examples.historical-data-request
   (:require [clojure.string :as s]
-            [ib-re-actor.gateway :as g])
-  (:use [ib-re-actor.synchronous :only [get-historical-data]]
+            [ib-re-actor-976-plus.gateway :as g])
+  (:use [ib-re-actor-976-plus.synchronous :only [get-historical-data]]
         [clj-time.core :only [date-time minus plus hours minutes
                               year month day before?]]
         [clojure.tools.logging :only [error debug]]))

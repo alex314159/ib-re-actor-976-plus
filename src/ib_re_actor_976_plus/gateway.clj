@@ -1,4 +1,4 @@
-(ns ib-re-actor.gateway
+(ns ib-re-actor-976-plus.gateway
   "The main user interface. Functions for connecting to Interactive Brokers TWS
   Gateway and sending requests to it.
                                                                                                                       
@@ -30,8 +30,8 @@
   4. Cancel the request with the cancel-* when done."
   (:require
    [clojure.tools.logging :as log]
-   [ib-re-actor.client-socket :as cs]
-   [ib-re-actor.wrapper :as wrapper :refer [error-end? matching-message? request-end?]]))
+   [ib-re-actor-976-plus.client-socket :as cs]
+   [ib-re-actor-976-plus.wrapper :as wrapper :refer [error-end? matching-message? request-end?]]))
 
 ;; Default port for live trading
 (defonce default-port 7496)

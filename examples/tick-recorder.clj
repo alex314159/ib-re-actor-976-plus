@@ -1,5 +1,5 @@
-(ns ib-re-actor.examples.tick-recorder
-  (:use [ib-re-actor.gateway]
+(ns ib-re-actor-976-plus.examples.tick-recorder
+  (:use [ib-re-actor-976-plus.gateway]
         [clj-time.core :only [date-time minus now]]
         [clj-time.coerce :only [to-long]]
         [clojure.java.io]

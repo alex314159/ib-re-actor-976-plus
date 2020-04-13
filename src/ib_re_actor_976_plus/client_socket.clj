@@ -1,4 +1,4 @@
-(ns ib-re-actor.client-socket
+(ns ib-re-actor-976-plus.client-socket
   "This namespace is a wrapper of the EClientSocket interface of the
   InteractiveBrokers (IB) API.
 
@@ -11,8 +11,8 @@
   https://www.interactivebrokers.com/en/software/api/api.htm
   "
   (:require
-   [ib-re-actor.mapping :refer [map->]]
-   [ib-re-actor.translation :refer [translate]])
+   [ib-re-actor-976-plus.mapping :refer [map->]]
+   [ib-re-actor-976-plus.translation :refer [translate]])
   (:import
    (com.ib.client EClientSocket)))
 

@@ -1,6 +1,6 @@
-(ns ib-re-actor.examples.getting-fundamentals
-  (:use [ib-re-actor.connection]
-        [ib-re-actor.contracts]
+(ns ib-re-actor-976-plus.examples.getting-fundamentals
+  (:use [ib-re-actor-976-plus.connection]
+        [ib-re-actor-976-plus.contracts]
         [clj-time.core :only [date-time minus]]))
 
 (def fundamental-data-complete? (atom false))

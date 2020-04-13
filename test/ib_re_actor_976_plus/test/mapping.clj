@@ -1,7 +1,7 @@
-(ns ib-re-actor.test.mapping
+(ns ib-re-actor-976-plus.test.mapping
   (:require
    [clj-time.core :refer [date-time year-month]]
-   [ib-re-actor.mapping :refer [->map map->]]
+   [ib-re-actor-976-plus.mapping :refer [->map map->]]
    [midje.sweet :refer [fact]])
   (:import
    (com.ib.client Contract ContractDetails Order OrderState Execution ExecutionFilter CommissionReport)))

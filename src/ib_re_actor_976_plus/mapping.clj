@@ -1,4 +1,4 @@
-(ns ib-re-actor.mapping
+(ns ib-re-actor-976-plus.mapping
   "Functions for mapping to and from Interactive Brokers classes. It is much easier to work
 with maps in clojure, so we use these functions internally on all the data we exchange
 with the Interactive Brokers API.
@@ -8,7 +8,7 @@ primitives: strings with constant values into keywords, booleans in strings into
 date strings into clj-time dates, etc."
   (:require
    [clojure.string :refer [join]]
-   [ib-re-actor.translation :refer [translate]])
+   [ib-re-actor-976-plus.translation :refer [translate]])
   (:import
    (com.ib.client Contract)))
 

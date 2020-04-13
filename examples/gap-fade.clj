@@ -1,6 +1,6 @@
-(ns ib-re-actor.examples.gap-fade
-  (:use [ib-re-actor.connection]
-        [ib-re-actor.contracts]
+(ns ib-re-actor-976-plus.examples.gap-fade
+  (:use [ib-re-actor-976-plus.connection]
+        [ib-re-actor-976-plus.contracts]
         [clj-time.core :only [date-time minus]]))
 
 (defn compute-pivots [{high :high low :low close :close}]

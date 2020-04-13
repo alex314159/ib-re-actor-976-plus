@@ -1,4 +1,4 @@
-(ns ib-re-actor.synchronous
+(ns ib-re-actor-976-plus.synchronous
   "This namespace wraps asynchronous functions with the appropriate magic to
   make them synchronous.
 
@@ -8,7 +8,7 @@
   to events in market data."
   (:require
    [clojure.tools.logging :as log]
-   [ib-re-actor.gateway :as g]))
+   [ib-re-actor-976-plus.gateway :as g]))
 
 
 (defn single-value-handlers

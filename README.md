@@ -11,8 +11,8 @@ This is a heavily refactored clone of https://github.com/cbilson/ib-re-actor and
 ## IB API changes and rationale for changes in wrapper behaviour
 
 After a long period of stability with version 971, Interactive Brokers introduced several changes to modernize the API starting with version 972. Changes include:
-* a questionable introduction of `EReader` and `ESignal` classes to connect to the API, breaking the connection schema used in 971
-* encapsulation of many more results, with for instance historical prices being returned through the `Bar` class. Furthermore, most class fields used to be public - we now have private fields with getters and setters. For instance `m_conId` in the Contract class is replaced by a `conid()` get and `conid(integer)` set.
+* a questionable introduction of `EReader` and `ESignal` classes to connect to the API, breaking the existing connection mechanism.
+* encapsulation everywhere. For instance, historical prices are now returned through the `Bar` class. Fields that used to be strings, such as security type or order action, are now Java Enums. Furthermore, most class fields used to be public - we now have private fields with getters and setters. For instance `m_conId` in the Contract class is replaced by a `conid()` get and `conid(integer)` set.
 * more data (fields in `tickPrice`) and more call-backs in `EWrapper` (additional functionality).
 
 ## Main changes from ib-re-actor
@@ -21,17 +21,21 @@ The smart stuff was done before me. Indeed, a great amount of work was originall
 
 However, with the introduction of many more classes, most of which I have no use for and I'm not sure how to test, I've gone back to basics. In the vast majority of cases, if IB is sending you an Object as a result, you'll get an Object in the wrapper. The code to translate from IB classes and to IB classes is still there and has been updated to the best of my abilities, but it is not fully tested. Given IB changes things overtime, I think it is safer to use this code at the edge of your project, instead of inside the `EWrapper` implementation as it was originally done. The `demoapp.clj` namespace has some examples.
 
-I've also broken dependencies to clj-time, which itself is a wrapper around Joda time, preferring to keep raw IB results. The rationale for that is `java.time` supersedes Joda time and is easy to call directly from Clojure.
+I've also broken dependencies to clj-time, which itself is a wrapper around Joda time, preferring to keep raw IB results. The rationale for that is two-fold: first, `java.time` supersedes Joda time and is easy to call directly from Clojure. Secondly, interpreting IB results led to some very messy code, partly because IB themselves are not consistent with their use of dates, times, and timezones.
 
 ## Installation
 
-At this time, IB does not distribute the TWSAPI on maven central and I am not sure I have the legal right to publish myself so you have to download it manually from http://interactivebrokers.github.io/# and install it locally. The following instructions have been tested with Leiningen.
+At this time, IB does not distribute the TWSAPI on maven central and I am not sure I have the legal right to publish it myself so you have to download it manually from http://interactivebrokers.github.io/# and install it locally. The following instructions have been tested with Leiningen.
 
 From the download folder, go to IBJts/source/JavaClient and find the TwsAPI.jar file. Rename this file twsapi-version.jar (so for version 9.76.01 it is twsapi-9.76.01.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 9.76.01 you end up having `.../.m2/repository/twsapi/twsapi/9.76.01/twsapi-9.76.01.jar`.
 
 In `project.clj` add `:plugins [[lein-localrepo "0.5.4"]]` ad the end of the file. Then add `[twsapi "version"]` in your dependencies.
 
 I then recommend cloning this repo and having direct access to the source code instead of using it as a dependency.
+
+## Warning
+
+I've used ib-re-actor in live trading for many years, and I'm using this version now. I think it's stable, but I make no warranties, please test at length using a paper account.
 
 ## Usage
 
@@ -41,11 +45,11 @@ What the wrapper does:
 * provide optional syntaxic sugar to convert IB classes to data maps and data maps to IB classes
 * provide some convenience functions.
 
-The EWrapper implementation will typically emit a map of the form `{:type :calling-function-name-in-snake-case :request-id integer :calling-function-argument-in-snake-case output-which-can-be-data-or-an-IB-class}`
+The EWrapper implementation will typically emit a map of the form `{:type :calling-function-name-in-snake-case :request-id integer :calling-function-argument-in-snake-case output-which-can-be-data-or-an-IB-class}`.
 
-You need to provide the connection with listeners that will do things based on callbacks. Typically you will only need to listen to a small subset of the events that can be emitted by the wrapper. So if you don't use historical data or options you don't need to listen to these callbacks.
+You need to provide the connection with listeners that will do things based on callbacks. Typically you will only need to listen to a small subset of the events that can be emitted by the wrapper. So if you don't use historical data or options you don't need to listen to these callbacks. Note that if you're going to do things that take time, it's a good idea to start them in separate threads so the listener thread is always free.
 
-Note that if you're going to do things that take time, it's a good idea to start them in separate threads so the listener thread is always free.
+Finally you need to manage your own request-ids and order-ids. Note that IB only accepts order-ids in increasing order - if you are sending orders concurrently, use a locking mechanism.
 
 Check the demo app namespace for example usage. For any help on the underlying events, the official API documentation is at https://interactivebrokers.github.io/tws-api/.
 

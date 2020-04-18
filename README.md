@@ -19,9 +19,11 @@ After a long period of stability with version 971, Interactive Brokers introduce
 
 The smart stuff was done before me. Indeed, a great amount of work was originally done to translate IB outputs into clean Clojure data maps, as well as convert Clojure data maps to Java classes.
 
-However, with the introduction of many more classes, most of which I have no use for and I'm not sure how to test, I've gone back to basics. In the vast majority of cases, if IB is sending you an Object as a result, you'll get an Object in the wrapper. The code to translate from IB classes and to IB classes is still there and has been updated to the best of my abilities, but it is not fully tested. Given IB changes things overtime, I think it is safer to use this code at the edge of your project, instead of inside the `EWrapper` implementation as it was originally done. The `demoapp.clj` namespace has some examples.
+However, with the introduction of many more classes, most of which I have no use for and I'm not sure how to test, I've gone back to basics: if IB is sending you an Object as a result, you'll get an Object in the wrapper.  In essence the EWrapper implementation is now auto-generated, making it largely future proof. For every call-back, the code will send a map of the form `{:type :calling-function-name-in-kebab-case :calling-function-argument-name-in-kebab-case calling-function-argument-value}`. This makes it easy to refer to the Interactive Brokers API official documentation.
 
-I've also broken dependencies to clj-time, which itself is a wrapper around Joda time, preferring to keep raw IB results. The rationale for that is two-fold: first, `java.time` supersedes Joda time and is easy to call directly from Clojure. Secondly, interpreting IB results led to some very messy code, partly because IB themselves are not consistent with their use of dates, times, and timezones.
+The code to translate from IB classes and to IB classes is still there and has been updated to the best of my abilities, but it is not fully tested. Given IB changes things overtime, I think it is safer to use this code at the edge of your project, instead of inside the `EWrapper` implementation as it was originally done. The `demoapp.clj` namespace has some examples.
+
+Finally I've broken dependencies to clj-time, which itself is a wrapper around Joda time, preferring to keep raw IB results. The rationale for that is two-fold: first, `java.time` supersedes Joda time and is easy to call directly from Clojure. Secondly, interpreting IB results led to some very messy code, partly because IB themselves are not consistent with their use of dates, times, and timezones.
 
 ## Installation
 
@@ -44,8 +46,6 @@ What the wrapper does:
 * implement the EWrapper interface
 * provide optional syntaxic sugar to convert IB classes to data maps and data maps to IB classes
 * provide some convenience functions.
-
-The EWrapper implementation will typically emit a map of the form `{:type :calling-function-name-in-snake-case :request-id integer :calling-function-argument-in-snake-case output-which-can-be-data-or-an-IB-class}`.
 
 You need to provide the connection with listeners that will do things based on callbacks. Typically you will only need to listen to a small subset of the events that can be emitted by the wrapper. So if you don't use historical data or options you don't need to listen to these callbacks. Note that if you're going to do things that take time, it's a good idea to start them in separate threads so the listener thread is always free.
 

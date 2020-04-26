@@ -1,6 +1,6 @@
 (ns ib-re-actor-976-plus.util
   (:require
-   [ib-re-actor-976-plus.translation :as t]))
+    [ib-re-actor-976-plus.translation :as t]))
 
 (def ^:const option-flag-keywords #{:read-only})
 
@@ -12,18 +12,18 @@
                   this (gensym "this")
                   val (gensym "val")]
               (assoc implementation (keyword name)
-                     `(fn
-                        ([~this]
-                           ~(if translation
-                              `(t/translate :from-ib ~translation (. ~this ~field))
-                              `(. ~this ~field)))
-                        ~@(if (not (option-flags :read-only))
-                            `(([~this ~val]
-                                 (set! (. ~this ~field)
-                                       ~(if translation
-                                          `(t/translate :to-ib ~translation ~val)
-                                          val))
-                                 ~this)))))))
+                                    `(fn
+                                       ([~this]
+                                        ~(if translation
+                                           `(t/translate :from-ib ~translation (. ~this ~field))
+                                           `(. ~this ~field)))
+                                       ~@(if (not (option-flags :read-only))
+                                           `(([~this ~val]
+                                              (set! (. ~this ~field)
+                                                    ~(if translation
+                                                       `(t/translate :to-ib ~translation ~val)
+                                                       val))
+                                              ~this)))))))
           {} property-descriptors))
 
 (defn assoc-if [map key val]

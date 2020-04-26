@@ -1,11 +1,11 @@
 (ns ib-re-actor-976-plus.wrapper
   (:require
     [clojure.tools.logging :as log]
-    [clojure.xml :as xml]
+    ;    [clojure.xml :as xml]
     [ib-re-actor-976-plus.mapping :refer [->map]]
     [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate]])
-  (:import (com.ib.client Bar EWrapper TickAttrib Contract ContractDetails)
-           (java.io ByteArrayInputStream)))
+  (:import (com.ib.client EWrapper)))                         ; Bar TickAttrib Contract ContractDetails ;(java.io ByteArrayInputStream)
+
 
 
 (defn- get-stack-trace [ex]
@@ -119,7 +119,7 @@
       (.toLowerCase)))
 
 (def text-replacements [["Map<Integer, Entry<String, Character>>" "nestedType"] ;special types, difficult to filter for
-                        [#"[,\(\)]" " "]                    ;, (, ) become space
+                        [#"[,\(\)]" " "]                    ;comma and parentheses become spaces
                         [#"[\t\n]" ""]                      ;get rid of tabs and new lines
                         [#"  +" " "]])                      ;get rid of double spaces
 
@@ -138,7 +138,7 @@
 
 (def error-methods
   "These methods need to be implemented separately as they're overloaded - same name with different signature.
-  Interestingly, even though the type hints don't appear in the REPL, they're there. Removing them makes reify fail.
+  Interestingly, even though the type hints don't appear in the REPL, they're there and removing them makes reify fail.
   cb is the name of the dispatch function
   "
   [
@@ -153,13 +153,14 @@
    ])
 
 (def reification
-  (let [method-entries (into [] (for [mdata ewrapper-java-methods :when (not= (subs mdata 0 10) "void error")] ;filtering for error methods which are implemented separately
-                                  (let [elements (clojure.string/split mdata #" ")
-                                        [mname arglist] [(second elements) (drop 2 elements)] ; first is return type, not needed
-                                        arg-names (mapv second (partition 2 arglist)) ; first would be type, not needed
-                                        arg-names-kebab-kw (map (comp keyword camel-to-kebab) arg-names)]
-                                    (list (symbol mname) (into [] (concat [(quote this)] (mapv symbol arg-names)))
-                                          (list (quote dispatch-message) (quote cb) (merge {:type (keyword (camel-to-kebab mname))} (zipmap arg-names-kebab-kw (mapv symbol arg-names))))))))]
+  (let [method-entries
+        (into [] (for [mdata ewrapper-java-methods :when (not= (subs mdata 0 10) "void error")] ;filtering for error methods which are implemented separately
+                   (let [elements (clojure.string/split mdata #" ")
+                         [mname arglist] [(second elements) (drop 2 elements)] ; first is return type, not needed
+                         arg-names (mapv second (partition 2 arglist)) ; first would be type, not needed
+                         arg-names-kebab-kw (map (comp keyword camel-to-kebab) arg-names)]
+                     (list (symbol mname) (into [] (concat [(quote this)] (mapv symbol arg-names)))
+                           (list (quote dispatch-message) (quote cb) (merge {:type (keyword (camel-to-kebab mname))} (zipmap arg-names-kebab-kw (mapv symbol arg-names))))))))]
     (concat [(quote reify) (quote EWrapper)] (concat error-methods method-entries))))
 
 (defmacro reify-ewrapper [this cb] reification)

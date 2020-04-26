@@ -7,10 +7,8 @@ In addition to just converting to maps, we also use these functions to translate
 primitives: strings with constant values into keywords, booleans in strings into booleans,
 date strings into clj-time dates, etc."
   (:require
-   [clojure.string :refer [join]]
-   [ib-re-actor-976-plus.translation :refer [translate]])
-  (:import
-   (com.ib.client Contract)))
+    [clojure.string :refer [join]]
+    [ib-re-actor-976-plus.translation :refer [translate]]))
 
 (defprotocol Mappable
   (->map [this]
@@ -22,9 +20,9 @@ date strings into clj-time dates, etc."
   "Chainable, conditional assoc. If v is not nil, assoc it and return the result,
 otherwise, don't and return m unchanged."
   ([m k v]
-     (if (nil? v) m (assoc m k v)))
+   (if (nil? v) m (assoc m k v)))
   ([m k v translation]
-     (if (nil? v) m (assoc m k (translate :from-ib translation v)))))
+   (if (nil? v) m (assoc m k (translate :from-ib translation v)))))
 
 (defn- assoc-nested [m k v]
   (if (nil? v) m (assoc m k (->map v))))
@@ -43,9 +41,9 @@ setter or assoc when mapping to and from objects.
   (let [{:keys [translation nested]} (apply hash-map options)
         m (gensym "m")]
     (cond
-     (not (nil? translation)) `((assoc-if-val-non-nil ~k (. ~this ~field) ~translation))
-     (not (nil? nested)) `((assoc-nested ~k (. ~this ~field)))
-     :else `((assoc-if-val-non-nil ~k (. ~this ~field))))))
+      (not (nil? translation)) `((assoc-if-val-non-nil ~k (. ~this ~field) ~translation))
+      (not (nil? nested)) `((assoc-nested ~k (. ~this ~field)))
+      :else `((assoc-if-val-non-nil ~k (. ~this ~field))))))
 
 (defn emit-map->field
   "When mapping from a clojure map to an object, this creates a call to set the associated
@@ -54,23 +52,28 @@ field on the object."
   (let [{:keys [translation nested]} (apply hash-map options)
         val (gensym "val")]
     `((if (contains? ~m ~key)
-          (let [~val (~key ~m)]
-            (try
-              (set! (. ~this ~field)
-                    ~(cond
-                       (not (nil? translation)) `(translate :to-ib ~translation ~val)
-                       (not (nil? nested)) `(map-> ~nested ~val)
-                       :else `~val))
-              (catch ClassCastException ex#
-                (throw (ex-info (str "Failed to map field " ~(str field)
-                                     ~(when translation
-                                        (str ", using translation " translation))
-                                     ", value \"" ~val "\"")
-                                {:class (class ~this)
-                                 :key ~key
-                                 :field ~(str field)
-                                 :translation ~translation}
-                                ex#)))))))))
+        (let [~val (~key ~m)]
+          (try
+            (. ~this ~field
+               ~(cond
+                  (not (nil? translation)) `(translate :to-ib ~translation ~val)
+                  (not (nil? nested)) `(map-> ~nested ~val)
+                  :else `~val))
+            ;(set! (. ~this ~field)
+            ;      ~(cond
+            ;         (not (nil? translation)) `(translate :to-ib ~translation ~val)
+            ;         (not (nil? nested)) `(map-> ~nested ~val)
+            ;         :else `~val))
+            (catch ClassCastException ex#
+              (throw (ex-info (str "Failed to map field " ~(str field)
+                                   ~(when translation
+                                      (str ", using translation " translation))
+                                   ", value \"" ~val "\"")
+                              {:class (class ~this)
+                               :key ~key
+                               :field ~(str field)
+                               :translation ~translation}
+                              ex#)))))))))
 
 (defmacro defmapping
   "This is used to extend an Interactive Brokers API class with a method to convert it into
@@ -84,7 +87,7 @@ convert maps into instances of the IB class."
        (extend-type ~c
          Mappable
          (->map [~this]
-           (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))
+                (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))
 
        (defmethod map-> ~c [_# ~field-map]
          (let [~this (new ~c)]
@@ -99,122 +102,149 @@ create instances, we will only map from objects to clojure maps."
     `(extend-type ~c
        Mappable
        (->map [~this]
-         (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))))
+              (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))))
 
 (defmapping com.ib.client.Contract
-  [:contract-id m_conId]
-  [:symbol m_symbol]
-  [:type m_secType :translation :security-type]
-  [:expiry m_expiry :translation :expiry]
-  [:strike m_strike]
-  [:put-call-right m_right :translation :right]
-  [:multiplier m_multiplier :translation :double-string]
-  [:exchange m_exchange]
-  [:currency m_currency]
-  [:local-symbol m_localSymbol]
-  [:trading-class m_tradingClass]
-  [:primary-exchange m_primaryExch]
-  [:include-expired? m_includeExpired]
-  [:security-id-type m_secIdType :translation :security-id-type]
-  [:security-id m_secId]
-  [:combo-legs-description m_comboLegsDescrip]
-  [:combo-legs m_comboLegs]
-  [:underlying-component m_underComp])
+            [:conid conid]
+            [:currency currency]
+            [:exchange exchange]
+            [:last-trade-date-or-contract-month lastTradeDateOrContractMonth] ;:translation :expiry
+            [:local-symbol localSymbol]
+            [:trading-class tradingClass]
+            [:multiplier multiplier :translation :double-string]
+            [:primary-exch primaryExch]
+            [:right right :translation :right]
+            [:sec-id secId]
+            [:sec-id-type secIdType :translation :security-id-type]                        ;
+            [:sec-type secType :translation :security-type]
+            [:strike strike]
+            [:symbol symbol]
+            [:delta-neutral-contract deltaNeutralContract]
+            [:include-expired includeExpired]
+            [:combo-legs comboLegs]
+            [:combo-legs-descrip comboLegsDescrip])
+
 
 (defmapping com.ib.client.ContractDetails
-  [:summary m_summary :nested com.ib.client.Contract]
-  [:market-name m_marketName]
-  [:min-tick m_minTick]
-  [:price-magnifier m_priceMagnifier]
-  [:order-types m_orderTypes :translation :order-types]
-  [:valid-exchanges m_validExchanges :translation :exchanges]
-  [:underlying-contract-id m_underConId]
-  [:long-name m_longName]
-  [:contract-month m_contractMonth]
-  [:industry m_industry]
-  [:category m_category]
-  [:subcategory m_subcategory]
-  [:time-zone-id m_timeZoneId]
-  [:trading-hours m_tradingHours]
-  [:liquid-hours m_liquidHours]
-  [:ev-rule m_evRule]
-  [:ev-multiplier m_evMultiplier]
-  [:cusip m_cusip]
-  [:ratings m_ratings]
-  [:description-details m_descAppend]
-  [:bond-type m_bondType]
-  [:coupon-type m_couponType]
-  [:callable? m_callable]
-  [:putable? m_putable]
-  [:coupon m_coupon]
-  [:convertible? m_convertible]
-  [:maturity m_maturity :translation :date]
-  [:issue-date m_issueDate :translation :date]
-  [:next-option-date m_nextOptionDate :translation :date]
-  [:next-option-type m_nextOptionType]
-  [:next-option-partial m_nextOptionPartial]
-  [:notes m_notes])
+            [:summary m_summary :nested com.ib.client.Contract]
+            [:market-name m_marketName]
+            [:min-tick m_minTick]
+            [:price-magnifier m_priceMagnifier]
+            [:order-types m_orderTypes :translation :order-types]
+            [:valid-exchanges m_validExchanges :translation :exchanges]
+            [:underlying-contract-id m_underConId]
+            [:long-name m_longName]
+            [:contract-month m_contractMonth]
+            [:industry m_industry]
+            [:category m_category]
+            [:subcategory m_subcategory]
+            [:time-zone-id m_timeZoneId]
+            [:trading-hours m_tradingHours]
+            [:liquid-hours m_liquidHours]
+            [:ev-rule m_evRule]
+            [:ev-multiplier m_evMultiplier]
+            [:cusip m_cusip]
+            [:ratings m_ratings]
+            [:description-details m_descAppend]
+            [:bond-type m_bondType]
+            [:coupon-type m_couponType]
+            [:callable? m_callable]
+            [:putable? m_putable]
+            [:coupon m_coupon]
+            [:convertible? m_convertible]
+            [:maturity m_maturity :translation :date]
+            [:issue-date m_issueDate :translation :date]
+            [:next-option-date m_nextOptionDate :translation :date]
+            [:next-option-type m_nextOptionType]
+            [:next-option-partial m_nextOptionPartial]
+            [:notes m_notes])
 
 (defmapping com.ib.client.ExecutionFilter
-  [:client-id m_clientId]
-  [:account-code m_acctCode]
-  [:after-time m_time :translation :timestamp]
-  [:order-symbol m_symbol]
-  [:security-type m_secType :translation :security-type]
-  [:exchange m_exchange]
-  [:side m_side :translation :order-action])
+            [:client-id clientId]
+            [:account-code acctCode]
+            [:after-time time ]                                       ;:translation :timestamp
+            [:order-symbol symbol]
+            [:security-type secType :translation :security-type]
+            [:exchange exchange]
+            [:side side :translation :order-action])
 
 (defmapping com.ib.client.Execution
-  [:account-code m_acctNumber]
-  [:average-price m_avgPrice]
-  [:client-id m_clientId]
-  [:cummulative-quantity m_cumQty]
-  [:exchange m_exchange]
-  [:execution-id m_execId]
-  [:liquidate-last m_liquidation]
-  [:order-id m_orderId]
-  [:permanent-id m_permId]
-  [:price m_price]
-  [:shares m_shares]
-  [:side m_side :translation :execution-side]
-  [:time m_time])
+            [:account-code acctNumber]
+            [:average-price avgPrice]
+            [:client-id clientId]
+            [:cummulative-quantity cumQty]
+            [:exchange exchange]
+            [:execution-id execId]
+            [:liquidate-last liquidation]
+            [:order-id orderId]
+            [:permanent-id permId]
+            [:price price]
+            [:shares shares]
+            [:side side :translation :execution-side]
+            [:time time]
+            [:order-ref orderRef]
+            [:ev-rule evRule]
+            [:ev-multiplier evMultiplier]
+            [:model-code modelCode]
+            [:last-liquidity lastLiquidity])
+
 
 (defmapping com.ib.client.Order
-  [:account-code m_account]
-  [:order-id m_orderId]
-  [:client-id m_clientId]
-  [:permanent-id m_permId]
-  [:transmit? m_transmit]
-  [:quantity m_totalQuantity]
-  [:action m_action :translation :order-action]
-  [:type m_orderType :translation :order-type]
-  [:block-order? m_blockOrder]
-  [:sweep-to-fill? m_sweepToFill]
-  [:time-in-force m_tif :translation :time-in-force]
-  [:good-after-time m_goodAfterTime]
-  [:good-till-date m_goodTillDate]
-  [:outside-regular-trading-hours? m_outsideRth]
-  [:hidden? m_hidden]
-  [:all-or-none? m_allOrNone]
-  [:limit-price m_lmtPrice]
-  [:discretionary-amount m_discretionaryAmt]
-  [:stop-price m_auxPrice])
+            [:account-code account]
+            [:order-id orderId]
+            [:client-id clientId]
+            [:permanent-id permId]
+            [:transmit? transmit]
+            [:quantity totalQuantity]
+            [:action action :translation :order-action]
+            [:type orderType :translation :order-type]
+            [:block-order? blockOrder]
+            [:sweep-to-fill? sweepToFill]
+            [:time-in-force tif :translation :time-in-force]
+            [:good-after-time goodAfterTime]
+            [:good-till-date goodTillDate]
+            [:outside-regular-trading-hours? outsideRth]
+            [:hidden? hidden]
+            [:all-or-none? allOrNone]
+            [:limit-price lmtPrice]
+            [:discretionary-amount discretionaryAmt]
+            [:stop-price auxPrice])
+
+(defmapping-readonly com.ib.client.Bar
+                     [:time time]
+                     [:open open]
+                     [:high high]
+                     [:low low]
+                     [:close close]
+                     [:volume volume]
+                     [:count count]
+                     [:wap wap])
 
 (defmapping-readonly com.ib.client.OrderState
-  [:status m_status :translation :order-status]
-  [:initial-margin m_initMargin]
-  [:maintenance-margin m_maintMargin]
-  [:equity-with-loan m_equityWithLoan]
-  [:commission m_commission]
-  [:minimum-commission m_minCommission]
-  [:maximum-commission m_maxCommission]
-  [:commission-currency m_commissionCurrency]
-  [:warning-text m_warningText])
+                     [:status status :translation :order-status]
+                     [:initial-margin-before initMarginBefore]
+                     [:maintenance-margin-before maintMarginBefore]
+                     [:equity-with-loan-before equityWithLoanBefore]
+                     [:initial-margin-change initMarginChange]
+                     [:maintenance-margin-change maintMarginChange]
+                     [:equity-with-loan-change equityWithLoanChange]
+                     [:initial-margin-after initMarginAfter]
+                     [:maintenance-margin-after maintMarginAfter]
+                     [:equity-with-loan-after equityWithLoanAfter]
+                     [:commission commission]
+                     [:minimum-commission minCommission]
+                     [:maximum-commission maxCommission]
+                     [:commission-currency commissionCurrency]
+                     [:warning-text warningText]
+                     [:completed-time completedTime]
+                     [:completed-status completedStatus])
+
+
 
 (defmapping-readonly com.ib.client.CommissionReport
-  [:commission m_commission]
-  [:currency m_currency]
-  [:execution-id m_execId]
-  [:realized-profit-loss m_realizedPNL]
-  [:yield m_yield]
-  [:yield-redemption-date m_yieldRedemptionDate :translate :yield-redemption-date])
+                     [:commission commission]
+                     [:currency currency]
+                     [:execution-id execId]
+                     [:realized-profit-loss realizedPNL]
+                     [:yield yield]
+                     [:yield-redemption-date yieldRedemptionDate]) ;:translate :yield-redemption-date

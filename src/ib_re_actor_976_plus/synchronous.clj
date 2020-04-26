@@ -7,8 +7,8 @@
   asynchronous API is a much more natural fit for building programs that react
   to events in market data."
   (:require
-   [clojure.tools.logging :as log]
-   [ib-re-actor-976-plus.gateway :as g]))
+    [clojure.tools.logging :as log]
+    [ib-re-actor-976-plus.gateway :as g]))
 
 
 (defn single-value-handlers

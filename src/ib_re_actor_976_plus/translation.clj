@@ -159,40 +159,39 @@ to check if if a given value is valid (known)."
     "days" :days))
 
 (translation-table what-to-show
-                   {:trades com.ib.client.Types$WhatToShow/TRADES
-                    :midpoint com.ib.client.Types$WhatToShow/MIDPOINT
-                    :bid com.ib.client.Types$WhatToShow/BID
-                    :ask com.ib.client.Types$WhatToShow/ASK
+                   ;in practice we have to stringify these - odd behaviour
+                   {:trades                     com.ib.client.Types$WhatToShow/TRADES
+                    :midpoint                   com.ib.client.Types$WhatToShow/MIDPOINT
+                    :bid                        com.ib.client.Types$WhatToShow/BID
+                    :ask                        com.ib.client.Types$WhatToShow/ASK
                     ;below doesn't work for real-time bars
-                    :bid-ask com.ib.client.Types$WhatToShow/BID_ASK
-                    :historical-volatility com.ib.client.Types$WhatToShow/HISTORICAL_VOLATILITY
-                    :option-implied-volatility com.ib.client.Types$WhatToShow/OPTION_IMPLIED_VOLATILITY
-                    :yield-ask com.ib.client.Types$WhatToShow/YIELD_ASK
-                    :yield-bid com.ib.client.Types$WhatToShow/YIELD_BID
-                    :yield-bid-ask com.ib.client.Types$WhatToShow/YIELD_BID_ASK
-                    :yield-last com.ib.client.Types$WhatToShow/YIELD_LAST
-                    :adjusted-last com.ib.client.Types$WhatToShow/ADJUSTED_LAST
-                    ;:option-volume "OPTION_VOLUME"
-                    ;:option-open-interest "OPTION_OPEN_INTEREST"
+                    :bid-ask                    com.ib.client.Types$WhatToShow/BID_ASK
+                    :historical-volatility      com.ib.client.Types$WhatToShow/HISTORICAL_VOLATILITY
+                    :option-implied-volatility  com.ib.client.Types$WhatToShow/OPTION_IMPLIED_VOLATILITY
+                    :yield-ask                  com.ib.client.Types$WhatToShow/YIELD_ASK
+                    :yield-bid                  com.ib.client.Types$WhatToShow/YIELD_BID
+                    :yield-bid-ask              com.ib.client.Types$WhatToShow/YIELD_BID_ASK
+                    :yield-last                 com.ib.client.Types$WhatToShow/YIELD_LAST
+                    :adjusted-last              com.ib.client.Types$WhatToShow/ADJUSTED_LAST
                     })
 
 
 (translation-table time-in-force
-                   {:day com.ib.client.Types$TimeInForce/DAY
-                    :good-to-close com.ib.client.Types$TimeInForce/GTC
-                    :immediate-or-cancel com.ib.client.Types$TimeInForce/IOC
-                    :good-till-date com.ib.client.Types$TimeInForce/GTD
-                    :on-open com.ib.client.Types$TimeInForce/OPG
-                    :fill-or-kill com.ib.client.Types$TimeInForce/FOK
-                    :day-till-cancelled com.ib.client.Types$TimeInForce/FOK
-                    :gtt com.ib.client.Types$TimeInForce/GTT
-                    :auc com.ib.client.Types$TimeInForce/AUC
-                    :gtx com.ib.client.Types$TimeInForce/GTX
+                   {:day                  com.ib.client.Types$TimeInForce/DAY
+                    :good-to-close        com.ib.client.Types$TimeInForce/GTC
+                    :immediate-or-cancel  com.ib.client.Types$TimeInForce/IOC
+                    :good-till-date       com.ib.client.Types$TimeInForce/GTD
+                    :on-open              com.ib.client.Types$TimeInForce/OPG
+                    :fill-or-kill         com.ib.client.Types$TimeInForce/FOK
+                    :day-till-cancelled   com.ib.client.Types$TimeInForce/FOK
+                    :gtt                  com.ib.client.Types$TimeInForce/GTT
+                    :auc                  com.ib.client.Types$TimeInForce/AUC
+                    :gtx                  com.ib.client.Types$TimeInForce/GTX
                     })
 
 (translation-table order-action
-                   {:buy com.ib.client.Types$Action/BUY
-                    :sell com.ib.client.Types$Action/SELL
+                   {:buy        com.ib.client.Types$Action/BUY
+                    :sell       com.ib.client.Types$Action/SELL
                     :sell-short com.ib.client.Types$Action/SSHORT})
 
 
@@ -200,46 +199,46 @@ to check if if a given value is valid (known)."
 
 ; POSSIBLE THAT THIS IF MESS-UP AND STRINGS WAS ENOUGH
 (translation-table order-type
-                   {:none com.ib.client.OrderType/None
-                    :box-top com.ib.client.OrderType/BOX_TOP
-                    :limit com.ib.client.OrderType/LMT
-                    :limit-on-close com.ib.client.OrderType/LOC
-                    :limit-if-touched com.ib.client.OrderType/LIT
-                    :market com.ib.client.OrderType/MKT
-                    :market-on-close com.ib.client.OrderType/MOC
-                    :market-to-limit com.ib.client.OrderType/MTL
-                    :market-with-protection com.ib.client.OrderType/MKT_PRT
-                    :market-if-touched com.ib.client.OrderType/MIT
-                    :pegged-to-market com.ib.client.OrderType/PEG_MKT
-                    :pegged-to-midpoint com.ib.client.OrderType/PEG_MID
-                    :relative com.ib.client.OrderType/REL
-                    :stop com.ib.client.OrderType/STP
-                    :stop-limit com.ib.client.OrderType/STP_LMT
-                    :trail com.ib.client.OrderType/TRAIL
-                    :trail-limit com.ib.client.OrderType/TRAIL_LIMIT
-                    :trailing-limit-if-touched com.ib.client.OrderType/TRAIL_LIT
-                    :trailing-market-if-touched com.ib.client.OrderType/TRAIL_MIT
-                    :vwap com.ib.client.OrderType/VWAP
-                    :volatility com.ib.client.OrderType/VOL
-                    :fix-pegged com.ib.client.OrderType/FIX_PEGGED
-                    :limit-plus-market com.ib.client.OrderType/LMT_PLUS_MKT
-                    :passive-relative com.ib.client.OrderType/PASSV_REL
-                    :pegged-to-benchmark com.ib.client.OrderType/PEG_BENCH
-                    :pegged-to-primary com.ib.client.OrderType/PEG_PRIM
-                    :pegged-to-stock com.ib.client.OrderType/PEG_STK
-                    :relative-plus-limit com.ib.client.OrderType/REL_PLUS_LMT
-                    :relative-plus-market com.ib.client.OrderType/REL_PLUS_MKT
-                    :snap-to-midpoint com.ib.client.OrderType/SNAP_MID
-                    :snap-to-market com.ib.client.OrderType/SNAP_MKT
-                    :snap-to-primary com.ib.client.OrderType/SNAP_PRIM
-                    :stop-with-protection com.ib.client.OrderType/STP_PRT
-                    :trail-limit-plus-market com.ib.client.OrderType/TRAIL_LMT_PLUS_MKT
-                    :trail-relative-plus-market com.ib.client.OrderType/TRAIL_REL_PLUS_MKT
-                    :quote com.ib.client.OrderType/QUOTE
-                    :pegged-to-primary-vol com.ib.client.OrderType/PEG_PRIM_VOL
-                    :pegged-to-mid-vol com.ib.client.OrderType/PEG_MID_VOL
-                    :pegged-to-market-vol com.ib.client.OrderType/PEG_MKT_VOL
-                    :pegged-to-srf-vol com.ib.client.OrderType/PEG_SRF_VOL
+                   {:none                             com.ib.client.OrderType/None
+                    :box-top                          com.ib.client.OrderType/BOX_TOP
+                    :limit                            com.ib.client.OrderType/LMT
+                    :limit-on-close                   com.ib.client.OrderType/LOC
+                    :limit-if-touched                 com.ib.client.OrderType/LIT
+                    :market                           com.ib.client.OrderType/MKT
+                    :market-on-close                  com.ib.client.OrderType/MOC
+                    :market-to-limit                  com.ib.client.OrderType/MTL
+                    :market-with-protection           com.ib.client.OrderType/MKT_PRT
+                    :market-if-touched                com.ib.client.OrderType/MIT
+                    :pegged-to-market                 com.ib.client.OrderType/PEG_MKT
+                    :pegged-to-midpoint               com.ib.client.OrderType/PEG_MID
+                    :relative                         com.ib.client.OrderType/REL
+                    :stop                             com.ib.client.OrderType/STP
+                    :stop-limit                       com.ib.client.OrderType/STP_LMT
+                    :trail                            com.ib.client.OrderType/TRAIL
+                    :trail-limit                      com.ib.client.OrderType/TRAIL_LIMIT
+                    :trailing-limit-if-touched        com.ib.client.OrderType/TRAIL_LIT
+                    :trailing-market-if-touched       com.ib.client.OrderType/TRAIL_MIT
+                    :vwap                             com.ib.client.OrderType/VWAP
+                    :volatility                       com.ib.client.OrderType/VOL
+                    :fix-pegged                       com.ib.client.OrderType/FIX_PEGGED
+                    :limit-plus-market                com.ib.client.OrderType/LMT_PLUS_MKT
+                    :passive-relative                 com.ib.client.OrderType/PASSV_REL
+                    :pegged-to-benchmark              com.ib.client.OrderType/PEG_BENCH
+                    :pegged-to-primary                com.ib.client.OrderType/PEG_PRIM
+                    :pegged-to-stock                  com.ib.client.OrderType/PEG_STK
+                    :relative-plus-limit              com.ib.client.OrderType/REL_PLUS_LMT
+                    :relative-plus-market             com.ib.client.OrderType/REL_PLUS_MKT
+                    :snap-to-midpoint                 com.ib.client.OrderType/SNAP_MID
+                    :snap-to-market                   com.ib.client.OrderType/SNAP_MKT
+                    :snap-to-primary                  com.ib.client.OrderType/SNAP_PRIM
+                    :stop-with-protection             com.ib.client.OrderType/STP_PRT
+                    :trail-limit-plus-market          com.ib.client.OrderType/TRAIL_LMT_PLUS_MKT
+                    :trail-relative-plus-market       com.ib.client.OrderType/TRAIL_REL_PLUS_MKT
+                    :quote                            com.ib.client.OrderType/QUOTE
+                    :pegged-to-primary-vol            com.ib.client.OrderType/PEG_PRIM_VOL
+                    :pegged-to-mid-vol                com.ib.client.OrderType/PEG_MID_VOL
+                    :pegged-to-market-vol             com.ib.client.OrderType/PEG_MKT_VOL
+                    :pegged-to-srf-vol                com.ib.client.OrderType/PEG_SRF_VOL
 
                     ;:ACTIVETIM "ACTIVETIM"
                     ;:ADJUST "ADJUST"
@@ -312,25 +311,25 @@ to check if if a given value is valid (known)."
 ; ORDER STATUS IS STILL SENT AS A STRING IN EWRAPPER - NO NEED FOR THIS FOR NOW
 (translation-table order-status
                    {
-                    :pending-submit com.ib.client.OrderStatus/PendingSubmit
-                    :pending-cancel com.ib.client.OrderStatus/PendingCancel
-                    :pre-submitted com.ib.client.OrderStatus/PreSubmitted
-                    :submitted com.ib.client.OrderStatus/Submitted
-                    :cancelled com.ib.client.OrderStatus/Cancelled
-                    :filled com.ib.client.OrderStatus/Filled
-                    :inactive com.ib.client.OrderStatus/Inactive
-                    :api-pending com.ib.client.OrderStatus/ApiPending
-                    :api-cancelled com.ib.client.OrderStatus/ApiCancelled
-                    :unknown com.ib.client.OrderStatus/Unknown
+                    :pending-submit     com.ib.client.OrderStatus/PendingSubmit
+                    :pending-cancel     com.ib.client.OrderStatus/PendingCancel
+                    :pre-submitted      com.ib.client.OrderStatus/PreSubmitted
+                    :submitted          com.ib.client.OrderStatus/Submitted
+                    :cancelled          com.ib.client.OrderStatus/Cancelled
+                    :filled             com.ib.client.OrderStatus/Filled
+                    :inactive           com.ib.client.OrderStatus/Inactive
+                    :api-pending        com.ib.client.OrderStatus/ApiPending
+                    :api-cancelled      com.ib.client.OrderStatus/ApiCancelled
+                    :unknown            com.ib.client.OrderStatus/Unknown
                     })
 
 
 (translation-table security-id-type
-                   {:none com.ib.client.Types$SecIdType/None
-                    :isin com.ib.client.Types$SecIdType/ISIN
-                    :cusip com.ib.client.Types$SecIdType/CUSIP
-                    :sedol com.ib.client.Types$SecIdType/SEDOL
-                    :ric com.ib.client.Types$SecIdType/RIC})
+                   {:none   com.ib.client.Types$SecIdType/None
+                    :isin   com.ib.client.Types$SecIdType/ISIN
+                    :cusip  com.ib.client.Types$SecIdType/CUSIP
+                    :sedol  com.ib.client.Types$SecIdType/SEDOL
+                    :ric    com.ib.client.Types$SecIdType/RIC})
 
 (translation-table tick-field-code
                    {:bid-size 0
@@ -754,16 +753,16 @@ to check if if a given value is valid (known)."
 ;                    "?" :unknown})
 
 
-;
-;(defmethod translate [:to-ib :duration] [_ _ [val unit]]
-;  (str val " " (translate :to-ib :duration-unit unit)))
-;
-;(defmethod translate [:from-ib :duration] [_ _ val]
-;  (when val
-;    (let [[amount unit] (.split val " ")]
-;      (vector (Integer/parseInt amount)
-;              (translate :from-ib :duration-unit unit)))))
-;
+
+(defmethod translate [:to-ib :duration] [_ _ [val unit]]
+  (str val " " (translate :to-ib :duration-unit unit)))
+
+(defmethod translate [:from-ib :duration] [_ _ val]
+  (when val
+    (let [[amount unit] (.split val " ")]
+      (vector (Integer/parseInt amount)
+              (translate :from-ib :duration-unit unit)))))
+
 ;(defmethod translate [:from-ib :date-time] [_ _ val]
 ;  (condp instance? val
 ;    java.util.Date (tc/from-date val)

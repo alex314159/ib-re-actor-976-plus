@@ -1,27 +1,27 @@
 (ns ib-re-actor-976-plus.gateway
   "The main user interface. Functions for connecting to Interactive Brokers TWS
   Gateway and sending requests to it.
-                                                                                                                      
-  The IB API requires consumers to instantate an object of type
+
+  The IB API requires consumers to instantiate an object of type
   com.ib.client.EClientSocket which is a socket client to the gateway, or TWS.
-  When instantating this object you pass in another object which must implement
+  When instantiating this object you pass in another object which must implement
   the com.ib.client.EWrapper interface. The EWrapper is a collection of
   callbacks. You then invoke methods (like requesting price data) on the the
   EClientSocket object and the results (price update events) is returned by the
   EWrapper callbacks. So the typical pattern for dealing with the IB API is to
   implement an EWrapper type object for each application, which requires a lot
   of knowledge of the API.
-                                                                                                                      
+
   This library takes a slightly different approach to try ease that burden. The
   library implements a listener framework around each callback in the EWrapper
   object. So what happens is that each time the IB Gateway calls back to an
   method in the EWrapper, our object parses the response and packages it up into
   a tidy Clojure map which its hands to any registered listeners.
-                                                                                                                      
+
   Consumers of this library thus do not need to care about the mechanics of
   EWrapper, ESocketClient etc, they simply need to register a listener and will
   receive events.
-                                                                                                                      
+
   Basic Usage:
 
   1. Connect to a running Gateway of TWS, using the connect function
@@ -29,9 +29,10 @@
   3. Request the generation of the appropriate event using the request-* functions
   4. Cancel the request with the cancel-* when done."
   (:require
-   [clojure.tools.logging :as log]
-   [ib-re-actor-976-plus.client-socket :as cs]
-   [ib-re-actor-976-plus.wrapper :as wrapper :refer [error-end? matching-message? request-end?]]))
+    [clojure.tools.logging :as log]
+    [ib-re-actor-976-plus.client-socket :as cs]
+    [ib-re-actor-976-plus.wrapper :as wrapper :refer [error-end? matching-message? request-end?]])
+  (:import (com.ib.client EJavaSignal)))
 
 ;; Default port for live trading
 (defonce default-port 7496)
@@ -98,14 +99,14 @@
 
 
 (defmulti unsubscribe!
-  "Removes the function passed in or the function associated with the id passed
-  in from the list of functions that will get called with every message from the
-  server."
-  (fn [_ x]
-    (cond
-      (number? x) :number
-      (fn? x) :fn
-      :else :unknown)))
+          "Removes the function passed in or the function associated with the id passed
+          in from the list of functions that will get called with every message from the
+          server."
+          (fn [_ x]
+            (cond
+              (number? x) :number
+              (fn? x) :fn
+              :else :unknown)))
 
 
 (defmethod unsubscribe! :default
@@ -153,23 +154,26 @@
   port is the port configured for that server.
   "
   ([client-id]
-   (connect client-id "localhost" default-paper-port))
-  ([client-id host port]
-   (let [subscribers (atom {})
-         next-id (atom 1)
-         id-updater (next-id-updater next-id)]
-     (swap! subscribers assoc id-updater id-updater )
+   (connect client-id "localhost" default-paper-port println))
+  ([client-id host port listener-function] ;ADD ONE VARIABLE
+   (let [subscribers (atom {listener-function listener-function})
+         ;next-id (atom 1)
+         ;id-updater (next-id-updater next-id)
+         ]
+     ;     (swap! subscribers assoc listener-function listener-function) ; MAIN CHANGE
      (try
        (let [wr (wrapper/create (message-dispatcher subscribers))
-             ecs (cs/connect wr host port client-id)]
+             signal (EJavaSignal.)
+             ecs (cs/connect wr signal host port client-id)]
          (when-not (= :error default-server-log-level)
            (cs/set-server-log-level ecs default-server-log-level))
-         {:ecs ecs
+         {:ecs         ecs
           :subscribers subscribers
-          :next-id next-id})
+          ;:next-id     next-id
+          })
        (catch Exception ex
-         (log/error "Error trying to connect to " host ":" port ": " ex))))))
-
+         (log/error "Error trying to connect to " host ":" port ": " ex)))))
+  )
 
 (defn disconnect [connection]
   (cs/disconnect (:ecs connection)))
@@ -181,13 +185,13 @@
 
 
 (defonce default-handlers
-  {:data #(log/info "Received:" %)
-   :end #(log/info "End of the request.")
-   :error #(log/error "Error: " %)})
+         {:data #(log/info "Received:" %)
+          :end #(log/info "End of the request.")
+          :error #(log/error "Error: " %)})
 
 
 (defonce nil-handlers
-  {})
+         {})
 
 
 (defn single-message-handler
@@ -237,7 +241,7 @@
      (subscribe! connection ticker-id
                  (multiple-messages-handler connection :tick ticker-id handlers))
      (cs/request-market-data (:ecs connection)
-                             ticker-id contract tick-list snapshot?)
+                             ticker-id contract tick-list snapshot? false)
      ticker-id)))
 
 
@@ -372,7 +376,7 @@
                  (multiple-messages-handler connection :price-bar request-id handlers))
      (cs/request-historical-data (:ecs connection) request-id contract
                                  end duration duration-unit bar-size bar-size-unit
-                                 what-to-show use-regular-trading-hours?)
+                                 what-to-show use-regular-trading-hours? 1 false)
      request-id))
   ([connection contract end
     duration duration-unit bar-size bar-size-unit

@@ -11,7 +11,6 @@
   https://www.interactivebrokers.com/en/software/api/api.htm
   "
   (:require
-    [clojure.tools.logging :as log]
     [ib-re-actor-976-plus.mapping :refer [map->]]
     [ib-re-actor-976-plus.translation :refer [translate]])
   (:import
@@ -26,6 +25,7 @@
     (.waitForSignal signal)
     (.processMsgs reader)))
 
+
 (defn connect
   "This function must be called before any other. There is no feedback
    for a successful connection, but a subsequent attempt to connect
@@ -38,19 +38,15 @@
    port is the port IB Gateway / TWS is running on.
 
    client-id identifies this client. Only one connection to a gateway can
-   be made per client-id at a time.
-
-   Important note: we are using a Thread for -process-messages instead of a future as somehow
-   the latter can fail silently if the EWrapper isn't correctly implemented.
-   Stacktrace java.lang.AbstractMethodError: Receiver class clibtrader.ib_re_actor.wrapper$create$reify__7992 does not define or inherit an implementation of the resolved method 'abstract void tickReqParams(int, double, java.lang.String, int)' of interface com.ib.client.EWrapper.\n
-   It seems somewhat linked to https://github.com/clojure-emacs/cider/issues/1404
-   "
+   be made per client-id at a time."
   ([wr signal host port client-id]
    (let [ecs (EClientSocket. wr signal)]
      (.eConnect ecs host port client-id)
      (let [reader (EReader. ecs signal)]
        (.start reader)
-       (.start (Thread. ^Runnable (fn [] (-process-messages ecs reader signal))))
+       (.start (Thread. ^Runnable (fn [] (-process-messages ecs reader signal)))) ;we're not using a future as somehow they fail silently with
+       ;java.lang.AbstractMethodError: Receiver class clibtrader.ib_re_actor.wrapper$create$reify__7992 does not define or inherit an implementation of the resolved method 'abstract void tickReqParams(int, double, java.lang.String, int)' of interface com.ib.client.EWrapper.
+       ;seems somewhat linked to https://github.com/clojure-emacs/cider/issues/1404
        ecs))))
 
 
@@ -91,7 +87,8 @@
 (defn connection-time
   "Returns the time the API application made a connection to TWS."
   [ecs]
-  (translate :from-ib :connection-time (.TwsConnectionTime ecs)))
+  ;(translate :from-ib :connection-time (.getTwsConnectionTime ecs))
+  (.getTwsConnectionTime ecs))
 
 
 ;;;
@@ -128,12 +125,17 @@
      :realtime-historical-volatility Realtime Historical Volatility
 
      if no tick list is specified, a single snapshot of market data will come back
-     and have the market data subscription will be immediately canceled."
-  ([ecs ticker-id contract tick-list snapshot?]
+     and have the market data subscription will be immediately canceled.
+
+     mkt-data-options is usually nil
+     "
+  ([ecs ticker-id contract tick-list snapshot? regulatory-snapshot?]
    (.reqMktData ecs ticker-id
                 (map-> com.ib.client.Contract contract)
                 (translate :to-ib :tick-list tick-list)
-                snapshot? nil)))
+                snapshot?
+                regulatory-snapshot?
+                nil)))
 
 
 (defn cancel-market-data
@@ -145,11 +147,13 @@
 
 (defn calculate-implied-volatility
   "Call this function to calculate volatility for a supplied option price and
-  underlying price."
+  underlying price.
+
+  "
   [ecs ticker-id option-contract option-price underlying-price]
   (.calculateImpliedVolatility ecs ticker-id
                                (map-> com.ib.client.Contract option-contract)
-                               option-price underlying-price))
+                               option-price underlying-price nil))
 
 
 (defn cancel-calculate-implied-volatility
@@ -165,7 +169,7 @@
   [ecs ticker-id option-contract volatility underlying-price]
   (.calculateOptionPrice ecs ticker-id
                          (map-> com.ib.client.Contract option-contract)
-                         volatility underlying-price))
+                         volatility underlying-price nil))
 
 
 (defn cancel-calculate-option-price
@@ -173,6 +177,11 @@
   greek values for a supplied volatility and underlying price."
   [ecs ticker-id]
   (.cancelCalculateOptionPrice ecs ticker-id))
+
+
+(defn request-sec-def-option-parameters
+  [ecs reqId underlyingSymbol futFopExchange underlyingSecType underlyingConId]
+  (.reqSecDefOptParams ecs reqId underlyingSymbol futFopExchange underlyingSecType underlyingConId))
 
 
 (defn request-market-data-type
@@ -197,6 +206,7 @@
    (.placeOrder ecs order-id
                 (map-> com.ib.client.Contract contract)
                 (map-> com.ib.client.Order order))))
+
 
 (defn cancel-order
   "Call this method to cancel an order."
@@ -240,6 +250,11 @@
   (.reqAutoOpenOrders ecs auto-bind?))
 
 
+(defn request-completed-orders
+  [ecs api-only?]
+  (.reqCompletedOrders ecs api-only?))
+
+
 (defn request-ids
   "Call this function to request the next valid ID that can be used when placing
   an order. After calling this method, the nextValidId() event will be
@@ -271,6 +286,7 @@
                     (map-> com.ib.client.Contract contract)
                     (translate :to-ib :exercise-action action)
                     quantity
+                    account
                     (if override? 1 0)))
 
 
@@ -282,6 +298,18 @@
   initiated in the API, it also gets canceled."
   [ecs]
   (.reqGlobalCancel ecs))
+
+
+;;;
+;;; Histogram
+;;;
+(defn request-histogram-data
+  [ecs ticker-id contract useRTH period]
+  (.reqHistogramData ecs ticker-id (map-> com.ib.client.Contract contract) useRTH period))
+
+(defn cancel-histogram-data
+  [ecs ticker-id]
+  (.cancelHistogramData ecs ticker-id))
 
 
 ;;;
@@ -315,7 +343,7 @@
 (defn cancel-account-summary
   "Cancels the request for Account Window Summary tab data."
   [ecs request-id]
-  (.cancelAccountSummary ecs 63 1 request-id))
+  (.cancelAccountSummary ecs request-id))                   ;  (.cancelAccountSummary ecs 63 1 request-id))
 
 
 (defn request-positions
@@ -330,6 +358,46 @@
   (.cancelPositions ecs))
 
 
+(defn request-account-updates-multi
+  [ecs reqId account modelCode ledgerAndNLV?]
+  (.reqAccountUpdatesMulti ecs reqId account modelCode ledgerAndNLV?))
+
+
+(defn cancel-account-updates-multi
+  [ecs reqId]
+  (.cancelAccountUpdatesMulti ecs reqId))
+
+
+(defn request-positions-multi
+  [ecs reqId account modelCode]
+  (.reqPositionsMulti ecs reqId account modelCode))
+
+
+(defn cancel-positions-multi
+  [ecs reqId]
+  (.cancelPositionsMulti ecs reqId))
+
+
+(defn request-pnl
+  [ecs reqId account modelCode]
+  (.reqPnL ecs reqId account modelCode))
+
+
+(defn cancel-pnl
+  [ecs reqId]
+  (.cancelPnL ecs reqId))
+
+
+(defn request-pnl-single
+  [ecs reqId account modelCode conid]
+  (.reqPnLSingle ecs reqId account modelCode conid))
+
+
+(defn cancel-pnl-single
+  [ecs reqId]
+  (.cancelPnLSingle ecs reqId))
+
+
 ;;;
 ;;; Executions
 ;;;
@@ -339,9 +407,8 @@
   method. To view executions beyond the past 24 hours, open the Trade Log in TWS
   and, while the Trade Log is displayed, request the executions again from the
   API."
-  [ecs execution-filter]
-  (.reqExecutions ecs (map-> com.ib.client.ExecutionFilter execution-filter)))
-
+  [ecs req-id execution-filter]
+  (.reqExecutions ecs req-id (map-> com.ib.client.ExecutionFilter execution-filter)))
 
 ;;;
 ;;; Contract Details
@@ -360,17 +427,43 @@
 (defn request-market-depth
   "Call this method to request market depth for a specific contract.
   The market depth will be returned by the updateMktDepth() and
-  updateMktDepthL2() methods."
-  [ecs ticker-id contract rows]
-  (.reqMktDepth ecs ticker-id (map-> com.ib.client.Contract contract) rows nil))
+  updateMktDepthL2() methods.
+
+  mkt-depth-options usually nil
+  "
+  [ecs ticker-id contract rows is-smart-depth? mkt-depth-options]
+  (.reqMktDepth ecs ticker-id (map-> com.ib.client.Contract contract) rows is-smart-depth? mkt-depth-options))
 
 
 (defn cancel-market-depth
   "After calling this method, market depth data for the specified Id will stop
   flowing."
-  [ecs ticker-id]
-  (.cancelMktDepth ecs ticker-id))
+  [ecs ticker-id is-smart-depth?]
+  (.cancelMktDepth ecs ticker-id is-smart-depth?))
 
+
+(defn request-market-depth-exchanges
+  [ecs]
+  (.reqMktDepthExchanges ecs))
+
+
+(defn request-market-rule
+  "Requests details about a given market rule
+  The market rule for an instrument on a particular exchange provides details about how the minimum price increment changes with price
+  A list of market rule ids can be obtained by invoking reqContractDetails on a particular contract. The returned market rule ID list will provide the market rule ID for the instrument in the correspond valid exchange list in contractDetails."
+  [ecs req-id]
+  (.reqMarketRule ecs req-id))
+
+
+(defn request-matching-symbols
+  "Requests matching stock symbols."
+  [ecs req-id pattern]
+  (.reqMatchingSymbols ecs req-id pattern))
+
+
+(defn request-smart-components
+  [ecs req-id bbo-exchange]
+  (.reqSmartComponents ecs req-id bbo-exchange))
 
 ;;;
 ;;; News Bulletins
@@ -387,6 +480,27 @@
   "Call this function to stop receiving news bulletins."
   [ecs]
   (.cancelNewsBulletins ecs))
+
+
+(defn request-news-providers
+  [ecs]
+  (.reqNewsProviders ecs))
+
+
+(defn request-news-article
+  [ecs request-id provider-code article-id]
+  (.reqNewsArticle ecs request-id provider-code article-id nil))
+
+
+(defn request-historical-news
+  "conId contract id of ticker
+  providerCodes - a '+'-separated list of provider codes
+  startDateTime - marks the (exclusive) start of the date range. The format is yyyy-MM-dd HH:mm:ss.0
+  endDateTime\t- marks the (inclusive) end of the date range. The format is yyyy-MM-dd HH:mm:ss.0
+  totalResults\t- the maximum number of headlines to fetch (1 - 300)"
+  [ecs request-id conid provider-codes start-date-time end-date-time total-results]
+  (.reqHistoricalNews ecs request-id conid provider-codes start-date-time end-date-time total-results nil)
+  )
 
 
 ;;;
@@ -420,6 +534,16 @@
   (.replaceFA ecs (translate :to-ib :financial-advisor-data-type data-type) xml))
 
 
+(defn request-soft-dollar-tiers
+  [ecs reqId]
+  (.reqSoftDollarTiers ecs reqId))
+
+
+(defn request-family-codes
+  [ecs]
+  (.reqFamilyCodes ecs))
+
+
 ;;;
 ;;; Market Scanners
 ;;;
@@ -433,10 +557,12 @@
 (defn request-scanner-subscription
   "Call this method to start receiving market scanner results through the
   scannerData() EWrapper method."
-  [ecs ticker-id subscription]
+  [ecs ticker-id subscription subscription-options subscription-filter-options]
   (.reqScannerSubscription ecs
+                           ticker-id
                            (map-> com.ib.client.ScannerSubscription subscription)
-                           nil))
+                           subscription-options
+                           subscription-filter-options))
 
 
 (defn cancel-scanner-subscription
@@ -452,33 +578,58 @@
   "Start receiving historical price bars stretching back <duration> <duration-unit>s back,
    up till <end> for the specified contract. The messages will have :request-id of <id>.
 
+   end: yyyyMMdd HH:mm:ss {TMZ} for example 20130701 23:59:59 GMT
+
    duration-unit should be one of :second(s), :day(s), :week(s), or :year(s).
 
    bar-size-unit should be one of :second(s), :minute(s), :hour(s), or :day(s).
 
    what-to-show should be one of :trades, :midpoint, :bid, :ask, :bid-ask,
-   :historical-volatility, :option-implied-volatility, :option-volume,
-   or :option-open-interest."
+   :historical-volatility, :option-implied-volatility, :yield-ask :yield-bid :yield-bid-ask :yield-last :adjusted-last
+
+   formatDate set to 1 to obtain the bars' time as yyyyMMdd HH:mm:ss, set to 2 to obtain it like system time format in seconds
+   Note that formatData parameter affects intra-day bars only; 1-day bars always return with date in YYYYMMDD format.
+
+   keepUpToDate set to True to received continuous updates on most recent bar data. If True, and endDateTime cannot be specified.
+   "
   [ecs request-id contract end duration duration-unit bar-size bar-size-unit
-   what-to-show use-regular-trading-hours?]
+   what-to-show use-regular-trading-hours? format-date keep-up-to-date?]
   (let [[acceptable-duration acceptable-duration-unit]
         (translate :to-ib :acceptable-duration [duration duration-unit])]
     (.reqHistoricalData ecs
                         request-id
                         (map-> com.ib.client.Contract contract)
-                        (translate :to-ib :date-time end)
+                        end                                 ;(translate :to-ib :date-time end)
                         (translate :to-ib :duration [acceptable-duration
                                                      acceptable-duration-unit])
                         (translate :to-ib :bar-size [bar-size bar-size-unit])
-                        (translate :to-ib :what-to-show what-to-show)
+                        (.name (translate :to-ib :what-to-show what-to-show))
                         (if use-regular-trading-hours? 1 0)
-                        2 nil)))
+                        format-date
+                        keep-up-to-date?
+                        nil)))
 
 
 (defn cancel-historical-data
   "Call this method to stop receiving historical data results."
   [ecs request-id]
   (.cancelHistoricalData ecs request-id))
+
+
+(defn request-head-time-stamp
+  "Returns the timestamp of earliest available historical data for a contract and data type"
+  [ecs ticker-id contract what-to-show use-regular-trading-hours? format-date]
+  (.reqHeadTimestamp  ecs
+                      ticker-id
+                      (map-> com.ib.client.Contract contract)
+                      (.name (translate :to-ib :what-to-show what-to-show))
+                      (if use-regular-trading-hours? 1 0)
+                      format-date))
+
+
+(defn cancel-head-time-stamp
+  [ecs ticker-id]
+  (.cancelHeadTimestamp ecs ticker-id))
 
 
 ;;;
@@ -489,15 +640,42 @@
   [ecs request-id contract what-to-show use-regular-trading-hours?]
   (.reqRealTimeBars ecs request-id
                     (map-> com.ib.client.Contract contract)
-                    5
-                    (translate :to-ib :what-to-show what-to-show)
-                    use-regular-trading-hours?))
+                    5                                ; currently being ignored
+                    (.name (translate :to-ib :what-to-show what-to-show))
+                    use-regular-trading-hours?
+                    nil))
 
 
 (defn cancel-real-time-bars
   "Call this function to stop receiving real time bars for the passed in request-id"
   [ecs request-id]
   (.cancelRealTimeBars ecs request-id))
+
+
+;;;
+;;; Tick by tick
+;;;
+(defn request-tick-by-tick-data
+  [ecs reqId contract tickType numberOfTicks ignore-size?]
+  (.reqTickByTickData ecs reqId (map-> com.ib.client.Contract contract) tickType numberOfTicks ignore-size?))
+
+
+(defn cancel-tick-by-tick-data
+  [ecs reqId]
+  (.cancelTickByTickData ecs reqId))
+
+
+(defn request-historical-ticks
+  [ecs reqId contract startDateTime endDateTime numberOfTicks what-to-show useRth ignoreSize]
+  (.reqHistoricalTicks ecs reqId
+                       (map-> com.ib.client.Contract contract)
+                       startDateTime
+                       endDateTime
+                       numberOfTicks
+                       (.name (translate :to-ib :what-to-show what-to-show))
+                       useRth
+                       ignoreSize
+                       nil))
 
 
 ;;;
@@ -510,7 +688,8 @@
   [ecs request-id contract report-type]
   (.reqFundamentalData ecs request-id
                        (map-> com.ib.client.Contract contract)
-                       (translate :to-ib :report-type report-type)))
+                       (translate :to-ib :report-type report-type)
+                       nil))
 
 
 (defn cancel-fundamental-data

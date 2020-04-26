@@ -1,5 +1,8 @@
 (defproject ib-re-actor-976-plus "0.1.0-SNAPSHOT"
   :description "Clojure friendly wrapper for InteractiveBrokers Java API"
+  :url "https://github.com/alex314159/ib-re-actor-976-plus"
+  :license {:name "Eclipse Public License"
+            :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  ;[clj-time "0.14.2"]
                  [org.clojure/tools.logging "1.0.0"]

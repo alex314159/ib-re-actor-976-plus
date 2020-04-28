@@ -629,6 +629,9 @@ to check if if a given value is valid (known)."
                     :unrealized-profit-loss "UnrealizedPnL"
                     :warrants-value "WarrantValue"
                     :what-if-portfolio-margin-enabled "WhatIfPMEnabled"
+                    :segment-title-commodities "SegmentTitle-C"
+                    :segment-title-stock "SegmentTitle-S"
+                    :net-liquidation-value-and-margin-in-review "NLVAndMarginInReview"
                     })
 
 (defn numeric-account-value? [key]

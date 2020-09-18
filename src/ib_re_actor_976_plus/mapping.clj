@@ -126,6 +126,7 @@ create instances, we will only map from objects to clojure maps."
 
 
 (defmapping com.ib.client.ContractDetails
+            [:contract contract]
             [:market-name marketName]
             [:min-tick minTick]
             [:price-magnifier priceMagnifier]

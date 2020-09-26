@@ -144,7 +144,7 @@
         (drop-last
           (-> (slurp (if-let [res (clojure.java.io/resource (str "EWrapper_" tws-version ".java"))]
                        res
-                       (clojure.java.io/resource "EWrapper.java"))) ;source code
+                       (clojure.java.io/resource "EWrapper.java")))
               (remove-header)
               (replace-all)
               (clojure.string/split #";")))))

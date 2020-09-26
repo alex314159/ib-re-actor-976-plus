@@ -126,10 +126,25 @@
 (defn replace-all [text] (reduce #(clojure.string/replace %1 (first %2) (second %2)) text text-replacements))
 (defn remove-header [s] (subs s (.indexOf s "void")))
 
+(def tws-version
+  ;todo check this works on Windows
+  (last
+    (drop-last
+      (clojure.string/split
+        (first
+          (filter
+            #(clojure.string/includes? % "twsapi")
+            (clojure.string/split
+              (System/getProperty "java.class.path") #":")))
+            #"/"))))
+
 (def ewrapper-java-methods
+  "We try and find the right version - if not revert to default which is 9.76.01"
   (mapv clojure.string/trim
         (drop-last
-          (-> (slurp (clojure.java.io/resource "EWrapper.java")) ;source code
+          (-> (slurp (if-let [res (clojure.java.io/resource (str "EWrapper_" tws-version ".java"))]
+                       res
+                       (clojure.java.io/resource "EWrapper.java"))) ;source code
               (remove-header)
               (replace-all)
               (clojure.string/split #";")))))

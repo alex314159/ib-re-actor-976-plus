@@ -25,7 +25,14 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cea61a95-3eb0-41bd-8777-c8555b9390c3" name="Default Changelist" comment="config files" />
+    <list default="true" id="cea61a95-3eb0-41bd-8777-c8555b9390c3" name="Default Changelist" comment="config files">
+      <change beforePath="$PROJECT_DIR$/.idea/ib-re-actor-976-plus.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ib-re-actor-976-plus.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Leiningen__twsapi_9_76_01.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/project.clj" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -53,7 +60,6 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="cursive.last.file.extension./home/alex/Dropbox/Linode/eclipse/clojure/ib-re-actor-976-plus/src" value="clj" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
@@ -108,7 +114,7 @@
       <method v="2" />
     </configuration>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="false" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -211,7 +217,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601284689745</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="config files">
+      <created>1602411909623</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1602411909623</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -246,14 +259,18 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="537" y="91" width="835" height="850" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1601120770821" />
+    <state x="597" y="283" width="715" height="465" key="MultipleFileMergeDialog" timestamp="1602411925616">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="597" y="283" width="715" height="465" key="MultipleFileMergeDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1602411925616" />
     <state x="443" y="96" width="1024" height="839" key="SettingsEditor" timestamp="1601284478619">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="443" y="96" width="1024" height="839" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1601284478619" />
-    <state x="555" y="255" width="800" height="522" key="Vcs.Push.Dialog.v2" timestamp="1601284694024">
+    <state x="555" y="255" width="800" height="522" key="Vcs.Push.Dialog.v2" timestamp="1602427163259">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="555" y="255" width="800" height="522" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1601284694024" />
+    <state x="555" y="255" width="800" height="522" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1602427163259" />
     <state x="666" y="268" width="587" height="502" key="find.popup" timestamp="1601128909279">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

@@ -12,4 +12,6 @@
                    :plugins [[lein-midje "3.2.1"]
                              [com.gfredericks/how-to-ns "0.1.6"]
                              [lein-localrepo "0.5.4"]]
-                   :how-to-ns {:require-docstring? false}}})
+                   :how-to-ns {:require-docstring? false}}}
+  :repositories [["releases" {:url "https://repo.clojars.org"
+                              :creds :gpg}]])

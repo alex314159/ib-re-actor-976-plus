@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:fix" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="cea61a95-3eb0-41bd-8777-c8555b9390c3" name="Default Changelist" comment="config files" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Clojure Namespace" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="ewrapperversioning" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1aTfSDBGMzEdeTQnpMH8OLOZwvV" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="cursive.last.file.extension./home/alex/Dropbox/Linode/eclipse/clojure/ib-re-actor-976-plus/src" value="clj" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/demo_apps" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/demo_apps" />
+    </key>
+  </component>
+  <component name="ReplState" timestamp="1602411709556">{:repl-history {:ide [], :local [{:command &quot;(def tws-version\n  (let [separator (if (= (subs (System/getProperty \&quot;os.name\&quot;) 0 3) \&quot;Win\&quot;) #\&quot;\\\\\&quot; #\&quot;/\&quot;)]\n    (last\n      (drop-last\n        (clojure.string/split\n          (first\n            (filter\n              #(clojure.string/includes? % \&quot;twsapi\&quot;)\n              (clojure.string/split\n                (System/getProperty \&quot;java.class.path\&quot;) #\&quot;:\&quot;)))\n          separator)))))&quot;, :offset 374, :ns &quot;user&quot;} {:command &quot;3&quot;, :offset 1, :ns &quot;user&quot;} {:command &quot;(def connection (gatweway/connect 1 \&quot;localhost\&quot; 7496 println))&quot;, :offset 62, :ns &quot;user&quot;} {:command &quot;(ns ib_re_actor_976_plus.wrapper)&quot;, :offset 32, :ns &quot;user&quot;} {:command &quot;tws-version&quot;, :offset 11, :ns &quot;ib_re_actor_976_plus.wrapper&quot;} {:command &quot;(require '[ib-re-actor-976-plus.gateway :as gateway])&quot;, :offset 53, :ns &quot;user&quot;} {:command &quot;(def connection (ib-reactor-976-plus.gatweway/connect 1 \&quot;localhost\&quot; 7496 println))&quot;, :offset 27, :ns &quot;user&quot;} {:command &quot;(def connection (gateway/connect 1 \&quot;localhost\&quot; 7496 println))&quot;, :offset 24, :ns &quot;user&quot;}], :remote []}}</component>
+  <component name="RunManager">
+    <configuration name="Unnamed" type="ClojureREPL" factoryName="Local" activateToolWindowBeforeRun="false" nameIsGenerated="true">
+      <module name="ib-re-actor-976-plus" />
+      <setting name="replType" value="NREPL" />
+      <setting name="execution" value="LEININGEN" />
+      <setting name="jvmArgs" value="" />
+      <setting name="parameters" value="" />
+      <setting name="workingDir" value="$PROJECT_DIR$" />
+      <setting name="profiles" value="" />
+      <setting name="aliases" value="" />
+      <setting name="fixLineNumbers" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="ClojureREPL" factoryName="Local" activateToolWindowBeforeRun="false">
+      <setting name="replType" value="NREPL" />
+      <setting name="execution" value="LEININGEN" />
+      <setting name="jvmArgs" value="" />
+      <setting name="parameters" value="" />
+      <setting name="workingDir" value="" />
+      <setting name="profiles" value="" />
+      <setting name="aliases" value="" />
+      <setting name="fixLineNumbers" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="ClojureREPL" factoryName="Remote" activateToolWindowBeforeRun="false">
+      <setting name="host" value="" />
+      <setting name="port" value="0" />
+      <setting name="replType" value="SOCKET" />
+      <setting name="configType" value="SPECIFY" />
+      <setting name="replPortFileType" value="STANDARD" />
+      <setting name="customPortFile" value="" />
+      <setting name="fixLineNumbers" value="false" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="cea61a95-3eb0-41bd-8777-c8555b9390c3" name="Default Changelist" comment="" />
+      <created>1586764501439</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1586764501439</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Update name of package">
+      <created>1586765193278</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1586765193278</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Fixing connection mechanism">
+      <created>1586765711319</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1586765711319</updated>
+    </task>
+    <task id="LOCAL-00003" summary="wrapper, translation, readme">
+      <created>1586814175937</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1586814175937</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Wrapper, original EWrapper.java interface, readme">
+      <created>1587245594269</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1587245594269</updated>
+    </task>
+    <task id="LOCAL-00005" summary="working version">
+      <created>1587898181238</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1587898181239</updated>
+    </task>
+    <task id="LOCAL-00006" summary="working version">
+      <created>1587898776367</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1587898776367</updated>
+    </task>
+    <task id="LOCAL-00007" summary="url and license">
+      <created>1587900069895</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1587900069895</updated>
+    </task>
+    <task id="LOCAL-00008" summary="added 3 account-update codes">
+      <created>1588105200726</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1588105200726</updated>
+    </task>
+    <task id="LOCAL-00009" summary="readme: right version">
+      <created>1588105281992</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1588105281992</updated>
+    </task>
+    <task id="LOCAL-00010" summary="versioning for ewrapper">
+      <created>1601120804389</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1601120804389</updated>
+    </task>
+    <task id="LOCAL-00011" summary="versioning for ewrapper, 9.80.03 file">
+      <created>1601121144590</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1601121144590</updated>
+    </task>
+    <task id="LOCAL-00012" summary="separator for windows (ewrapper versioning)">
+      <created>1601284584560</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1601284584560</updated>
+    </task>
+    <task id="LOCAL-00013" summary="config files">
+      <created>1601284689745</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1601284689745</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Update name of package" />
+    <MESSAGE value="Fixing connection mechanism" />
+    <MESSAGE value="wrapper, translation, readme" />
+    <MESSAGE value="Wrapper, original EWrapper.java interface, readme" />
+    <MESSAGE value="working version" />
+    <MESSAGE value="url and license" />
+    <MESSAGE value="added 3 account-update codes" />
+    <MESSAGE value="readme: right version" />
+    <MESSAGE value="versioning for ewrapper" />
+    <MESSAGE value="versioning for ewrapper, 9.80.03 file" />
+    <MESSAGE value="separator for windows (ewrapper versioning)" />
+    <MESSAGE value="config files" />
+    <option name="LAST_COMMIT_MESSAGE" value="config files" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="537" y="91" width="835" height="850" key="CommitChangelistDialog2" timestamp="1601120770821">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="537" y="91" width="835" height="850" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1601120770821" />
+    <state x="443" y="96" width="1024" height="839" key="SettingsEditor" timestamp="1601284478619">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="443" y="96" width="1024" height="839" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1601284478619" />
+    <state x="555" y="255" width="800" height="522" key="Vcs.Push.Dialog.v2" timestamp="1601284694024">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="555" y="255" width="800" height="522" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1601284694024" />
+    <state x="666" y="268" width="587" height="502" key="find.popup" timestamp="1601128909279">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="666" y="268" width="587" height="502" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1601128909279" />
+    <state x="679" y="235" width="551" height="561" key="git4idea.branch.GitSmartOperationDialog" timestamp="1602411639424">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="679" y="235" width="551" height="561" key="git4idea.branch.GitSmartOperationDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1602411639424" />
+    <state x="587" y="228" width="744" height="678" key="search.everywhere.popup" timestamp="1601111377586">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="587" y="228" width="744" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1601111377586" />
+  </component>
+</project>

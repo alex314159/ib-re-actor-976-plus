@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: twsapi:9.76.01">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/twsapi/twsapi/9.76.01/twsapi-9.76.01.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

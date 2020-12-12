@@ -25,10 +25,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cea61a95-3eb0-41bd-8777-c8555b9390c3" name="Default Changelist" comment="config files">
+    <list default="true" id="cea61a95-3eb0-41bd-8777-c8555b9390c3" name="Default Changelist" comment="readme">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Leiningen__twsapi_9_81_01.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/ib-re-actor-976-plus.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ib-re-actor-976-plus.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Leiningen__twsapi_9_76_01.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Leiningen__twsapi_9_80_03.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_11_10_2020,_11_20_[Default_Changelist]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_11_10_2020__11_20__Default_Changelist_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project.clj" beforeDir="false" afterPath="$PROJECT_DIR$/project.clj" afterDir="false" />
@@ -60,6 +63,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="cursive.last.file.extension./home/alex/Dropbox/Linode/eclipse/clojure/ib-re-actor-976-plus/src" value="clj" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
@@ -78,7 +82,7 @@
       <recent name="$PROJECT_DIR$/demo_apps" />
     </key>
   </component>
-  <component name="ReplState" timestamp="1602411709556">{:repl-history {:ide [], :local [{:command &quot;(def tws-version\n  (let [separator (if (= (subs (System/getProperty \&quot;os.name\&quot;) 0 3) \&quot;Win\&quot;) #\&quot;\\\\\&quot; #\&quot;/\&quot;)]\n    (last\n      (drop-last\n        (clojure.string/split\n          (first\n            (filter\n              #(clojure.string/includes? % \&quot;twsapi\&quot;)\n              (clojure.string/split\n                (System/getProperty \&quot;java.class.path\&quot;) #\&quot;:\&quot;)))\n          separator)))))&quot;, :offset 374, :ns &quot;user&quot;} {:command &quot;3&quot;, :offset 1, :ns &quot;user&quot;} {:command &quot;(def connection (gatweway/connect 1 \&quot;localhost\&quot; 7496 println))&quot;, :offset 62, :ns &quot;user&quot;} {:command &quot;(ns ib_re_actor_976_plus.wrapper)&quot;, :offset 32, :ns &quot;user&quot;} {:command &quot;tws-version&quot;, :offset 11, :ns &quot;ib_re_actor_976_plus.wrapper&quot;} {:command &quot;(require '[ib-re-actor-976-plus.gateway :as gateway])&quot;, :offset 53, :ns &quot;user&quot;} {:command &quot;(def connection (ib-reactor-976-plus.gatweway/connect 1 \&quot;localhost\&quot; 7496 println))&quot;, :offset 27, :ns &quot;user&quot;} {:command &quot;(def connection (gateway/connect 1 \&quot;localhost\&quot; 7496 println))&quot;, :offset 24, :ns &quot;user&quot;}], :remote []}}</component>
+  <component name="ReplState" timestamp="1607794635727">{:repl-history {:ide [], :local [{:command &quot;(def tws-version\n  (let [separator (if (= (subs (System/getProperty \&quot;os.name\&quot;) 0 3) \&quot;Win\&quot;) #\&quot;\\\\\&quot; #\&quot;/\&quot;)]\n    (last\n      (drop-last\n        (clojure.string/split\n          (first\n            (filter\n              #(clojure.string/includes? % \&quot;twsapi\&quot;)\n              (clojure.string/split\n                (System/getProperty \&quot;java.class.path\&quot;) #\&quot;:\&quot;)))\n          separator)))))&quot;, :offset 374, :ns &quot;user&quot;} {:command &quot;3&quot;, :offset 1, :ns &quot;user&quot;} {:command &quot;(def connection (gatweway/connect 1 \&quot;localhost\&quot; 7496 println))&quot;, :offset 62, :ns &quot;user&quot;} {:command &quot;(ns ib_re_actor_976_plus.wrapper)&quot;, :offset 32, :ns &quot;user&quot;} {:command &quot;tws-version&quot;, :offset 11, :ns &quot;ib_re_actor_976_plus.wrapper&quot;} {:command &quot;(require '[ib-re-actor-976-plus.gateway :as gateway])&quot;, :offset 53, :ns &quot;user&quot;} {:command &quot;(def connection (ib-reactor-976-plus.gatweway/connect 1 \&quot;localhost\&quot; 7496 println))&quot;, :offset 27, :ns &quot;user&quot;} {:command &quot;(def connection (gateway/connect 1 \&quot;localhost\&quot; 7496 println))&quot;, :offset 24, :ns &quot;user&quot;} {:command &quot;(require '[ib-re-actor-976-plus.wrapper :as wrapper])&quot;, :offset 39, :ns &quot;user&quot;} {:command &quot;wrapper.tws&quot;, :offset 11, :ns &quot;user&quot;} {:command &quot;wrapper/tws-version&quot;, :offset 19, :ns &quot;user&quot;}], :remote []}}</component>
   <component name="RunManager">
     <configuration name="Unnamed" type="ClojureREPL" factoryName="Local" activateToolWindowBeforeRun="false" nameIsGenerated="true">
       <module name="ib-re-actor-976-plus" />
@@ -224,7 +228,14 @@
       <option name="project" value="LOCAL" />
       <updated>1602411909623</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="readme">
+      <created>1602427227482</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1602427227482</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -252,13 +263,18 @@
     <MESSAGE value="versioning for ewrapper, 9.80.03 file" />
     <MESSAGE value="separator for windows (ewrapper versioning)" />
     <MESSAGE value="config files" />
-    <option name="LAST_COMMIT_MESSAGE" value="config files" />
+    <MESSAGE value="readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="readme" />
   </component>
   <component name="WindowStateProjectService">
     <state x="537" y="91" width="835" height="850" key="CommitChangelistDialog2" timestamp="1601120770821">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="537" y="91" width="835" height="850" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1601120770821" />
+    <state x="100" y="99" width="1720" height="840" key="DiffContextDialog" timestamp="1602427394978">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="100" y="99" width="1720" height="840" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1602427394978" />
     <state x="597" y="283" width="715" height="465" key="MultipleFileMergeDialog" timestamp="1602411925616">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -267,10 +283,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="443" y="96" width="1024" height="839" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1601284478619" />
-    <state x="555" y="255" width="800" height="522" key="Vcs.Push.Dialog.v2" timestamp="1602427163259">
+    <state x="555" y="255" width="800" height="522" key="Vcs.Push.Dialog.v2" timestamp="1602427303153">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="555" y="255" width="800" height="522" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1602427163259" />
+    <state x="555" y="255" width="800" height="522" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1602427303153" />
     <state x="666" y="268" width="587" height="502" key="find.popup" timestamp="1601128909279">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

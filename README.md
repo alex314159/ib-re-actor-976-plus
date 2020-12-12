@@ -6,7 +6,7 @@ A clojure friendly wrapper around the Interactive Brokers java API.
 
 ## Acknowledgements
 
-This is a heavily refactored fork of https://github.com/cbilson/ib-re-actor and https://github.com/jsab/ib-re-actor. That wrapper was suitable for the 971 version of the API. Interactive Brokers introduced several breaking changes starting with version 972. This main purpose of this wrapper is to update the code to work with subsequent API version. It also introduces some simplifying changes. At the moment it has been tested with version 976.
+This is a heavily refactored fork of https://github.com/cbilson/ib-re-actor and https://github.com/jsab/ib-re-actor. That wrapper was suitable for the 971 version of the API. Interactive Brokers introduced several breaking changes starting with version 972. This main purpose of this wrapper is to update the code to work with subsequent API version. It also introduces some simplifying changes. At the moment it has been tested with version 976, 980 and 981.
 
 ## IB API changes from 971 to recent versions
 
@@ -30,10 +30,10 @@ Finally I've broken dependencies to clj-time, which itself is a wrapper around J
 At this time, IB does not distribute the TWSAPI on maven central and I am not sure I have the legal right to publish it myself so you have to download it manually from http://interactivebrokers.github.io/# and install it locally. The following instructions have been tested with Leiningen.
 
 From the download folder, go to IBJts/source/JavaClient and find the TwsAPI.jar file. Rename this file twsapi-version.jar (so for version 9.76.01 it is twsapi-9.76.01.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 9.76.01 you end up having `.../.m2/repository/twsapi/twsapi/9.76.01/twsapi-9.76.01.jar`.
-Note this has also been
+
 In `project.clj` add `:plugins [[lein-localrepo "0.5.4"]]` ad the end of the file. Then add `[twsapi "version"]` as well as `[twsapi "version"]` `[ib-re-actor-976-plus "0.1.2-SNAPSHOT"]` in your dependencies.
 
-At the moment this has been tested with 9.76.01 and 9.80.03. Other versions will fall back to 9.76.01.
+At the moment this has been tested with 9.76.01, 9.80.03 and 9.81.01. Other versions will fall back to 9.76.01.
 
 ## Warning
 

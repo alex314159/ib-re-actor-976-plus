@@ -31,7 +31,7 @@ At this time, IB does not distribute the TWSAPI on maven central and I am not su
 
 From the download folder, go to IBJts/source/JavaClient and find the TwsAPI.jar file. Rename this file twsapi-version.jar (so for version 9.76.01 it is twsapi-9.76.01.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 9.76.01 you end up having `.../.m2/repository/twsapi/twsapi/9.76.01/twsapi-9.76.01.jar`.
 
-In `project.clj` add `:plugins [[lein-localrepo "0.5.4"]]` ad the end of the file. Then add `[twsapi "version"]` as well as `[twsapi "version"]` `[ib-re-actor-976-plus "0.1.2-SNAPSHOT"]` in your dependencies.
+In `project.clj` add `:plugins [[lein-localrepo "0.5.4"]]` ad the end of the file. Then add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.3-SNAPSHOT"]` in your dependencies.
 
 At the moment this has been tested with 9.76.01, 9.80.03 and 9.81.01. Other versions will fall back to 9.76.01.
 

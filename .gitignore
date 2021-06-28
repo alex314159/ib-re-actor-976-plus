@@ -11,3 +11,4 @@ pom.xml
 /errors.log
 /ticks.csv
 /.nrepl-port
+/.idea

@@ -61,6 +61,6 @@
       (finally
         (g/unsubscribe handler)))))
 
-(comment
-  (require 'clj-logging-config.log4j)
-  (clj-logging-config.log4j/set-logger! :level :debug))
+;(comment
+;  (require 'clj-logging-config.log4j)
+;  (clj-logging-config.log4j/set-logger! :level :debug))

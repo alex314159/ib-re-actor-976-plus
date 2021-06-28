@@ -4,7 +4,8 @@
         [clj-time.coerce :only [to-long]]
         [clojure.java.io]
         [clojure.tools.logging :only [debug warn error]]
-        [clj-logging-config.log4j :only [set-logger!]]))
+    ;[clj-logging-config.log4j :only [set-logger!]]
+        ))
 
 (def contracts
   [
@@ -93,6 +94,6 @@
       (when (not (nil? *out-writer*))
         (.close *out-writer*)))))
 
-(comment
-  (set-logger! :level :debug)
-  (connect "localhost" 4001))
+;(comment
+;  (set-logger! :level :debug)
+;  (connect "localhost" 4001))

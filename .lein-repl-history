@@ -1,3 +1,8 @@
 (ns ib-re-actor-976-plus.gateway)
 twsversion
 exit
+(ns wrapper.clj)
+(camel-to-kebab "helloSexy")
+(require '[ib-re-actor-976-plus.wrapper :as wrapper])
+(wrapper/tws-version )
+wrapper/tws-version

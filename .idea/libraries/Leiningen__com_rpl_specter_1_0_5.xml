@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: com.rpl/specter:1.0.5">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/rpl/specter/1.0.5/specter-1.0.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

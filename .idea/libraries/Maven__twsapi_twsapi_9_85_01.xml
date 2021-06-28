@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: twsapi:twsapi:9.85.01">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/twsapi/twsapi/9.85.01/twsapi-9.85.01.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/twsapi/twsapi/9.85.01/twsapi-9.85.01-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/twsapi/twsapi/9.85.01/twsapi-9.85.01-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

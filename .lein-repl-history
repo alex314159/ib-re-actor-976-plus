@@ -6,3 +6,45 @@ exit
 (require '[ib-re-actor-976-plus.wrapper :as wrapper])
 (wrapper/tws-version )
 wrapper/tws-version
+(require '[ib-re-actor-976-plus.wrapper :as wrapper])
+wrapper/tws-version 
+(:require [ib-re-actor-976-plus.gateway :as gateway]
+            [ib-re-actor-976-plus.mapping :refer [map->]]
+            [ib-re-actor-976-plus.client-socket :as cs]))
+(ns ib-re-actor-976-plus.demoapps.basic-app
+  (:require [ib-re-actor-976-plus.gateway :as gateway]
+            [ib-re-actor-976-plus.mapping :refer [map->]]
+            [ib-re-actor-976-plus.client-socket :as cs]))
+(def account "U1217609")
+def requests (atom 0))                                     ; this is the counter for IB requests
+(def default-port 7496)
+(def requests (atom 0))
+(def connection (gateway/connect 2 "localhost" default-paper-port println)) ;you may need to change the port
+(def connection (gateway/connect 2 "localhost" default-port println)) ;you may need to change the port
+(def ESU0-map {:symbol "ES" :sec-type "FUT" :exchange "GLOBEX" :currency "USD" :last-trade-date-or-contract-month "20211217"})
+(defn example-historical-request []
+  (cs/request-historical-data
+    (:ecs connection)
+    (swap! requests inc)
+    ESU0-map
+    "20200420 0:00:00"                                      ;the format is important. It defaults to TWS timezone if not specified
+    10 :days
+    1 :day
+    :trades
+    true
+    1
+    false))
+(example-historical-request )
+(defn example-historical-request []
+  (cs/request-historical-data
+    (:ecs connection)
+    (swap! requests inc)
+    ESU0-map
+    "20210920 0:00:00"                                      ;the format is important. It defaults to TWS timezone if not specified
+    10 :days
+    1 :day
+    :trades
+    true
+    1
+    false))
+(example-historical-request )

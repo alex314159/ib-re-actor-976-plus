@@ -4,13 +4,14 @@
     ;    [clojure.xml :as xml]
     [ib-re-actor-976-plus.mapping :refer [->map]]
     [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate]])
-  (:import (com.ib.client EWrapper)))                         ; Bar TickAttrib Contract ContractDetails ;(java.io ByteArrayInputStream)
+  (:import (com.ib.client EWrapper)
+           (java.io StringWriter PrintWriter)))                         ; Bar TickAttrib Contract ContractDetails ;(java.io ByteArrayInputStream)
 
 
 
 (defn- get-stack-trace [ex]
-  (let [sw (java.io.StringWriter.)
-        pw (java.io.PrintWriter. sw)]
+  (let [sw (StringWriter.)
+        pw (PrintWriter. sw)]
     (.printStackTrace ex pw)
     (.toString sw)))
 

@@ -21,8 +21,8 @@
 (def connection (gateway/connect 2 "localhost" default-paper-port println)) ;you may need to change the port
 
 ;Create data structures - either plain maps or IB objects
-(def ESU0-map {:symbol "ES" :sec-type "FUT" :exchange "GLOBEX" :currency "USD" :last-trade-date-or-contract-month "20200918"})
-(def ESU0-contract (map-> com.ib.client.Contract ESU0-map))
+(def ESZ1-map {:symbol "ES" :sec-type "FUT" :exchange "GLOBEX" :currency "USD" :last-trade-date-or-contract-month "20211217"})
+(def ESZ1-contract (map-> com.ib.client.Contract ESZ1-map))
 
 (def ESU0C3000-map {:symbol "ES" :sec-type "FOP" :exchange "GLOBEX" :currency "USD" :last-trade-date-or-contract-month "20200918" :right :call :strike 3000})
 (def ESU0C3000-contract (map-> com.ib.client.Contract ESU0C3000-map))
@@ -40,8 +40,8 @@
   (cs/request-historical-data
     (:ecs connection)
     (swap! requests inc)
-    ESU0-map
-    "20200420 0:00:00"                                      ;the format is important. It defaults to TWS timezone if not specified
+    ESZ1-map
+    "20210920 0:00:00"                                      ;the format is important. It defaults to TWS timezone if not specified
     10 :days
     1 :day
     :trades
@@ -53,8 +53,8 @@
   (.reqHistoricalData
     (:ecs connection)
     (swap! requests inc)
-    ESU0-contract
-    "20200420 0:00:00" ;the format is important. It defaults to TWS timezone if not specified
+    ESZ1-contract
+    "20210920 0:00:00" ;the format is important. It defaults to TWS timezone if not specified
     "10 D"
     "1 day"
     "TRADES"

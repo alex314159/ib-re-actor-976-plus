@@ -6,17 +6,17 @@ A clojure friendly wrapper around the Interactive Brokers java API.
 
 ## Acknowledgements
 
-This is a heavily refactored fork of https://github.com/cbilson/ib-re-actor and https://github.com/jsab/ib-re-actor. That wrapper was suitable for the 971 version of the API. Interactive Brokers introduced several breaking changes starting with version 972. This main purpose of this wrapper is to update the code to work with subsequent API version. It also introduces some simplifying changes. At the moment it has been tested with version 976, 980, 981 and 985. See addendums for list of changes from the original.
+This is a heavily refactored fork of https://github.com/cbilson/ib-re-actor and https://github.com/jsab/ib-re-actor. That wrapper was suitable for the 971 version of the API. Interactive Brokers introduced several breaking changes starting with version 972. This main purpose of this wrapper is to update the code to work with subsequent API version. It also introduces some simplifying changes. At the moment it has been tested with version 976 and more recent. See addendums for list of changes from the original.
 
 ## Installation
 
 IB does not distribute the TWSAPI on central repositories so you have to download it manually from http://interactivebrokers.github.io/# and install it locally. Note that downloading the API from that link is implicitly consenting to IB's license. The following instructions have been tested with Leiningen.
 
-From the download folder, go to IBJts/source/JavaClient and find the TwsAPI.jar file. Rename this file twsapi-version.jar (so for version 9.76.01 it is twsapi-9.76.01.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 9.76.01 you end up having `.../.m2/repository/twsapi/twsapi/9.76.01/twsapi-9.76.01.jar`. Note that on Mac you may get a warning that the original downloaded zip file is in an unsupported format, extract it in Linux or use another zip unarchiver.  
+From the download folder, go to IBJts/source/JavaClient and find the TwsApi.jar file. Rename this file twsapi-version.jar (so for version 9.76.01 it is twsapi-9.76.01.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 9.76.01 you end up having `.../.m2/repository/twsapi/twsapi/9.76.01/twsapi-9.76.01.jar`. Note that on Mac you may get a warning that the original downloaded zip file is in an unsupported format, extract it in Linux or use another zip unarchiver.  
 
-In `project.clj` add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.5-SNAPSHOT"]` in your dependencies.
+In `project.clj` add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.6-SNAPSHOT"]` in your dependencies.
 
-At the moment this has been tested with 9.76.01, 9.80.03, 9.81.01, 9.85.01 and 10.10.04. Other versions will fall back to 9.76.01.
+At the moment this has been tested with 9.76.01, 9.80.03, 9.81.01, 9.85.01, 10.10.04 and 10.11.01. Other versions will fall back to 9.76.01.
 
 ## Warning
 

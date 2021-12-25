@@ -131,7 +131,8 @@ to check if if a given value is valid (known)."
                     :commodity         com.ib.client.Types$SecType/CMDTY
                     :bsk               com.ib.client.Types$SecType/BSK
                     :icu               com.ib.client.Types$SecType/ICU
-                    :ics               com.ib.client.Types$SecType/ICS})
+                    :ics               com.ib.client.Types$SecType/ICS
+                    :crypto            com.ib.client.Types$SecType/CRYPTO})
 
 (defmethod translate [:to-ib :bar-size-unit] [_ _ unit]
   (case unit
@@ -187,6 +188,7 @@ to check if if a given value is valid (known)."
                     :gtt                  com.ib.client.Types$TimeInForce/GTT
                     :auc                  com.ib.client.Types$TimeInForce/AUC
                     :gtx                  com.ib.client.Types$TimeInForce/GTX
+                    :dtc                  com.ib.client.Types$TimeInForce/DTC
                     })
 
 (translation-table order-action
@@ -422,6 +424,15 @@ to check if if a given value is valid (known)."
                     :avg-opt-volume 87
                     :delayed-last-timestamp 88
                     :shortable-shares 89
+                    :delayed-halted 90
+                    :reuters-2-mutual-funds 91
+                    :etf-nav-close 92
+                    :etf-nav-bid 94
+                    :etf-nav-ask 95
+                    :etf-nav-last 96
+                    :etf-frozen-nav-last 97
+                    :etf-nav-high 98
+                    :etf-nav-low 99
                     }
                    )
 
@@ -565,8 +576,8 @@ to check if if a given value is valid (known)."
                     :futures-profit-loss "FuturesPNL"
                     :fx-cash-balance "FxCashBalance"
                     :gross-position-value "GrossPositionValue"
-                    :net-liquidation "NetLiquidation"
                     :gross-position-value-stock "GrossPositionValue-S"
+                    :highest-severity "HighestSeverity"
                     :indian-stock-haircut "IndianStockHaircut"
                     :indian-stock-haircut-commodities "IndianStockHaircut-C"
                     :indian-stock-haircut-stock "IndianStockHaircut-S"
@@ -574,6 +585,7 @@ to check if if a given value is valid (known)."
                     :initial-margin-requirement-commodities "InitMarginReq-C"
                     :initial-margin-requirement-stock "InitMarginReq-S"
                     :leverage-stock "Leverage-S"
+                    :leverage "Leverage"
                     :look-ahead-available-funds "LookAheadAvailableFunds"
                     :look-ahead-available-funds-commodities "LookAheadAvailableFunds-C"
                     :look-ahead-available-funds-stock "LookAheadAvailableFunds-S"
@@ -593,9 +605,11 @@ to check if if a given value is valid (known)."
                     :money-market-fund-value "MoneyMarketFundValue"
                     :mutual-fund-value "MutualFundValue"
                     :net-dividend "NetDividend"
+                    :net-liquidation "NetLiquidation"
                     :net-liquidation-commodities "NetLiquidation-C"
                     :net-liquidation-stock "NetLiquidation-S"
                     :net-liquidation-by-currency "NetLiquidationByCurrency"
+                    :net-liquidation-value-and-margin-in-review "NLVAndMarginInReview"
                     :option-market-value "OptionMarketValue"
                     :pa-shares-value "PASharesValue"
                     :pa-shares-value-commodities "PASharesValue-C"
@@ -614,6 +628,9 @@ to check if if a given value is valid (known)."
                     :regulation-T-equity-stock "RegTEquity-S"
                     :regulation-T-margin "RegTMargin"
                     :regulation-T-margin-stock "RegTMargin-S"
+                    :segment-title-commodities "SegmentTitle-C"
+                    :segment-title-stock "SegmentTitle-S"
+                    :settled-cash "SettledCash"
                     :sma "SMA"
                     :sma-stock "SMA-S"
                     :stock-market-value "StockMarketValue"
@@ -629,9 +646,6 @@ to check if if a given value is valid (known)."
                     :unrealized-profit-loss "UnrealizedPnL"
                     :warrants-value "WarrantValue"
                     :what-if-portfolio-margin-enabled "WhatIfPMEnabled"
-                    :segment-title-commodities "SegmentTitle-C"
-                    :segment-title-stock "SegmentTitle-S"
-                    :net-liquidation-value-and-margin-in-review "NLVAndMarginInReview"
                     })
 
 (defn numeric-account-value? [key]

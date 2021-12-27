@@ -1,4 +1,4 @@
-(ns ib-re-actor-976-plus.demo_apps.advanced_app
+(ns demo_apps.advanced_app
 
 
   (:require [ib-re-actor-976-plus.gateway :as gateway]

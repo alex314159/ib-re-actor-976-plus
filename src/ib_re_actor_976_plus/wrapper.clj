@@ -1,11 +1,11 @@
 (ns ib-re-actor-976-plus.wrapper
   (:require
     [clojure.tools.logging :as log]
-    ;    [clojure.xml :as xml]
     [ib-re-actor-976-plus.mapping :refer [->map]]
-    [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate]])
-  (:import (com.ib.client EWrapper)
-           (java.io StringWriter PrintWriter)))                         ; Bar TickAttrib Contract ContractDetails ;(java.io ByteArrayInputStream)
+    [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate tws-version]])
+  (:import
+    (com.ib.client EWrapper)                                ;this is important
+    (java.io StringWriter PrintWriter)))                         ; Bar TickAttrib Contract ContractDetails ;(java.io ByteArrayInputStream)
 
 
 
@@ -128,17 +128,7 @@
 
 (defn remove-header [s] (subs s (.indexOf s "void")))
 
-(def tws-version
-  (let [separator (if (= (subs (System/getProperty "os.name") 0 3) "Win") #"\\" #"/")]
-    (last
-      (drop-last
-        (clojure.string/split
-          (first
-            (filter
-              #(clojure.string/includes? % "twsapi")
-              (clojure.string/split
-                (System/getProperty "java.class.path") #":")))
-          separator)))))
+
 
 (def ewrapper-java-methods
   "We try and find the right version - if not revert to default which is 9.76.01"

@@ -5,6 +5,24 @@
     ;[clj-time.format :as tf]
     [clojure.string :as str]))
 
+;Unfortunately it is important to know the TWS version here, because of the Decimal issue
+
+(def tws-version
+  (let [separator (if (= (subs (System/getProperty "os.name") 0 3) "Win") #"\\" #"/")]
+    (last
+      (drop-last
+        (clojure.string/split
+          (first
+            (filter
+              #(clojure.string/includes? % "twsapi")
+              (clojure.string/split
+                (System/getProperty "java.class.path") #":")))
+          separator)))))
+
+(def use-decimal?
+  (let [v (map #(Long/parseLong %) (clojure.string/split tws-version #"\."))]
+    (and (>= (first v) 10) (>= (second v) 10))))
+
 (defmulti ^:dynamic translate
           "Translate to or from a value from the Interactive Brokers API.
 
@@ -920,6 +938,19 @@ to check if if a given value is valid (known)."
 
 (defmethod translate [:to-ib :exchanges] [_ _ val]
   (str/join "," val))
+
+;only for 10.10 onwards
+(defmethod translate [:to-ib :string-to-decimal] [_ _ val]
+  (if use-decimal?
+    (com.ib.client.Decimal/parse (str val))
+    val))
+
+;only for 10.10 onwards
+(defmethod translate [:from-ib :decimal-to-long] [_ _ val]
+  (if use-decimal?
+    (.longValue val)
+    val))
+
 
 ;(defmethod translate [:from-ib :yield-redemption-date] [_ _ val]
 ;  (let [year (int (Math/floor (/ val 10000)))

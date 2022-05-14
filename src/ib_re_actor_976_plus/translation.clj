@@ -943,25 +943,34 @@ to check if if a given value is valid (known)."
 (defmethod translate [:to-ib :exchanges] [_ _ val]
   (str/join "," val))
 
-;This is necessary because the com.ib.client.Decimal doesn't exist in previous versions of twsapi
-(def ^java.lang.reflect.Method val->decimal
-  (when use-decimal?
-    (.getMethod (Class/forName "com.ib.client.Decimal")
-                "parse"
-                (into-array [java.lang.String]))))
+;;This is necessary because the com.ib.client.Decimal doesn't exist in previous versions of twsapi
+;;Solution below works. Other solution marginally faster and feels more clojuresque
+;(def ^java.lang.reflect.Method val->decimal
+;  (when use-decimal?
+;    (.getMethod (Class/forName "com.ib.client.Decimal")
+;                "parse"
+;                (into-array [java.lang.String]))))
+;
+;;only for 10.10 onwards
+;(defmethod translate [:to-ib :string-to-decimal] [_ _ val]
+;  ;we coerce val to str, just in case
+;  (if val->decimal
+;    (.invoke val->decimal nil (into-array [(str val)]))
+;    val))
+
+(defmacro if-decimal?
+  [if-form else-form]
+  (if use-decimal?
+    `(do ~if-form)
+    `(do ~else-form)))
 
 ;only for 10.10 onwards
 (defmethod translate [:to-ib :string-to-decimal] [_ _ val]
   ;we coerce val to str, just in case
-  (if val->decimal
-    (.invoke val->decimal nil (into-array [(str val)]))
-    val))
+  (if-decimal? (com.ib.client.Decimal/parse (str val)) val))
 
-;only for 10.10 onwards
 (defmethod translate [:from-ib :decimal-to-long] [_ _ val]
-  (if use-decimal?
-    (.longValue val)
-    val))
+  (if use-decimal? (.longValue val) val))
 
 
 ;(defmethod translate [:from-ib :yield-redemption-date] [_ _ val]

@@ -6,7 +6,9 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/tools.logging "1.2.4"]]
   :profiles {:dev {:dependencies [[twsapi "10.15.02"]
-                                  [midje "1.10.5"]]
+                                  [midje "1.10.5"]
+                                  ;[criterium "0.4.6"]
+                                  ]
                    :plugins      [[lein-midje "3.2.1"]]
                    }
              }

@@ -969,6 +969,12 @@ to check if if a given value is valid (known)."
   ;we coerce val to str, just in case
   (if-decimal? (com.ib.client.Decimal/parse (str val)) val))
 
+(defmethod translate [:from-ib :string-to-decimal] [_ _ val]
+  ;we coerce val to str, just in case
+  (if-decimal?
+    (if (or (number? val) (string? val)) (com.ib.client.Decimal/parse (str val)) val)
+    val))
+
 (defmethod translate [:from-ib :decimal-to-long] [_ _ val]
   (if use-decimal? (.longValue val) val))
 

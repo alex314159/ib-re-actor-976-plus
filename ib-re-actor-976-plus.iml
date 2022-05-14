@@ -16,11 +16,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.clojure:clojure:1.10.3" level="project" />
-    <orderEntry type="library" name="Maven: org.clojure:spec.alpha:0.2.194" level="project" />
-    <orderEntry type="library" name="Maven: org.clojure:core.specs.alpha:0.2.56" level="project" />
-    <orderEntry type="library" name="Maven: org.clojure:tools.logging:1.2.3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: twsapi:twsapi:10.11.01" level="project" />
+    <orderEntry type="library" name="Maven: org.clojure:clojure:1.11.1" level="project" />
+    <orderEntry type="library" name="Maven: org.clojure:spec.alpha:0.3.218" level="project" />
+    <orderEntry type="library" name="Maven: org.clojure:core.specs.alpha:0.2.62" level="project" />
+    <orderEntry type="library" name="Maven: org.clojure:tools.logging:1.2.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: twsapi:twsapi:10.15.02" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: midje:midje:1.10.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: marick:suchwow:6.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: potemkin:potemkin:0.4.4" level="project" />

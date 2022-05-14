@@ -1,7 +1,9 @@
 (ns demoapps.basic-app
   (:require [ib-re-actor-976-plus.gateway :as gateway]
             [ib-re-actor-976-plus.mapping :refer [map->]]
-            [ib-re-actor-976-plus.client-socket :as cs]))
+            [ib-re-actor-976-plus.client-socket :as cs])
+  (:import (com.ib.client Contract Order))
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

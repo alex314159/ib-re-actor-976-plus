@@ -97,16 +97,16 @@ to check if if a given value is valid (known)."
                                :valid-values (vals to-table#)})))))))))
 
 (translation-table duration-unit
-                   {:second "S"
+                   {:second  "S"
                     :seconds "S"
-                    :day "D"
-                    :days "D"
-                    :week "W"
-                    :weeks "W"
-                    :month "M"
-                    :months "M"
-                    :year "Y"
-                    :years "Y"})
+                    :day     "D"
+                    :days    "D"
+                    :week    "W"
+                    :weeks   "W"
+                    :month   "M"
+                    :months  "M"
+                    :year    "Y"
+                    :years   "Y"})
 
 (defmethod translate [:to-ib :acceptable-duration] [_ _ [val unit]]
   (case unit
@@ -126,31 +126,35 @@ to check if if a given value is valid (known)."
     :years [val :years]))
 
 (translation-table security-type
-                   {
-                    :none              com.ib.client.Types$SecType/None
-                    :equity            com.ib.client.Types$SecType/STK
-                    :option            com.ib.client.Types$SecType/OPT
-                    :future            com.ib.client.Types$SecType/FUT
-                    :continuous-future com.ib.client.Types$SecType/CONTFUT
-                    :cash              com.ib.client.Types$SecType/CASH
-                    :bond              com.ib.client.Types$SecType/BOND
-                    :cfd               com.ib.client.Types$SecType/CFD
-                    :future-option     com.ib.client.Types$SecType/FOP
-                    :warrant           com.ib.client.Types$SecType/WAR
-                    :iopt              com.ib.client.Types$SecType/IOPT
-                    :fwd               com.ib.client.Types$SecType/FWD
-                    :bag               com.ib.client.Types$SecType/BAG
-                    :index             com.ib.client.Types$SecType/IND
-                    :bill              com.ib.client.Types$SecType/BILL
-                    :fund              com.ib.client.Types$SecType/FUND
-                    :fixed             com.ib.client.Types$SecType/FIXED
-                    :slb               com.ib.client.Types$SecType/SLB
-                    :news              com.ib.client.Types$SecType/NEWS
-                    :commodity         com.ib.client.Types$SecType/CMDTY
-                    :bsk               com.ib.client.Types$SecType/BSK
-                    :icu               com.ib.client.Types$SecType/ICU
-                    :ics               com.ib.client.Types$SecType/ICS
-                    :crypto            com.ib.client.Types$SecType/CRYPTO})
+                   (merge
+                     {
+                      :none              com.ib.client.Types$SecType/None
+                      :equity            com.ib.client.Types$SecType/STK
+                      :option            com.ib.client.Types$SecType/OPT
+                      :future            com.ib.client.Types$SecType/FUT
+                      :continuous-future com.ib.client.Types$SecType/CONTFUT
+                      :cash              com.ib.client.Types$SecType/CASH
+                      :bond              com.ib.client.Types$SecType/BOND
+                      :cfd               com.ib.client.Types$SecType/CFD
+                      :future-option     com.ib.client.Types$SecType/FOP
+                      :warrant           com.ib.client.Types$SecType/WAR
+                      :iopt              com.ib.client.Types$SecType/IOPT
+                      :fwd               com.ib.client.Types$SecType/FWD
+                      :bag               com.ib.client.Types$SecType/BAG
+                      :index             com.ib.client.Types$SecType/IND
+                      :bill              com.ib.client.Types$SecType/BILL
+                      :fund              com.ib.client.Types$SecType/FUND
+                      :fixed             com.ib.client.Types$SecType/FIXED
+                      :slb               com.ib.client.Types$SecType/SLB
+                      :news              com.ib.client.Types$SecType/NEWS
+                      :commodity         com.ib.client.Types$SecType/CMDTY
+                      :bsk               com.ib.client.Types$SecType/BSK
+                      :icu               com.ib.client.Types$SecType/ICU
+                      :ics               com.ib.client.Types$SecType/ICS}
+                     (if (>= (read-string (clojure.string/replace (subs tws-version 0 5) "." "")) 1010)
+                       {:crypto            (eval (symbol "com.ib.client.Types$SecType/ICS"))}
+                       {})
+                     ))
 
 (defmethod translate [:to-ib :bar-size-unit] [_ _ unit]
   (case unit
@@ -352,132 +356,132 @@ to check if if a given value is valid (known)."
                     :ric    com.ib.client.Types$SecIdType/RIC})
 
 (translation-table tick-field-code
-                   {:bid-size 0
-                    :bid-price 1
-                    :ask-price 2
-                    :ask-size 3
-                    :last-price 4
-                    :last-size 5
-                    :high 6
-                    :low 7
-                    :volume 8
-                    :close 9
-                    :bid-option-computation 10
-                    :ask-option-computation 11
-                    :last-option-computation 12
-                    :model-option-computation 13
-                    :open 14
-                    :low-13-week 15
-                    :high-13-week 16
-                    :low-26-week 17
-                    :high-26-week 18
-                    :low-52-week 19
-                    :high-52-week 20
-                    :avg-volume 21
-                    :open-interest 22
+                   {:bid-size                     0
+                    :bid-price                    1
+                    :ask-price                    2
+                    :ask-size                     3
+                    :last-price                   4
+                    :last-size                    5
+                    :high                         6
+                    :low                          7
+                    :volume                       8
+                    :close                        9
+                    :bid-option-computation       10
+                    :ask-option-computation       11
+                    :last-option-computation      12
+                    :model-option-computation     13
+                    :open                         14
+                    :low-13-week                  15
+                    :high-13-week                 16
+                    :low-26-week                  17
+                    :high-26-week                 18
+                    :low-52-week                  19
+                    :high-52-week                 20
+                    :avg-volume                   21
+                    :open-interest                22
                     :option-historical-volatility 23
-                    :option-implied-volatility 24
-                    :option-bid-exchange 25
-                    :option-ask-exchange 26
-                    :option-call-open-interest 27
-                    :option-put-open-interest 28
-                    :option-call-volume 29
-                    :option-put-volume 30
-                    :index-future-premium 31
-                    :bid-exchange 32
-                    :ask-exchange 33
-                    :auction-volume 34
-                    :auction-price 35
-                    :auction-imbalance 36
-                    :mark-price 37
-                    :bid-efp-computation 38
-                    :ask-efp-computation 39
-                    :last-efp-computation 40
-                    :open-efp-computation 41
-                    :high-efp-computation 42
-                    :low-efp-computation 43
-                    :close-efp-computation 44
-                    :last-timestamp 45
-                    :shortable 46
-                    :fundamental-ratios 47
-                    :realtime-volume 48
-                    :halted 49
-                    :bid-yield 50
-                    :ask-yield 51
-                    :last-yield 52
-                    :cust-option-computation 53
-                    :trade-count 54
-                    :trade-rate 55
-                    :volume-rate 56
-                    :last-rth-trade 57
-                    :rt-historical-vol 58
-                    :ib-dividends 59
-                    :bond-factor-multiplier 60
-                    :regulatory-imbalance 61
-                    :news-tick 62
-                    :short-term-volume-3-min 63
-                    :short-term-volume-5-min 64
-                    :short-term-volume-10-min 65
-                    :delayed-bid 66
-                    :delayed-ask 67
-                    :delayed-last 68
-                    :delayed-bid-size 69
-                    :delayed-ask-size 70
-                    :delayed-last-size 71
-                    :delayed-high 72
-                    :delayed-low 73
-                    :delayed-volume 74
-                    :delayed-close 75
-                    :delayed-open 76
-                    :rt-trd-volume 77
-                    :creditman-mark-price 78
-                    :creditman-slow-mark-price 79
-                    :delayed-bid-option 80
-                    :delayed-ask-option 81
-                    :delayed-last-option 82
-                    :delayed-model-option 83
-                    :last-exch 84
-                    :last-reg-time 85
-                    :futures-open-interest 86
-                    :avg-opt-volume 87
-                    :delayed-last-timestamp 88
-                    :shortable-shares 89
-                    :delayed-halted 90
-                    :reuters-2-mutual-funds 91
-                    :etf-nav-close 92
-                    :etf-nav-bid 94
-                    :etf-nav-ask 95
-                    :etf-nav-last 96
-                    :etf-frozen-nav-last 97
-                    :etf-nav-high 98
-                    :etf-nav-low 99
+                    :option-implied-volatility    24
+                    :option-bid-exchange          25
+                    :option-ask-exchange          26
+                    :option-call-open-interest    27
+                    :option-put-open-interest     28
+                    :option-call-volume           29
+                    :option-put-volume            30
+                    :index-future-premium         31
+                    :bid-exchange                 32
+                    :ask-exchange                 33
+                    :auction-volume               34
+                    :auction-price                35
+                    :auction-imbalance            36
+                    :mark-price                   37
+                    :bid-efp-computation          38
+                    :ask-efp-computation          39
+                    :last-efp-computation         40
+                    :open-efp-computation         41
+                    :high-efp-computation         42
+                    :low-efp-computation          43
+                    :close-efp-computation        44
+                    :last-timestamp               45
+                    :shortable                    46
+                    :fundamental-ratios           47
+                    :realtime-volume              48
+                    :halted                       49
+                    :bid-yield                    50
+                    :ask-yield                    51
+                    :last-yield                   52
+                    :cust-option-computation      53
+                    :trade-count                  54
+                    :trade-rate                   55
+                    :volume-rate                  56
+                    :last-rth-trade               57
+                    :rt-historical-vol            58
+                    :ib-dividends                 59
+                    :bond-factor-multiplier       60
+                    :regulatory-imbalance         61
+                    :news-tick                    62
+                    :short-term-volume-3-min      63
+                    :short-term-volume-5-min      64
+                    :short-term-volume-10-min     65
+                    :delayed-bid                  66
+                    :delayed-ask                  67
+                    :delayed-last                 68
+                    :delayed-bid-size             69
+                    :delayed-ask-size             70
+                    :delayed-last-size            71
+                    :delayed-high                 72
+                    :delayed-low                  73
+                    :delayed-volume               74
+                    :delayed-close                75
+                    :delayed-open                 76
+                    :rt-trd-volume                77
+                    :creditman-mark-price         78
+                    :creditman-slow-mark-price    79
+                    :delayed-bid-option           80
+                    :delayed-ask-option           81
+                    :delayed-last-option          82
+                    :delayed-model-option         83
+                    :last-exch                    84
+                    :last-reg-time                85
+                    :futures-open-interest        86
+                    :avg-opt-volume               87
+                    :delayed-last-timestamp       88
+                    :shortable-shares             89
+                    :delayed-halted               90
+                    :reuters-2-mutual-funds       91
+                    :etf-nav-close                92
+                    :etf-nav-bid                  94
+                    :etf-nav-ask                  95
+                    :etf-nav-last                 96
+                    :etf-frozen-nav-last          97
+                    :etf-nav-high                 98
+                    :etf-nav-low                  99
                     }
                    )
 
 (translation-table generic-tick-type
                    {
-                    :option-volume 100                   ; :option-call-volume, :option-put-volume
-                    :option-open-interest 101            ; :option-call-open-interest, :option-put-open-interest
-                    :historical-volatility 104           ; :option-historical-volatility
-                    :option-implied-volatility 106       ; :option-implied-volatility
-                    :index-future-premium 162            ; :index-future-premium
-                    :miscellaneous-stats 165             ; :low-13-week, :high-13-week, :low-26-week, :high-26-week, :low-52-week, :high-52-week, :avg-volume 21
-                    :mark-price 221                      ; :mark-price
-                    :auction-values 225                  ; :auction-volume, :auction-price, :auction-imbalance
-                    :realtime-volume 233                 ; :realtime-volume
-                    :shortable 236                       ; :shortable
-                    :inventory 256                       ;
-                    :fundamental-ratios 258              ; :fundamental-ratios
-                    :realtime-historical-volatility 411  ; 58?
-                    :short-term-volume 595
+                    :option-volume                  100     ; :option-call-volume, :option-put-volume
+                    :option-open-interest           101     ; :option-call-open-interest, :option-put-open-interest
+                    :historical-volatility          104     ; :option-historical-volatility
+                    :option-implied-volatility      106     ; :option-implied-volatility
+                    :index-future-premium           162     ; :index-future-premium
+                    :miscellaneous-stats            165     ; :low-13-week, :high-13-week, :low-26-week, :high-26-week, :low-52-week, :high-52-week, :avg-volume 21
+                    :mark-price                     221     ; :mark-price
+                    :auction-values                 225     ; :auction-volume, :auction-price, :auction-imbalance
+                    :realtime-volume                233     ; :realtime-volume
+                    :shortable                      236     ; :shortable
+                    :inventory                      256     ;
+                    :fundamental-ratios             258     ; :fundamental-ratios
+                    :realtime-historical-volatility 411     ; 58?
+                    :short-term-volume              595
                     })
 
 (translation-table log-level
-                   {:system 1
-                    :error 2
-                    :warning 3
+                   {:system        1
+                    :error         2
+                    :warning       3
                     :informational 4
-                    :detail 5})
+                    :detail        5})
 
 (defmethod translate [:to-ib :tick-list] [_ _ val]
   (->> val
@@ -494,176 +498,176 @@ to check if if a given value is valid (known)."
 
 (translation-table fundamental-ratio
                    {
-                    :closing-price "NPRICE"
-                    :3-year-ttm-growth "Three_Year_TTM_Growth"
-                    :ttm-over-ttm "TTM_over_TTM"
-                    :12-month-high "NHIG"
-                    :12-month-low "NLOW"
-                    :pricing-date "PDATE"
-                    :10-day-average-volume "VOL10DAVG"
-                    :market-cap "MKTCAP"
-                    :eps-exclusing-extraordinary-items "TTMEPSXCLX"
-                    :eps-normalized "AEPSNORM"
-                    :revenue-per-share "TTMREVPS"
+                    :closing-price                      "NPRICE"
+                    :3-year-ttm-growth                  "Three_Year_TTM_Growth"
+                    :ttm-over-ttm                       "TTM_over_TTM"
+                    :12-month-high                      "NHIG"
+                    :12-month-low                       "NLOW"
+                    :pricing-date                       "PDATE"
+                    :10-day-average-volume              "VOL10DAVG"
+                    :market-cap                         "MKTCAP"
+                    :eps-exclusing-extraordinary-items  "TTMEPSXCLX"
+                    :eps-normalized                     "AEPSNORM"
+                    :revenue-per-share                  "TTMREVPS"
                     :common-equity-book-value-per-share "QBVPS"
-                    :tangible-book-value-per-share "QTANBVPS"
-                    :cash-per-share "QCSHPS"
-                    :cash-flow-per-share "TTMCFSHR"
-                    :dividends-per-share "TTMDIVSHR"
-                    :dividend-rate "IAD"
-                    :pe-excluding-extraordinary-items "PEEXCLXOR"
-                    :pe-normalized "APENORM"
-                    :price-to-sales "TMPR2REV"
-                    :price-to-tangible-book "PR2TANBK"
-                    :price-to-cash-flow-per-share "TTMPRCFPS"
-                    :price-to-book "PRICE2BK"
-                    :current-ration "QCURRATIO"
-                    :quick-ratio "QQUICKRATI"
-                    :long-term-debt-to-equity "QLTD2EQ"
-                    :total-debt-to-equity "QTOTD2EQ"
-                    :payout-ratio "TTMPAYRAT"
-                    :revenue "TTMREV"
-                    :ebita "TTMEBITD"
-                    :ebt "TTMEBT"
-                    :niac "TTMNIAC"
-                    :ebt-normalized "AEBTNORM"
-                    :niac-normalized "ANIACNORM"
-                    :gross-margin "TTMGROSMGN"
-                    :net-profit-margin "TTMNPMGN"
-                    :operating-margin "TTMOPMGN"
-                    :pretax-margin "APTMGNPCT"
-                    :return-on-average-assets "TTMROAPCT"
-                    :return-on-average-equity "TTMROEPCT"
-                    :roi "TTMROIPCT"
-                    :revenue-change "REVCHNGYR"
-                    :revenue-change-ttm "TTMREVCHG"
-                    :revenue-growth "REVTRENDGR"
-                    :eps-change "EPSCHNGYR"
-                    :eps-change-ttm "TTMEPSCHG"
-                    :eps-growth "EPSTRENDGR"
-                    :dividend-growth "DIVGRPCT"})
+                    :tangible-book-value-per-share      "QTANBVPS"
+                    :cash-per-share                     "QCSHPS"
+                    :cash-flow-per-share                "TTMCFSHR"
+                    :dividends-per-share                "TTMDIVSHR"
+                    :dividend-rate                      "IAD"
+                    :pe-excluding-extraordinary-items   "PEEXCLXOR"
+                    :pe-normalized                      "APENORM"
+                    :price-to-sales                     "TMPR2REV"
+                    :price-to-tangible-book             "PR2TANBK"
+                    :price-to-cash-flow-per-share       "TTMPRCFPS"
+                    :price-to-book                      "PRICE2BK"
+                    :current-ration                     "QCURRATIO"
+                    :quick-ratio                        "QQUICKRATI"
+                    :long-term-debt-to-equity           "QLTD2EQ"
+                    :total-debt-to-equity               "QTOTD2EQ"
+                    :payout-ratio                       "TTMPAYRAT"
+                    :revenue                            "TTMREV"
+                    :ebita                              "TTMEBITD"
+                    :ebt                                "TTMEBT"
+                    :niac                               "TTMNIAC"
+                    :ebt-normalized                     "AEBTNORM"
+                    :niac-normalized                    "ANIACNORM"
+                    :gross-margin                       "TTMGROSMGN"
+                    :net-profit-margin                  "TTMNPMGN"
+                    :operating-margin                   "TTMOPMGN"
+                    :pretax-margin                      "APTMGNPCT"
+                    :return-on-average-assets           "TTMROAPCT"
+                    :return-on-average-equity           "TTMROEPCT"
+                    :roi                                "TTMROIPCT"
+                    :revenue-change                     "REVCHNGYR"
+                    :revenue-change-ttm                 "TTMREVCHG"
+                    :revenue-growth                     "REVTRENDGR"
+                    :eps-change                         "EPSCHNGYR"
+                    :eps-change-ttm                     "TTMEPSCHG"
+                    :eps-growth                         "EPSTRENDGR"
+                    :dividend-growth                    "DIVGRPCT"})
 
 (translation-table account-value-key
                    {
-                    :account-code "AccountCode"
-                    :account-ready "AccountReady"
-                    :account-type "AccountType"
-                    :accrued-cash "AccruedCash"
-                    :accrued-cash-commodities "AccruedCash-C"
-                    :accrued-cash-stock "AccruedCash-S"
-                    :accrued-dividend "AccruedDividend"
-                    :accrued-dividend-commodities "AccruedDividend-C"
-                    :accrued-dividend-stock "AccruedDividend-S"
-                    :available-funds "AvailableFunds"
-                    :available-funds-commodities "AvailableFunds-C"
-                    :available-funds-stock "AvailableFunds-S"
-                    :billable "Billable"
-                    :billable-commodities "Billable-C"
-                    :billable-stock "Billable-S"
-                    :buying-power "BuyingPower"
-                    :cash-balance "CashBalance"
-                    :corporate-bond-value "CorporateBondValue"
-                    :currency "Currency"
-                    :cushion "Cushion"
-                    :day-trades-remaining "DayTradesRemaining"
-                    :day-trades-remaining-T+1 "DayTradesRemainingT+1"
-                    :day-trades-remaining-T+2 "DayTradesRemainingT+2"
-                    :day-trades-remaining-T+3 "DayTradesRemainingT+3"
-                    :day-trades-remaining-T+4 "DayTradesRemainingT+4"
-                    :equity-with-loan-value "EquityWithLoanValue"
-                    :equity-with-loan-value-commodities "EquityWithLoanValue-C"
-                    :equity-with-loan-value-stock "EquityWithLoanValue-S"
-                    :excess-liquidity "ExcessLiquidity"
-                    :excess-liquidity-commodities "ExcessLiquidity-C"
-                    :excess-liquidity-stock "ExcessLiquidity-S"
-                    :exchange-rate "ExchangeRate"
-                    :full-available-funds "FullAvailableFunds"
-                    :full-available-funds-commodities "FullAvailableFunds-C"
-                    :full-available-funds-stock "FullAvailableFunds-S"
-                    :full-excess-liquidity "FullExcessLiquidity"
-                    :full-excess-liquidity-commodities "FullExcessLiquidity-C"
-                    :full-excess-liquidity-stock "FullExcessLiquidity-S"
-                    :full-initial-margin-requirement "FullInitMarginReq"
-                    :full-initial-margin-requirement-commodities "FullInitMarginReq-C"
-                    :full-initial-margin-requirement-stock "FullInitMarginReq-S"
-                    :full-maintenance-margin-requirement "FullMaintMarginReq"
-                    :full-maintenance-margin-requirement-commodities "FullMaintMarginReq-C"
-                    :full-maintenance-margin-requirement-stock "FullMaintMarginReq-S"
-                    :fund-value "FundValue"
-                    :future-option-value "FutureOptionValue"
-                    :futures-profit-loss "FuturesPNL"
-                    :fx-cash-balance "FxCashBalance"
-                    :gross-position-value "GrossPositionValue"
-                    :gross-position-value-stock "GrossPositionValue-S"
-                    :highest-severity "HighestSeverity"
-                    :indian-stock-haircut "IndianStockHaircut"
-                    :indian-stock-haircut-commodities "IndianStockHaircut-C"
-                    :indian-stock-haircut-stock "IndianStockHaircut-S"
-                    :initial-margin-requirement "InitMarginReq"
-                    :initial-margin-requirement-commodities "InitMarginReq-C"
-                    :initial-margin-requirement-stock "InitMarginReq-S"
-                    :leverage-stock "Leverage-S"
-                    :leverage "Leverage"
-                    :look-ahead-available-funds "LookAheadAvailableFunds"
-                    :look-ahead-available-funds-commodities "LookAheadAvailableFunds-C"
-                    :look-ahead-available-funds-stock "LookAheadAvailableFunds-S"
-                    :look-ahead-excess-liquidity "LookAheadExcessLiquidity"
-                    :look-ahead-excess-liquidity-commodities "LookAheadExcessLiquidity-C"
-                    :look-ahead-excess-liquidity-stock "LookAheadExcessLiquidity-S"
-                    :look-ahead-initial-margin-requirement "LookAheadInitMarginReq"
-                    :look-ahead-initial-margin-requirement-commodities "LookAheadInitMarginReq-C"
-                    :look-ahead-initial-margin-requirement-stock "LookAheadInitMarginReq-S"
-                    :look-ahead-maintenance-margin-requirement "LookAheadMaintMarginReq"
+                    :account-code                                          "AccountCode"
+                    :account-ready                                         "AccountReady"
+                    :account-type                                          "AccountType"
+                    :accrued-cash                                          "AccruedCash"
+                    :accrued-cash-commodities                              "AccruedCash-C"
+                    :accrued-cash-stock                                    "AccruedCash-S"
+                    :accrued-dividend                                      "AccruedDividend"
+                    :accrued-dividend-commodities                          "AccruedDividend-C"
+                    :accrued-dividend-stock                                "AccruedDividend-S"
+                    :available-funds                                       "AvailableFunds"
+                    :available-funds-commodities                           "AvailableFunds-C"
+                    :available-funds-stock                                 "AvailableFunds-S"
+                    :billable                                              "Billable"
+                    :billable-commodities                                  "Billable-C"
+                    :billable-stock                                        "Billable-S"
+                    :buying-power                                          "BuyingPower"
+                    :cash-balance                                          "CashBalance"
+                    :corporate-bond-value                                  "CorporateBondValue"
+                    :currency                                              "Currency"
+                    :cushion                                               "Cushion"
+                    :day-trades-remaining                                  "DayTradesRemaining"
+                    :day-trades-remaining-T+1                              "DayTradesRemainingT+1"
+                    :day-trades-remaining-T+2                              "DayTradesRemainingT+2"
+                    :day-trades-remaining-T+3                              "DayTradesRemainingT+3"
+                    :day-trades-remaining-T+4                              "DayTradesRemainingT+4"
+                    :equity-with-loan-value                                "EquityWithLoanValue"
+                    :equity-with-loan-value-commodities                    "EquityWithLoanValue-C"
+                    :equity-with-loan-value-stock                          "EquityWithLoanValue-S"
+                    :excess-liquidity                                      "ExcessLiquidity"
+                    :excess-liquidity-commodities                          "ExcessLiquidity-C"
+                    :excess-liquidity-stock                                "ExcessLiquidity-S"
+                    :exchange-rate                                         "ExchangeRate"
+                    :full-available-funds                                  "FullAvailableFunds"
+                    :full-available-funds-commodities                      "FullAvailableFunds-C"
+                    :full-available-funds-stock                            "FullAvailableFunds-S"
+                    :full-excess-liquidity                                 "FullExcessLiquidity"
+                    :full-excess-liquidity-commodities                     "FullExcessLiquidity-C"
+                    :full-excess-liquidity-stock                           "FullExcessLiquidity-S"
+                    :full-initial-margin-requirement                       "FullInitMarginReq"
+                    :full-initial-margin-requirement-commodities           "FullInitMarginReq-C"
+                    :full-initial-margin-requirement-stock                 "FullInitMarginReq-S"
+                    :full-maintenance-margin-requirement                   "FullMaintMarginReq"
+                    :full-maintenance-margin-requirement-commodities       "FullMaintMarginReq-C"
+                    :full-maintenance-margin-requirement-stock             "FullMaintMarginReq-S"
+                    :fund-value                                            "FundValue"
+                    :future-option-value                                   "FutureOptionValue"
+                    :futures-profit-loss                                   "FuturesPNL"
+                    :fx-cash-balance                                       "FxCashBalance"
+                    :gross-position-value                                  "GrossPositionValue"
+                    :gross-position-value-stock                            "GrossPositionValue-S"
+                    :highest-severity                                      "HighestSeverity"
+                    :indian-stock-haircut                                  "IndianStockHaircut"
+                    :indian-stock-haircut-commodities                      "IndianStockHaircut-C"
+                    :indian-stock-haircut-stock                            "IndianStockHaircut-S"
+                    :initial-margin-requirement                            "InitMarginReq"
+                    :initial-margin-requirement-commodities                "InitMarginReq-C"
+                    :initial-margin-requirement-stock                      "InitMarginReq-S"
+                    :leverage-stock                                        "Leverage-S"
+                    :leverage                                              "Leverage"
+                    :look-ahead-available-funds                            "LookAheadAvailableFunds"
+                    :look-ahead-available-funds-commodities                "LookAheadAvailableFunds-C"
+                    :look-ahead-available-funds-stock                      "LookAheadAvailableFunds-S"
+                    :look-ahead-excess-liquidity                           "LookAheadExcessLiquidity"
+                    :look-ahead-excess-liquidity-commodities               "LookAheadExcessLiquidity-C"
+                    :look-ahead-excess-liquidity-stock                     "LookAheadExcessLiquidity-S"
+                    :look-ahead-initial-margin-requirement                 "LookAheadInitMarginReq"
+                    :look-ahead-initial-margin-requirement-commodities     "LookAheadInitMarginReq-C"
+                    :look-ahead-initial-margin-requirement-stock           "LookAheadInitMarginReq-S"
+                    :look-ahead-maintenance-margin-requirement             "LookAheadMaintMarginReq"
                     :look-ahead-maintenance-margin-requirement-commodities "LookAheadMaintMarginReq-C"
-                    :look-ahead-maintenance-margin-requirement-stock "LookAheadMaintMarginReq-S"
-                    :look-ahead-next-change "LookAheadNextChange"
-                    :maintenance-margin-requirement "MaintMarginReq"
-                    :maintenance-margin-requirement-commodities "MaintMarginReq-C"
-                    :maintenance-margin-requirement-stock "MaintMarginReq-S"
-                    :money-market-fund-value "MoneyMarketFundValue"
-                    :mutual-fund-value "MutualFundValue"
-                    :net-dividend "NetDividend"
-                    :net-liquidation "NetLiquidation"
-                    :net-liquidation-commodities "NetLiquidation-C"
-                    :net-liquidation-stock "NetLiquidation-S"
-                    :net-liquidation-by-currency "NetLiquidationByCurrency"
-                    :net-liquidation-value-and-margin-in-review "NLVAndMarginInReview"
-                    :option-market-value "OptionMarketValue"
-                    :pa-shares-value "PASharesValue"
-                    :pa-shares-value-commodities "PASharesValue-C"
-                    :pa-shares-value-stock "PASharesValue-S"
-                    :post-expiration-excess "PostExpirationExcess"
-                    :post-expiration-excess-commodities "PostExpirationExcess-C"
-                    :post-expiration-excess-stock "PostExpirationExcess-S"
-                    :post-expiration-margin "PostExpirationMargin"
-                    :post-expiration-margin-commodities "PostExpirationMargin-C"
-                    :post-expiration-margin-stock "PostExpirationMargin-S"
-                    :profit-loss "PNL"
-                    :previous-day-equity-with-loan-value "PreviousDayEquityWithLoanValue"
-                    :previous-day-equity-with-loan-value-stock "PreviousDayEquityWithLoanValue-S"
-                    :realized-profit-loss "RealizedPnL"
-                    :regulation-T-equity "RegTEquity"
-                    :regulation-T-equity-stock "RegTEquity-S"
-                    :regulation-T-margin "RegTMargin"
-                    :regulation-T-margin-stock "RegTMargin-S"
-                    :segment-title-commodities "SegmentTitle-C"
-                    :segment-title-stock "SegmentTitle-S"
-                    :settled-cash "SettledCash"
-                    :sma "SMA"
-                    :sma-stock "SMA-S"
-                    :stock-market-value "StockMarketValue"
-                    :t-bill-value "TBillValue"
-                    :t-bond-value "TBondValue"
-                    :total-cash-balance "TotalCashBalance"
-                    :total-cash-value "TotalCashValue"
-                    :total-cash-value-commodities "TotalCashValue-C"
-                    :total-cash-value-stock "TotalCashValue-S"
-                    :trading-type-stock "TradingType-S"
-                    :unaltered-initial-margin-requirement "UnalteredInitMarginReq"
-                    :unaltered-maintenance-margin-requirement "UnalteredMaintMarginReq"
-                    :unrealized-profit-loss "UnrealizedPnL"
-                    :warrants-value "WarrantValue"
-                    :what-if-portfolio-margin-enabled "WhatIfPMEnabled"
+                    :look-ahead-maintenance-margin-requirement-stock       "LookAheadMaintMarginReq-S"
+                    :look-ahead-next-change                                "LookAheadNextChange"
+                    :maintenance-margin-requirement                        "MaintMarginReq"
+                    :maintenance-margin-requirement-commodities            "MaintMarginReq-C"
+                    :maintenance-margin-requirement-stock                  "MaintMarginReq-S"
+                    :money-market-fund-value                               "MoneyMarketFundValue"
+                    :mutual-fund-value                                     "MutualFundValue"
+                    :net-dividend                                          "NetDividend"
+                    :net-liquidation                                       "NetLiquidation"
+                    :net-liquidation-commodities                           "NetLiquidation-C"
+                    :net-liquidation-stock                                 "NetLiquidation-S"
+                    :net-liquidation-by-currency                           "NetLiquidationByCurrency"
+                    :net-liquidation-value-and-margin-in-review            "NLVAndMarginInReview"
+                    :option-market-value                                   "OptionMarketValue"
+                    :pa-shares-value                                       "PASharesValue"
+                    :pa-shares-value-commodities                           "PASharesValue-C"
+                    :pa-shares-value-stock                                 "PASharesValue-S"
+                    :post-expiration-excess                                "PostExpirationExcess"
+                    :post-expiration-excess-commodities                    "PostExpirationExcess-C"
+                    :post-expiration-excess-stock                          "PostExpirationExcess-S"
+                    :post-expiration-margin                                "PostExpirationMargin"
+                    :post-expiration-margin-commodities                    "PostExpirationMargin-C"
+                    :post-expiration-margin-stock                          "PostExpirationMargin-S"
+                    :profit-loss                                           "PNL"
+                    :previous-day-equity-with-loan-value                   "PreviousDayEquityWithLoanValue"
+                    :previous-day-equity-with-loan-value-stock             "PreviousDayEquityWithLoanValue-S"
+                    :realized-profit-loss                                  "RealizedPnL"
+                    :regulation-T-equity                                   "RegTEquity"
+                    :regulation-T-equity-stock                             "RegTEquity-S"
+                    :regulation-T-margin                                   "RegTMargin"
+                    :regulation-T-margin-stock                             "RegTMargin-S"
+                    :segment-title-commodities                             "SegmentTitle-C"
+                    :segment-title-stock                                   "SegmentTitle-S"
+                    :settled-cash                                          "SettledCash"
+                    :sma                                                   "SMA"
+                    :sma-stock                                             "SMA-S"
+                    :stock-market-value                                    "StockMarketValue"
+                    :t-bill-value                                          "TBillValue"
+                    :t-bond-value                                          "TBondValue"
+                    :total-cash-balance                                    "TotalCashBalance"
+                    :total-cash-value                                      "TotalCashValue"
+                    :total-cash-value-commodities                          "TotalCashValue-C"
+                    :total-cash-value-stock                                "TotalCashValue-S"
+                    :trading-type-stock                                    "TradingType-S"
+                    :unaltered-initial-margin-requirement                  "UnalteredInitMarginReq"
+                    :unaltered-maintenance-margin-requirement              "UnalteredMaintMarginReq"
+                    :unrealized-profit-loss                                "UnrealizedPnL"
+                    :warrants-value                                        "WarrantValue"
+                    :what-if-portfolio-margin-enabled                      "WhatIfPMEnabled"
                     })
 
 (defn numeric-account-value? [key]
@@ -681,7 +685,7 @@ to check if if a given value is valid (known)."
                :full-maintenance-margin-requirement :full-maintenance-margin-requirement-commodities :full-maintenance-margin-requirement-stock
                :fund-value :future-option-value :futures-profit-loss :fx-cash-balance
                :gross-position-value :gross-position-values-commodities :gross-position-value-stock
-               :indian-stock-haricut :indian-stock-haircut-commodities :indian-stock-haircut-stock
+               :indian-stock-haircut :indian-stock-haircut-commodities :indian-stock-haircut-stock
                :initial-margin-requirement :initial-margin-requirement-commodities :initial-margin-requirement-stock
                :leverage :leverage-commodities :leverage-stock
                :look-ahead-available-funds :look-ahead-available-funds-commodities :look-ahead-available-funds-stock
@@ -732,30 +736,30 @@ to check if if a given value is valid (known)."
                     })
 
 (translation-table report-type
-                   {:company-overview "ReportSnapshot"
-                    :financial-summary "ReportsFinSummary"
-                    :financial-ratios "ReportRatios"
+                   {:company-overview     "ReportSnapshot"
+                    :financial-summary    "ReportsFinSummary"
+                    :financial-ratios     "ReportRatios"
                     :financial-statements "ReportsFinStatements"
-                    :analyst-estimates "RESC"
-                    :company-calendar "CalendarReport"
+                    :analyst-estimates    "RESC"
+                    :company-calendar     "CalendarReport"
                     })
 
 (translation-table rule-80A
-                   {:individual "I"
-                    :agency "A"
-                    :agent-other-member "W"
-                    :individual-PTIA "J"
-                    :agency-PTIA "U"
+                   {:individual              "I"
+                    :agency                  "A"
+                    :agent-other-member      "W"
+                    :individual-PTIA         "J"
+                    :agency-PTIA             "U"
                     :agent-other-member-PTIA "M"
-                    :individual-PT "K"
-                    :agency-PT "Y"
-                    :agent-other-member-PT "N"})
+                    :individual-PT           "K"
+                    :agency-PT               "Y"
+                    :agent-other-member-PT   "N"})
 
 (translation-table market-data-type
                    {:real-time-streaming 1
-                    :frozen 2
-                    :delayed 3
-                    :delayed-frozen 4})
+                    :frozen              2
+                    :delayed             3
+                    :delayed-frozen      4})
 
 (translation-table boolean-int
                    {true 1
@@ -771,7 +775,7 @@ to check if if a given value is valid (known)."
                     :financial-advisor-account-aliases 3})
 
 (translation-table right
-                   {:put com.ib.client.Types$Right/Put
+                   {:put  com.ib.client.Types$Right/Put
                     :call com.ib.client.Types$Right/Call
                     :none com.ib.client.Types$Right/None})
 
@@ -939,10 +943,18 @@ to check if if a given value is valid (known)."
 (defmethod translate [:to-ib :exchanges] [_ _ val]
   (str/join "," val))
 
+;This is necessary because the com.ib.client.Decimal doesn't exist in previous versions of twsapi
+(def ^java.lang.reflect.Method val->decimal
+  (when use-decimal?
+    (.getMethod (Class/forName "com.ib.client.Decimal")
+                "parse"
+                (into-array [java.lang.String]))))
+
 ;only for 10.10 onwards
 (defmethod translate [:to-ib :string-to-decimal] [_ _ val]
-  (if use-decimal?
-    (com.ib.client.Decimal/parse (str val))
+  ;we coerce val to str, just in case
+  (if val->decimal
+    (.invoke val->decimal nil (into-array [(str val)]))
     val))
 
 ;only for 10.10 onwards

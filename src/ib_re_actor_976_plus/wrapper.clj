@@ -1,6 +1,7 @@
 (ns ib-re-actor-976-plus.wrapper
   (:require
     [clojure.tools.logging :as log]
+    [ib-re-actor-976-plus.translation :refer [tws-version]]
     [ib-re-actor-976-plus.mapping :refer [->map]]
     [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate tws-version]])
   (:import
@@ -146,11 +147,12 @@
 (def error-methods
   "These methods need to be implemented separately as they're overloaded - same name with different signature.
   Interestingly, even though the type hints don't appear in the REPL, they're there and removing them makes reify fail.
-  cb is the name of the dispatch function
-  "
-  [
-   (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String message)]
-         (list dispatch-message (quote cb) {:type :error :id (quote id) :code (quote errorCode) :message (quote message)}))
+  cb is the name of the dispatch function"
+  [(if (> (read-string (clojure.string/replace (subs tws-version 0 5) "." "")) 1011)
+     (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String errorMsg) (quote ^String advancedOrderRejectJson)]
+           (list dispatch-message (quote cb) {:type :error :id (quote id) :code (quote errorCode) :message (quote errorMsg) :advanced-order-reject-json (quote advancedOrderRejectJson)}))
+     (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String message)]
+           (list dispatch-message (quote cb) {:type :error :id (quote id) :code (quote errorCode) :message (quote message)})))
 
    (list (quote ^void error) [(quote this) (quote ^Exception ex)]
          (list dispatch-message (quote cb) {:type :error :ex (quote ex)}))

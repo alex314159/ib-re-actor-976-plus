@@ -1,6 +1,4 @@
-(ns demo_apps.advanced_app
-
-
+(ns demoapps.advanced_app
   (:require [ib-re-actor-976-plus.gateway :as gateway]
             [clojure.tools.logging :as log]
             [ib-re-actor-976-plus.translation :as translation]

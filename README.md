@@ -6,7 +6,7 @@ A clojure friendly wrapper around the Interactive Brokers java API.
 
 ## Acknowledgements
 
-This is a heavily refactored fork of https://github.com/cbilson/ib-re-actor and https://github.com/jsab/ib-re-actor. That wrapper was suitable for the 971 version of the API. Interactive Brokers introduced several breaking changes starting with version 972. This main purpose of this wrapper is to update the code to work with subsequent API version. It also introduces some simplifying changes. At the moment it has been tested with version 976 and more recent. See addendums for list of changes from the original.
+This is a heavily refactored fork of https://github.com/cbilson/ib-re-actor and https://github.com/jsab/ib-re-actor. That wrapper was suitable for the 971 version of the API. Interactive Brokers introduced several breaking changes starting with version 972. This main purpose of this wrapper is to update the code to work with subsequent API versions. It also introduces some simplifying changes. At the moment it has been tested with version 976 and more recent. See addendums for list of changes from the original.
 
 ## Installation
 
@@ -16,7 +16,7 @@ From the download folder, go to IBJts/source/JavaClient and find the TwsApi.jar 
 
 In `project.clj` add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.8-SNAPSHOT"]` in your dependencies.
 
-At the moment this has been tested with 9.76.01, 9.80.03, 9.81.01, 9.85.01, 10.10.04 and 10.11.01, 10.15.02 and 10.16.01. Other versions will fall back to 9.76.01.
+At the moment this has been tested with 9.76.01, 9.80.03, 9.81.01, 9.85.01, 10.10.04, 10.11.01, 10.15.02 and 10.16.01. Other versions will fall back to 9.76.01.
 
 ## Warning
 

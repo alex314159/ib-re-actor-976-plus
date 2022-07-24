@@ -12,11 +12,11 @@ This is a heavily refactored fork of https://github.com/cbilson/ib-re-actor and 
 
 IB does not distribute the TWSAPI on central repositories so you have to download it manually from http://interactivebrokers.github.io/# and install it locally. Note that downloading the API from that link is implicitly consenting to IB's license. The following instructions have been tested with Leiningen.
 
-From the download folder, go to IBJts/source/JavaClient and find the TwsApi.jar file. Rename this file twsapi-version.jar (so for version 9.76.01 it is twsapi-9.76.01.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 10.15.02 you end up having `.../.m2/repository/twsapi/twsapi/10.15.02/twsapi-10.15.02.jar`. Note that on Mac you may get a warning that the original downloaded zip file is in an unsupported format, extract it in Linux or use another zip unarchiver.  
+From the download folder, go to IBJts/source/JavaClient and find the TwsApi.jar file. Rename this file twsapi-version.jar (so for version 9.76.01 it is twsapi-9.76.01.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 10.15.02 you end up having `.../.m2/repository/twsapi/twsapi/10.15.02/twsapi-10.15.02.jar`. Note that on Mac the default unarchiver will refuse to open the zip file, extract it in the terminal by typing `unzip [filename.zip]` or use another unarchiver.  
 
-In `project.clj` add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.7-SNAPSHOT"]` in your dependencies.
+In `project.clj` add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.8-SNAPSHOT"]` in your dependencies.
 
-At the moment this has been tested with 9.76.01, 9.80.03, 9.81.01, 9.85.01, 10.10.04 and 10.11.01 and 10.15.02. Other versions will fall back to 9.76.01.
+At the moment this has been tested with 9.76.01, 9.80.03, 9.81.01, 9.85.01, 10.10.04 and 10.11.01, 10.15.02 and 10.16.01. Other versions will fall back to 9.76.01.
 
 ## Warning
 

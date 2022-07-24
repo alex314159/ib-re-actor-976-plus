@@ -6,7 +6,7 @@
   com.ib.client.EClientSocket which is a socket client to the gateway, or TWS.
   When instantiating this object you pass in another object which must implement
   the com.ib.client.EWrapper interface. The EWrapper is a collection of
-  callbacks. You then invoke methods (like requesting price data) on the the
+  callbacks. You then invoke methods (like requesting price data) on the
   EClientSocket object and the results (price update events) is returned by the
   EWrapper callbacks. So the typical pattern for dealing with the IB API is to
   implement an EWrapper type object for each application, which requires a lot
@@ -14,7 +14,7 @@
 
   This library takes a slightly different approach to try ease that burden. The
   library implements a listener framework around each callback in the EWrapper
-  object. So what happens is that each time the IB Gateway calls back to an
+  object. So what happens is that each time the IB Gateway calls back to a
   method in the EWrapper, our object parses the response and packages it up into
   a tidy Clojure map which its hands to any registered listeners.
 
@@ -147,7 +147,7 @@
   If the connection fails, returns nil. See log in that case.
 
   client-id identifies this connection. Only one connection can be made per
-  client-id to the same server..
+  client-id to the same server.
 
   host is the hostname or address of the server running IB Gateway or TWS.
 
@@ -175,9 +175,26 @@
          (log/error "Error trying to connect to " host ":" port ": " ex)))))
   )
 
+(defn connect-simple
+  "Same as above but this connection only accepts one listener, set at creation.
+  It returns the same object type as connect but is immutable.
+  This is useful in a real world application where your listener is a multi-method.
+  "
+  ([client-id]
+   (connect-simple client-id "localhost" default-paper-port println))
+  ([client-id host port listener-function]
+   (try
+     (let [wr (wrapper/create (fn [message] (try (listener-function message) (catch Throwable t (log/error t "Error dispatching" message)))))
+           signal (EJavaSignal.)
+           ecs (cs/connect wr signal host port client-id)]
+       (when-not (= :error default-server-log-level)
+         (cs/set-server-log-level ecs default-server-log-level))
+       {:ecs ecs})
+     (catch Exception ex
+       (log/error "Error trying to connect to " host ":" port ": " ex)))))
+
 (defn disconnect [connection]
   (cs/disconnect (:ecs connection)))
-
 
 (defn is-connected? [connection]
   (and (:ecs connection)

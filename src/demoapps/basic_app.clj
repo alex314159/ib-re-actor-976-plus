@@ -14,19 +14,19 @@
 ;Try running these functions one by one.
 ;We will create a connection that simply prints IB messages
 
-(def account "U1234567")                                   ;you need to fill this for the examples to work
+(def account "U1217609")                                   ;you need to fill this for the examples to work
 (def requests (atom 0))                                     ; this is the counter for IB requests
 (def default-port 7496)
 (def default-paper-port 7497)
 
 ;Create the connection. This will return a map with the client and the subscribers.
-(def connection (gateway/connect 2 "localhost" default-paper-port println)) ;you may need to change the port
+(def connection (gateway/connect 2 "localhost" default-port println)) ;you may need to change the port
 
 ;Create data structures - either plain maps or IB objects
-(def ESZ1-map {:symbol "ES" :sec-type "FUT" :exchange "GLOBEX" :currency "USD" :last-trade-date-or-contract-month "20211217"})
-(def ESZ1-contract (map-> com.ib.client.Contract ESZ1-map))
+(def ESZ2-map {:symbol "ES" :sec-type "FUT" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20221216" :multiplier 50})
+(def ESZ2-contract (map-> com.ib.client.Contract ESZ2-map))
 
-(def ESU0C3000-map {:symbol "ES" :sec-type "FOP" :exchange "GLOBEX" :currency "USD" :last-trade-date-or-contract-month "20200918" :right :call :strike 3000})
+(def ESU0C3000-map {:symbol "ES" :sec-type "FOP" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20200918" :right :call :strike 3000 :multiplier 50})
 (def ESU0C3000-contract (map-> com.ib.client.Contract ESU0C3000-map))
 
 (def MSFT-map {:symbol "MSFT" :sec-type "STK" :currency "USD" :exchange "SMART" :primary-exch "NASDAQ"})
@@ -42,8 +42,8 @@
   (cs/request-historical-data
     (:ecs connection)
     (swap! requests inc)
-    ESZ1-map
-    "20210920 0:00:00"                                      ;the format is important. It defaults to TWS timezone if not specified
+    ESZ2-map
+    "20221210 00:00:00 UTC"                                      ;the format is important. It defaults to TWS timezone if not specified
     10 :days
     1 :day
     :trades
@@ -55,8 +55,8 @@
   (.reqHistoricalData
     (:ecs connection)
     (swap! requests inc)
-    ESZ1-contract
-    "20210920 0:00:00" ;the format is important. It defaults to TWS timezone if not specified
+    ESZ2-contract
+    "20221210 00:00:00 UTC" ;the format is important. Having issues with US/Eastern
     "10 D"
     "1 day"
     "TRADES"
@@ -69,7 +69,7 @@
   (cs/request-market-data
     (:ecs connection)
     (swap! requests inc)
-    ESU0-map
+    ESZ2-map
     nil
     false
     false))

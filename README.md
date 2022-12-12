@@ -16,7 +16,7 @@ From the download folder, go to IBJts/source/JavaClient and find the TwsApi.jar 
 
 In `project.clj` add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.8-SNAPSHOT"]` in your dependencies.
 
-At the moment this has been tested with 9.76.01, 9.80.03, 9.81.01, 9.85.01, 10.10.04, 10.11.01, 10.15.02 and 10.16.01. Other versions will fall back to 9.76.01.
+At the moment this has been tested with 9.76.01, 9.80.03, 9.81.01, 9.85.01, 10.10.04, 10.11.01, 10.15.02, 10.16.01 and 10.20.01. Other versions will fall back to 9.76.01.
 
 ## Warning
 
@@ -32,7 +32,7 @@ What the wrapper does:
 
 You need to provide the connection with listeners that will do things based on callbacks. Typically you will only need to listen to a small subset of the events that can be emitted by the wrapper. So if you don't use historical data or options you don't need to listen to these callbacks. Note that if you're going to do things that take time, it's a good idea to start them in separate threads so the listener thread is always free. You can provide the connection with many listeners. Another natural way is to define a multimethod that will filter on event type and print or log by default.
 
-Finally you need to manage your own request-ids and order-ids. Note that IB only accepts order-ids in increasing order - if you are sending orders concurrently, use a locking mechanism.
+Finally, you need to manage your own request-ids and order-ids. Note that IB only accepts order-ids in increasing order - if you are sending orders concurrently, use a locking mechanism.
 
 Check the demo_apps folder for example usage. For any help on the underlying events, the official API documentation is at https://interactivebrokers.github.io/tws-api/.
 
@@ -47,16 +47,16 @@ After a long period of stability with version 971, Interactive Brokers introduce
 
 The smart stuff was done before me. Indeed, a great amount of work was originally done to translate IB outputs into clean Clojure data maps, as well as convert Clojure data maps to Java classes.
 
-However, with the introduction of many more classes, most of which I have no use for and I'm not sure how to test, I've gone back to basics: if IB is sending you an Object as a result, you'll get an Object in the wrapper.  In essence the EWrapper implementation is now auto-generated from the `EWrapper.java` interface, making it largely future proof. For every callback, the code will send a map of the form `{:type :calling-function-name-in-kebab-case :calling-function-argument-name-in-kebab-case calling-function-argument-value}`. This makes it easy to refer to the Interactive Brokers API official documentation.
+However, with the introduction of many more classes, most of which I have no use for, and I'm not sure how to test, I've gone back to basics: if IB is sending you an Object as a result, you'll get an Object in the wrapper.  In essence the EWrapper implementation is now auto-generated from the `EWrapper.java` interface, making it largely future proof. For every callback, the code will send a map of the form `{:type :calling-function-name-in-kebab-case :calling-function-argument-name-in-kebab-case calling-function-argument-value}`. This makes it easy to refer to the Interactive Brokers API official documentation.
 
 The code to translate from and to IB classes is still there and has been updated to the best of my abilities, but it is not fully tested. Given IB changes things overtime, I think it is safer to use this code at the edge of your project, instead of inside the `EWrapper` implementation as it was originally done. Please refer to the demo_apps folder for examples.
 
-Finally I've broken dependencies to clj-time, which itself is a wrapper around Joda time, preferring to keep raw IB results. The rationale for that is two-fold: first, `java.time` supersedes Joda time and is easy to call directly from Clojure. Secondly, interpreting IB results led to some very messy code, partly because IB themselves are not consistent with their use of dates, times, and timezones.
+Finally, I've broken dependencies to clj-time, which itself is a wrapper around Joda time, preferring to keep raw IB results. The rationale for that is two-fold: first, `java.time` supersedes Joda time and is easy to call directly from Clojure. Secondly, interpreting IB results led to some very messy code, partly because IB themselves are not consistent with their use of dates, times, and timezones.
 
 
 ## License
 
-Copyright (C) 2011-2021 Chris Bilson, Jean-Sebastien A. Beaudry, Alexandre Almosni
+Copyright (C) 2011-2022 Chris Bilson, Jean-Sebastien A. Beaudry, Alexandre Almosni
 
 Distributed under the Eclipse Public License, the same as Clojure.
 

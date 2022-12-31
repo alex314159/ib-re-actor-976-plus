@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.82] - 2022-12-31
+### Bug fixes
+- Added translation for more account keys
+
 ## [0.1.8] - 2022-07-24
 ### Bug fixes
 - Compatibility with twsapi 10.16.01

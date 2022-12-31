@@ -552,20 +552,28 @@ to check if if a given value is valid (known)."
                     :account-code                                          "AccountCode"
                     :account-ready                                         "AccountReady"
                     :account-type                                          "AccountType"
+                    :account-or-group                                      "AccountOrGroup"
                     :accrued-cash                                          "AccruedCash"
                     :accrued-cash-commodities                              "AccruedCash-C"
                     :accrued-cash-stock                                    "AccruedCash-S"
+                    :accrued-cash-regulated                                "AccruedCash-F"
                     :accrued-dividend                                      "AccruedDividend"
                     :accrued-dividend-commodities                          "AccruedDividend-C"
                     :accrued-dividend-stock                                "AccruedDividend-S"
+                    :accrued-dividend-regulated                            "AccruedDividend-F"
                     :available-funds                                       "AvailableFunds"
                     :available-funds-commodities                           "AvailableFunds-C"
                     :available-funds-stock                                 "AvailableFunds-S"
+                    :available-funds-regulated                             "AvailableFunds-F"
                     :billable                                              "Billable"
                     :billable-commodities                                  "Billable-C"
                     :billable-stock                                        "Billable-S"
+                    :billable-regulated                                    "Billable-F"
                     :buying-power                                          "BuyingPower"
                     :cash-balance                                          "CashBalance"
+                    :column-prio-commodities                               "ColumnPrio-C"
+                    :column-prio-stock                                     "ColumnPrio-S"
+                    :column-prio-regulated                                 "ColumnPrio-F"
                     :corporate-bond-value                                  "CorporateBondValue"
                     :currency                                              "Currency"
                     :cushion                                               "Cushion"
@@ -577,74 +585,104 @@ to check if if a given value is valid (known)."
                     :equity-with-loan-value                                "EquityWithLoanValue"
                     :equity-with-loan-value-commodities                    "EquityWithLoanValue-C"
                     :equity-with-loan-value-stock                          "EquityWithLoanValue-S"
+                    :equity-with-loan-value-regulated                      "EquityWithLoanValue-F"
                     :excess-liquidity                                      "ExcessLiquidity"
                     :excess-liquidity-commodities                          "ExcessLiquidity-C"
                     :excess-liquidity-stock                                "ExcessLiquidity-S"
+                    :excess-liquidity-regulated                            "ExcessLiquidity-F"
                     :exchange-rate                                         "ExchangeRate"
                     :full-available-funds                                  "FullAvailableFunds"
                     :full-available-funds-commodities                      "FullAvailableFunds-C"
                     :full-available-funds-stock                            "FullAvailableFunds-S"
+                    :full-available-funds-regulated                        "FullAvailableFunds-F"
                     :full-excess-liquidity                                 "FullExcessLiquidity"
                     :full-excess-liquidity-commodities                     "FullExcessLiquidity-C"
                     :full-excess-liquidity-stock                           "FullExcessLiquidity-S"
+                    :full-excess-liquidity-regulated                       "FullExcessLiquidity-F"
                     :full-initial-margin-requirement                       "FullInitMarginReq"
                     :full-initial-margin-requirement-commodities           "FullInitMarginReq-C"
                     :full-initial-margin-requirement-stock                 "FullInitMarginReq-S"
+                    :full-initial-margin-requirement-regulated             "FullInitMarginReq-F"
                     :full-maintenance-margin-requirement                   "FullMaintMarginReq"
                     :full-maintenance-margin-requirement-commodities       "FullMaintMarginReq-C"
                     :full-maintenance-margin-requirement-stock             "FullMaintMarginReq-S"
+                    :full-maintenance-margin-requirement-regulated         "FullMaintMarginReq-F"
                     :fund-value                                            "FundValue"
                     :future-option-value                                   "FutureOptionValue"
                     :futures-profit-loss                                   "FuturesPNL"
                     :fx-cash-balance                                       "FxCashBalance"
                     :gross-position-value                                  "GrossPositionValue"
                     :gross-position-value-stock                            "GrossPositionValue-S"
+                    :gross-position-value-regulated                        "GrossPositionValue-F"
+                    :guarantee                                             "Guarantee"
+                    :guarantee-commodities                                 "Guarantee-C"
+                    :guarantee-stock                                       "Guarantee-S"
+                    :guarantee-regulated                                   "Guarantee-F"
                     :highest-severity                                      "HighestSeverity"
                     :indian-stock-haircut                                  "IndianStockHaircut"
                     :indian-stock-haircut-commodities                      "IndianStockHaircut-C"
                     :indian-stock-haircut-stock                            "IndianStockHaircut-S"
+                    :indian-stock-haircut-regulated                        "IndianStockHaircut-F"
                     :initial-margin-requirement                            "InitMarginReq"
                     :initial-margin-requirement-commodities                "InitMarginReq-C"
                     :initial-margin-requirement-stock                      "InitMarginReq-S"
-                    :leverage-stock                                        "Leverage-S"
+                    :initial-margin-requirement-regulated                  "InitMarginReq-F"
+                    :issuer-option-value                                   "IssuerOptionValue"
                     :leverage                                              "Leverage"
+                    :leverage-stock                                        "Leverage-S"
+                    :leverage-regulated                                    "Leverage-F"
                     :look-ahead-available-funds                            "LookAheadAvailableFunds"
                     :look-ahead-available-funds-commodities                "LookAheadAvailableFunds-C"
                     :look-ahead-available-funds-stock                      "LookAheadAvailableFunds-S"
+                    :look-ahead-available-funds-regulated                  "LookAheadAvailableFunds-F"
                     :look-ahead-excess-liquidity                           "LookAheadExcessLiquidity"
                     :look-ahead-excess-liquidity-commodities               "LookAheadExcessLiquidity-C"
                     :look-ahead-excess-liquidity-stock                     "LookAheadExcessLiquidity-S"
+                    :look-ahead-excess-liquidity-regulated                 "LookAheadExcessLiquidity-F"
                     :look-ahead-initial-margin-requirement                 "LookAheadInitMarginReq"
                     :look-ahead-initial-margin-requirement-commodities     "LookAheadInitMarginReq-C"
                     :look-ahead-initial-margin-requirement-stock           "LookAheadInitMarginReq-S"
+                    :look-ahead-initial-margin-requirement-regulated       "LookAheadInitMarginReq-F"
                     :look-ahead-maintenance-margin-requirement             "LookAheadMaintMarginReq"
                     :look-ahead-maintenance-margin-requirement-commodities "LookAheadMaintMarginReq-C"
                     :look-ahead-maintenance-margin-requirement-stock       "LookAheadMaintMarginReq-S"
+                    :look-ahead-maintenance-margin-requirement-regulated   "LookAheadMaintMarginReq-F"
                     :look-ahead-next-change                                "LookAheadNextChange"
                     :maintenance-margin-requirement                        "MaintMarginReq"
                     :maintenance-margin-requirement-commodities            "MaintMarginReq-C"
                     :maintenance-margin-requirement-stock                  "MaintMarginReq-S"
+                    :maintenance-margin-requirement-regulated              "MaintMarginReq-F"
                     :money-market-fund-value                               "MoneyMarketFundValue"
                     :mutual-fund-value                                     "MutualFundValue"
                     :net-dividend                                          "NetDividend"
                     :net-liquidation                                       "NetLiquidation"
                     :net-liquidation-commodities                           "NetLiquidation-C"
                     :net-liquidation-stock                                 "NetLiquidation-S"
+                    :net-liquidation-regulated                             "NetLiquidation-F"
                     :net-liquidation-by-currency                           "NetLiquidationByCurrency"
+                    :net-liquidation-uncertainty                           "NetLiquidationUncertainty"
                     :net-liquidation-value-and-margin-in-review            "NLVAndMarginInReview"
                     :option-market-value                                   "OptionMarketValue"
                     :pa-shares-value                                       "PASharesValue"
                     :pa-shares-value-commodities                           "PASharesValue-C"
                     :pa-shares-value-stock                                 "PASharesValue-S"
+                    :pa-shares-value-regulated                             "PASharesValue-F"
+                    :physical-certificate-value                            "PhysicalCertificateValue"
+                    :physical-certificate-value-commodities                "PhysicalCertificateValue-C"
+                    :physical-certificate-value-stock                      "PhysicalCertificateValue-S"
+                    :physical-certificate-value-regulated                  "PhysicalCertificateValue-F"
                     :post-expiration-excess                                "PostExpirationExcess"
                     :post-expiration-excess-commodities                    "PostExpirationExcess-C"
                     :post-expiration-excess-stock                          "PostExpirationExcess-S"
+                    :post-expiration-excess-regulated                      "PostExpirationExcess-F"
                     :post-expiration-margin                                "PostExpirationMargin"
                     :post-expiration-margin-commodities                    "PostExpirationMargin-C"
                     :post-expiration-margin-stock                          "PostExpirationMargin-S"
+                    :post-expiration-margin-regulated                      "PostExpirationMargin-F"
                     :profit-loss                                           "PNL"
                     :previous-day-equity-with-loan-value                   "PreviousDayEquityWithLoanValue"
                     :previous-day-equity-with-loan-value-stock             "PreviousDayEquityWithLoanValue-S"
+                    :real-currency                                         "RealCurrency"
                     :realized-profit-loss                                  "RealizedPnL"
                     :regulation-T-equity                                   "RegTEquity"
                     :regulation-T-equity-stock                             "RegTEquity-S"
@@ -652,6 +690,7 @@ to check if if a given value is valid (known)."
                     :regulation-T-margin-stock                             "RegTMargin-S"
                     :segment-title-commodities                             "SegmentTitle-C"
                     :segment-title-stock                                   "SegmentTitle-S"
+                    :segment-title-regulated                               "SegmentTitle-F"
                     :settled-cash                                          "SettledCash"
                     :sma                                                   "SMA"
                     :sma-stock                                             "SMA-S"
@@ -662,7 +701,13 @@ to check if if a given value is valid (known)."
                     :total-cash-value                                      "TotalCashValue"
                     :total-cash-value-commodities                          "TotalCashValue-C"
                     :total-cash-value-stock                                "TotalCashValue-S"
+                    :total-cash-value-regulated                            "TotalCashValue-F"
+                    :total-debit-card-pending-charges                      "TotalDebitCardPendingCharges"
+                    :total-debit-card-pending-charges-commodities          "TotalDebitCardPendingCharges-C"
+                    :total-debit-card-pending-charges-stock                "TotalDebitCardPendingCharges-S"
+                    :total-debit-card-pending-charges-regulated            "TotalDebitCardPendingCharges-F"
                     :trading-type-stock                                    "TradingType-S"
+                    :trading-type-regulated                                "TradingType-F"
                     :unaltered-initial-margin-requirement                  "UnalteredInitMarginReq"
                     :unaltered-maintenance-margin-requirement              "UnalteredMaintMarginReq"
                     :unrealized-profit-loss                                "UnrealizedPnL"
@@ -671,45 +716,47 @@ to check if if a given value is valid (known)."
                     })
 
 (defn numeric-account-value? [key]
-  (contains? #{:accrued-cash :accrued-cash-commodities :accrued-cash-stock
-               :accrued-dividend :accrued-dividend-commodities :accrued-dividend-stock
-               :available-funds :available-funds-commodities :available-funds-stock
-               :billable :billable-commodities :billable-stock
+  (contains? #{:accrued-cash :accrued-cash-commodities :accrued-cash-stock :accrued-cash-regulated
+               :accrued-dividend :accrued-dividend-commodities :accrued-dividend-stock :accrued-dividend-regulated
+               :available-funds :available-funds-commodities :available-funds-stock :available-funds-regulated
+               :billable :billable-commodities :billable-stock :billable-regulated
                :buying-power :cash-balance :corporate-bond-value :cushion
-               :equity-with-loan-value :equity-with-loan-value-commodities :equity-with-loan-value-stock
-               :excess-liquidity :excess-liquidity-commodities :excess-liquidity-stock
+               :equity-with-loan-value :equity-with-loan-value-commodities :equity-with-loan-value-stock :equity-with-loan-value-regulated
+               :excess-liquidity :excess-liquidity-commodities :excess-liquidity-stock :excess-liquidity-regulated
                :exchange-rate
-               :full-available-funds :full-available-funds-commodities :full-available-funds-stock
-               :full-excess-liquidity :full-excess-liquidity-commodities :full-excess-liquidity-stock
-               :full-initial-margin-requirement :full-initial-margin-requirement-commodities :full-initial-margin-requirement-stock
-               :full-maintenance-margin-requirement :full-maintenance-margin-requirement-commodities :full-maintenance-margin-requirement-stock
+               :full-available-funds :full-available-funds-commodities :full-available-funds-stock :full-available-funds-regulated
+               :full-excess-liquidity :full-excess-liquidity-commodities :full-excess-liquidity-stock :full-excess-liquidity-regulated
+               :full-initial-margin-requirement :full-initial-margin-requirement-commodities :full-initial-margin-requirement-stock :full-initial-margin-requirement-regulated
+               :full-maintenance-margin-requirement :full-maintenance-margin-requirement-commodities :full-maintenance-margin-requirement-stock :full-maintenance-margin-requirement-regulated
                :fund-value :future-option-value :futures-profit-loss :fx-cash-balance
-               :gross-position-value :gross-position-values-commodities :gross-position-value-stock
-               :indian-stock-haircut :indian-stock-haircut-commodities :indian-stock-haircut-stock
-               :initial-margin-requirement :initial-margin-requirement-commodities :initial-margin-requirement-stock
-               :leverage :leverage-commodities :leverage-stock
-               :look-ahead-available-funds :look-ahead-available-funds-commodities :look-ahead-available-funds-stock
-               :look-ahead-excess-liquidity :look-ahead-excess-liquidity-commodities :look-ahead-excess-liquidity-stock
-               :look-ahead-initial-margin-requirement :look-ahead-initial-margin-requirement-commodities :look-ahead-initial-margin-requirement-stock
-               :look-ahead-maintenance-margin-requirement :look-ahead-maintenance-margin-requirement-commodities
-               :look-ahead-maintenance-margin-requirement-stock
+               :gross-position-value :gross-position-values-commodities :gross-position-value-stock :gross-position-value-regulated
+               :guarantee :guarantee-commodities :guarantee-stock :guarantee-regulated
+               :indian-stock-haircut :indian-stock-haircut-commodities :indian-stock-haircut-stock :indian-stock-haircut-regulated
+               :initial-margin-requirement :initial-margin-requirement-commodities :initial-margin-requirement-stock :initial-margin-requirement-regulated
+               :leverage :leverage-commodities :leverage-stock :leverage-regulated
+               :look-ahead-available-funds :look-ahead-available-funds-commodities :look-ahead-available-funds-stock :look-ahead-available-funds-regulated
+               :look-ahead-excess-liquidity :look-ahead-excess-liquidity-commodities :look-ahead-excess-liquidity-stock :look-ahead-excess-liquidity-regulated
+               :look-ahead-initial-margin-requirement :look-ahead-initial-margin-requirement-commodities :look-ahead-initial-margin-requirement-stock :look-ahead-initial-margin-requirement-regulated
+               :look-ahead-maintenance-margin-requirement :look-ahead-maintenance-margin-requirement-commodities :look-ahead-maintenance-margin-requirement-stock :look-ahead-maintenance-margin-requirement-regulated
                :look-ahead-next-change
-               :maintenance-margin-requirement :maintenance-margin-requirement-commodities :maintenance-margin-requirement-stock
+               :maintenance-margin-requirement :maintenance-margin-requirement-commodities :maintenance-margin-requirement-stock :maintenance-margin-requirement-regulated
                :money-market-fund-value :mutual-fund-value :net-dividend
-               :net-liquidation :net-liquidation-commodities :net-liquidation-stock
+               :net-liquidation :net-liquidation-commodities :net-liquidation-stock :net-liquidation-regulated
                :net-liquidation-by-currency :option-market-value
-               :pa-shares-value :pa-shares-value-commodities :pa-shares-value-stock
+               :pa-shares-value :pa-shares-value-commodities :pa-shares-value-stock :pa-shares-value-regulated
+               :physical-certificate-value :physical-certificate-value-commodities :physical-certificate-value-stock :physical-certificate-value-regulated
                :post-expiration-margin
-               :post-expiration-margin-commodities :post-expiration-margin-stock
+               :post-expiration-margin-commodities :post-expiration-margin-stock :post-expiration-margin-regulated
                :post-expiration-excess
-               :post-expiration-excess-commodities :post-expiration-excess-stock
+               :post-expiration-excess-commodities :post-expiration-excess-stock :post-expiration-excess-regulated
                :previous-day-equity-with-loan-value :previous-day-equity-with-loan-value-commodities :previous-day-equity-with-loan-value-stock
                :realized-profit-loss
                :regulation-T-equity :regulation-T-equity-commodities :regulation-T-equity-stock
                :regulation-T-margin :regulation-T-margin-commodities :regulation-T-margin-stock
                :sma :sma-commodities :sma-stock
                :stock-market-value :t-bill-value :t-bond-value :total-cash-balance
-               :total-cash-value :total-cash-value-commodities :total-cash-value-stock
+               :total-cash-value :total-cash-value-commodities :total-cash-value-stock :total-cash-value-regulated
+               :total-debit-card-pending-charges :total-debit-card-pending-charges-commodities :total-debit-card-pending-charges-stock :total-debit-card-pending-charges-regulated
                :unaltered-initial-margin-requirement :unaltered-maintenance-margin-requirement
                :unrealized-profit-loss :warrants-value
                } key))

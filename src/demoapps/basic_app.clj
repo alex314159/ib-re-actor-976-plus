@@ -14,7 +14,7 @@
 ;Try running these functions one by one.
 ;We will create a connection that simply prints IB messages
 
-(def account "U1217609")                                   ;you need to fill this for the examples to work
+(def account "U1234567")                                   ;you need to fill this for the examples to work
 (def requests (atom 0))                                     ; this is the counter for IB requests
 (def default-port 7496)
 (def default-paper-port 7497)

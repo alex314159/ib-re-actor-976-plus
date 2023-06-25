@@ -14,9 +14,9 @@ IB does not distribute the TWSAPI on central repositories so you have to downloa
 
 From the download folder, go to IBJts/source/JavaClient and find the TwsApi.jar file. Rename this file twsapi-version.jar (so for version 10.22.01 it is twsapi-10.22.01.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 10.22.01 you end up having `.../.m2/repository/twsapi/twsapi/10.15.02/twsapi-10.22.01.jar`. Note that on Mac the default unarchiver will refuse to open the zip file, extract it in the terminal by typing `unzip [filename.zip]` or use another unarchiver.  
 
-In `project.clj` add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.83-SNAPSHOT"]` in your dependencies.
+In `project.clj` add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.84-SNAPSHOT"]` in your dependencies.
 
-At the moment this has been tested with 9.76.01, 9.80.03, 9.81.01, 9.85.01, 10.10.04, 10.11.01, 10.15.02, 10.16.01, 10.20.01 and 10.22.01. Other versions will fall back to 9.76.01.
+At the moment this has been tested with 9.76.01, 9.80.03, 9.81.01, 9.85.01, 10.10.04, 10.11.01, 10.15.02, 10.16.01, 10.20.01 and 10.22.01. Other versions will fall back to 10.22.01.
 
 ## Warning
 

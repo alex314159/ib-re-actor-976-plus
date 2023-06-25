@@ -8,16 +8,19 @@
 ;Unfortunately it is important to know the TWS version here, because of the Decimal issue
 
 (def tws-version
-  (let [separator (if (= (subs (System/getProperty "os.name") 0 3) "Win") #"\\" #"/")]
-    (last
-      (drop-last
-        (clojure.string/split
-          (first
-            (filter
-              #(clojure.string/includes? % "twsapi")
-              (clojure.string/split
-                (System/getProperty "java.class.path") #":")))
-          separator)))))
+  (try
+    (let [separator (if (= (subs (System/getProperty "os.name") 0 3) "Win") #"\\" #"/")]
+      (last
+        (drop-last
+          (clojure.string/split
+            (first
+              (filter
+                #(clojure.string/includes? % "twsapi")
+                (clojure.string/split
+                  (System/getProperty "java.class.path") #":")))
+            separator))))
+    (catch Exception e
+      "10.22.01")))
 
 (def use-decimal?
   (let [v (map #(Long/parseLong %) (clojure.string/split tws-version #"\."))]

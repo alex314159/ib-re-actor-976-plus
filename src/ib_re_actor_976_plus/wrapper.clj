@@ -1,7 +1,6 @@
 (ns ib-re-actor-976-plus.wrapper
   (:require
     [clojure.tools.logging :as log]
-    [ib-re-actor-976-plus.translation :refer [tws-version]]
     [ib-re-actor-976-plus.mapping :refer [->map]]
     [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate tws-version]])
   (:import
@@ -132,12 +131,12 @@
 
 
 (def ewrapper-java-methods
-  "We try and find the right version - if not revert to default which is 9.76.01"
+  "We try and find the right version - if not revert to default which is 10.22.01"
   (mapv clojure.string/trim
         (drop-last
           (-> (slurp (if-let [res (clojure.java.io/resource (str "EWrapper_" tws-version ".java"))]
                        res
-                       (clojure.java.io/resource "EWrapper.java")))
+                       (clojure.java.io/resource "EWrapper_10.22.01.java")))
               (remove-header)
               (replace-all)
               (clojure.string/split #";")))))

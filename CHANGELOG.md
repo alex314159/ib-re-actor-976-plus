@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.84] - 2023-06-25
+### Make 10.22.01 the default implementation
+- Better support for uberjar
+
+## [0.1.83] - 2023-06-18
+### Added support for twsapi 10.22.01
+
 ## [0.1.82] - 2022-12-31
 ### Bug fixes
 - Added translation for more account keys

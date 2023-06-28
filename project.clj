@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/tools.logging "1.2.4"]]
+  :plugins [[lein-marginalia "0.9.1"]]
   :profiles {:dev {:dependencies [[twsapi "10.22.01"]
                                   [midje "1.10.9"]
                                   ;[criterium "0.4.6"]

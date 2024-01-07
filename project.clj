@@ -1,4 +1,4 @@
-(defproject ib-re-actor-976-plus "0.1.84-SNAPSHOT"
+(defproject ib-re-actor-976-plus "0.1.85-SNAPSHOT"
   :description "Clojure friendly wrapper for Interactive Brokers Java API"
   :url "https://github.com/alex314159/ib-re-actor-976-plus"
   :license {:name "Eclipse Public License"
@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/tools.logging "1.2.4"]]
   :plugins [[lein-marginalia "0.9.1"]]
-  :profiles {:dev {:dependencies [[twsapi "10.22.01"]
+  :profiles {:dev {:dependencies [[twsapi "10.26.03"]
                                   [midje "1.10.9"]
                                   ;[criterium "0.4.6"]
                                   ]

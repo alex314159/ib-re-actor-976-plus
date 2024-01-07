@@ -131,12 +131,12 @@
 
 
 (def ewrapper-java-methods
-  "We try and find the right version - if not revert to default which is 10.22.01"
+  "We try and find the right version - if not revert to default which is 10.26.03"
   (mapv clojure.string/trim
         (drop-last
           (-> (slurp (if-let [res (clojure.java.io/resource (str "EWrapper_" tws-version ".java"))]
                        res
-                       (clojure.java.io/resource "EWrapper_10.22.01.java")))
+                       (clojure.java.io/resource "EWrapper_10.26.03.java")))
               (remove-header)
               (replace-all)
               (clojure.string/split #";")))))

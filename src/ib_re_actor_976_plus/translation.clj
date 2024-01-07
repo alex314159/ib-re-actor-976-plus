@@ -20,7 +20,7 @@
                   (System/getProperty "java.class.path") #":")))
             separator))))
     (catch Exception e
-      "10.22.01")))
+      "10.26.03")))
 
 (def use-decimal?
   (let [v (map #(Long/parseLong %) (clojure.string/split tws-version #"\."))]
@@ -458,6 +458,11 @@ to check if if a given value is valid (known)."
                     :etf-frozen-nav-last          97
                     :etf-nav-high                 98
                     :etf-nav-low                  99
+                    :social-market-analytics     100
+                    :estimated-ipo-midpoint      101
+                    :final-ipo-last              102
+                    :delayed-yield-bid           103
+                    :delayed-yield-ask           104
                     }
                    )
 

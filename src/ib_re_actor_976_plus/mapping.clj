@@ -186,7 +186,9 @@ create instances, we will only map from objects to clojure maps."
             [:ev-rule evRule]
             [:ev-multiplier evMultiplier]
             [:model-code modelCode]
-            [:last-liquidity lastLiquidity])
+            [:last-liquidity lastLiquidity]
+            [:last-liquidity-str lastLiquidityStr]
+            [:pending-price-revision pendingPriceRevision])
 
 
 (defmapping com.ib.client.Order

@@ -23,8 +23,8 @@
 (def connection (gateway/connect 2 "localhost" default-port println)) ;you may need to change the port
 
 ;Create data structures - either plain maps or IB objects
-(def ESZ2-map {:symbol "ES" :sec-type "FUT" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20221216" :multiplier 50})
-(def ESZ2-contract (map-> com.ib.client.Contract ESZ2-map))
+(def ESU4-map {:symbol "ES" :sec-type "FUT" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20240920" :multiplier 50})
+(def ESU4-contract (map-> com.ib.client.Contract ESU4-map))
 
 (def ESU0C3000-map {:symbol "ES" :sec-type "FOP" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20200918" :right :call :strike 3000 :multiplier 50})
 (def ESU0C3000-contract (map-> com.ib.client.Contract ESU0C3000-map))
@@ -42,8 +42,8 @@
   (cs/request-historical-data
     (:ecs connection)
     (swap! requests inc)
-    ESZ2-map
-    "20221210 00:00:00 UTC"                                      ;the format is important. It defaults to TWS timezone if not specified
+    ESU4-map
+    "20240802 00:00:00 UTC"                                      ;the format is important. It defaults to TWS timezone if not specified
     10 :days
     1 :day
     :trades
@@ -55,7 +55,7 @@
   (.reqHistoricalData
     (:ecs connection)
     (swap! requests inc)
-    ESZ2-contract
+    ESU4-contract
     "20221210 00:00:00 UTC" ;the format is important. Having issues with US/Eastern
     "10 D"
     "1 day"
@@ -69,7 +69,7 @@
   (cs/request-market-data
     (:ecs connection)
     (swap! requests inc)
-    ESZ2-map
+    ESU4-map
     nil
     false
     false))

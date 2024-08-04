@@ -3,7 +3,7 @@
   :url "https://github.com/alex314159/ib-re-actor-976-plus"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.11.3"]
+  :dependencies [[org.clojure/clojure "1.11.4"]
                  [org.clojure/tools.logging "1.2.4"]]
   :plugins [[lein-marginalia "0.9.1"]]
   :profiles {:dev {:dependencies [[twsapi "10.30.01"]

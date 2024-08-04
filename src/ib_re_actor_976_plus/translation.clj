@@ -20,7 +20,7 @@
                   (System/getProperty "java.class.path") #":")))
             separator))))
     (catch Exception e
-      "10.26.03")))
+      "10.30.01")))
 
 (def use-decimal?
   (let [v (map #(Long/parseLong %) (clojure.string/split tws-version #"\."))]

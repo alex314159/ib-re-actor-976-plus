@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.86] - 2024-08-04
+### Added support for twsapi 10.30.01 which is now the default
+
 ## [0.1.85] - 2024-01-07
 ### Added support for twsapi 10.26.03 which is now the default
 

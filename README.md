@@ -12,11 +12,11 @@ This is a heavily refactored fork of https://github.com/cbilson/ib-re-actor and 
 
 IB does not distribute the TWSAPI on central repositories so you have to download it manually from http://interactivebrokers.github.io/# and install it locally. Note that downloading the API from that link is implicitly consenting to IB's license. The following instructions have been tested with Leiningen.
 
-From the download folder, go to IBJts/source/JavaClient and find the TwsApi.jar file. Rename this file twsapi-version.jar (so for version 10.26.03 it is twsapi-10.26.03.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 10.26.03 you end up having `.../.m2/repository/twsapi/twsapi/10.26.03/twsapi-10.26.03.jar`. Note that on Mac the default unarchiver will refuse to open the zip file, extract it in the terminal by typing `unzip [filename.zip]` or use another unarchiver.  
+From the download folder, go to IBJts/source/JavaClient and find the TwsApi.jar file. Rename this file twsapi-version.jar (so for version 10.30.01 it is twsapi-10.30.01.jar) and copy it to  `.../.m2/repository/twsapi/twsapi/version/`, assuming your maven folder is `.m2`. So for version 10.30.01 you end up having `.../.m2/repository/twsapi/twsapi/10.30.01/twsapi-10.30.01.jar`. Note that on Mac the default unarchiver will refuse to open the zip file, extract it in the terminal by typing `unzip [filename.zip]` or use another unarchiver.  
 
-In `project.clj` add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.85-SNAPSHOT"]` in your dependencies.
+In `project.clj` add `[twsapi "version"]` as well as `[ib-re-actor-976-plus "0.1.86-SNAPSHOT"]` in your dependencies.
 
-At the moment this has been tested with most versions between 9.76.01 and 10.26.03. The default fall back is 10.26.03.
+At the moment this has been tested with most versions between 9.76.01 and 10.30.01. The default fall back is 10.30.01.
 
 ## Warning
 

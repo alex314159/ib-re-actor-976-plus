@@ -131,12 +131,10 @@
 
 
 (def ewrapper-java-methods
-  "We try and find the right version - if not revert to default which is 10.30.01"
+  "Default version is managed in translation.clj"
   (mapv clojure.string/trim
         (drop-last
-          (-> (slurp (if-let [res (clojure.java.io/resource (str "EWrapper_" tws-version ".java"))]
-                       res
-                       (clojure.java.io/resource "EWrapper_10.30.01.java")))
+          (-> (slurp (clojure.java.io/resource (str "EWrapper_" tws-version ".java")))
               (remove-header)
               (replace-all)
               (clojure.string/split #";")))))
@@ -147,18 +145,23 @@
   "These methods need to be implemented separately as they're overloaded - same name with different signature.
   Interestingly, even though the type hints don't appear in the REPL, they're there and removing them makes reify fail.
   cb is the name of the dispatch function"
-  [(if (> (read-string (clojure.string/replace (subs tws-version 0 5) "." "")) 1011)
-     (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String errorMsg) (quote ^String advancedOrderRejectJson)]
-           (list dispatch-message (quote cb) {:type :error :id (quote id) :code (quote errorCode) :message (quote errorMsg) :advanced-order-reject-json (quote advancedOrderRejectJson)}))
-     (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String message)]
-           (list dispatch-message (quote cb) {:type :error :id (quote id) :code (quote errorCode) :message (quote message)})))
+  (let [tv (read-string (clojure.string/replace (subs tws-version 0 5) "." ""))]
+    [(if
+       (> tv 1011)
+       (if (>= tv 1033)
+         (list (quote ^void error) [(quote this) (quote ^int id) (quote ^long errorTime) (quote ^int errorCode) (quote ^String errorMsg) (quote ^String advancedOrderRejectJson)]
+               (list dispatch-message (quote cb) {:type :error :id (quote id) :time (quote errorTime) :code (quote errorCode) :message (quote errorMsg) :advanced-order-reject-json (quote advancedOrderRejectJson)}))
+         (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String errorMsg) (quote ^String advancedOrderRejectJson)]
+               (list dispatch-message (quote cb) {:type :error :id (quote id) :code (quote errorCode) :message (quote errorMsg) :advanced-order-reject-json (quote advancedOrderRejectJson)})))
+       (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String message)]
+             (list dispatch-message (quote cb) {:type :error :id (quote id) :code (quote errorCode) :message (quote message)})))
 
-   (list (quote ^void error) [(quote this) (quote ^Exception ex)]
-         (list dispatch-message (quote cb) {:type :error :ex (quote ex)}))
+     (list (quote ^void error) [(quote this) (quote ^Exception ex)]
+           (list dispatch-message (quote cb) {:type :error :ex (quote ex)}))
 
-   (list (quote ^void error) [(quote this) (quote ^String message)]
-         (list dispatch-message (quote cb) {:type :error :message (quote message)}))
-   ])
+     (list (quote ^void error) [(quote this) (quote ^String message)]
+           (list dispatch-message (quote cb) {:type :error :message (quote message)}))
+     ]))
 
 (def reification
   (let [method-entries

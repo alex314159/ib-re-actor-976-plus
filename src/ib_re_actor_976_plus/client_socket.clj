@@ -14,7 +14,7 @@
     [ib-re-actor-976-plus.mapping :refer [map->]]
     [ib-re-actor-976-plus.translation :refer [translate]])
   (:import
-    (com.ib.client EClientSocket EReader EJavaSignal)))
+    (com.ib.client EClientSocket EReader EJavaSignal OrderCancel)))
 
 ;;;
 ;;; Connection and Server
@@ -211,7 +211,7 @@
 (defn cancel-order
   "Call this method to cancel an order."
   [ecs order-id]
-  (.cancelOrder ecs order-id))
+  (.cancelOrder ecs order-id (OrderCancel.)))
 
 
 (defn request-open-orders

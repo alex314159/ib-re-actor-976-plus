@@ -8,7 +8,7 @@ primitives: strings with constant values into keywords, booleans in strings into
 date strings into clj-time dates, etc."
   (:require
     [clojure.string :refer [join]]
-    [ib-re-actor-976-plus.translation :refer [translate]]))
+    [ib-re-actor-976-plus.translation :refer [translate tws-version]]))
 
 (defprotocol Mappable
   (->map [this]
@@ -241,12 +241,20 @@ create instances, we will only map from objects to clojure maps."
                      [:completed-time completedTime]
                      [:completed-status completedStatus])
 
+(if (< (compare tws-version "10.33.01") 0)
+  (defmapping-readonly (resolve 'com.ib.client.CommissionReport)
+                       [:commission commission]
+                       [:currency currency]
+                       [:execution-id execId]
+                       [:realized-profit-loss realizedPNL]
+                       [:yield yield]
+                       [:yield-redemption-date yieldRedemptionDate])
+  (defmapping-readonly (resolve 'com.ib.client.CommissionAndFeesReport)
+                       [:commission-and-fees commissionAndFees]
+                       [:currency currency]
+                       [:execution-id execId]
+                       [:realized-profit-loss realizedPNL]
+                       [:yield yield]
+                       [:yield-redemption-date yieldRedemptionDate])
 
-
-(defmapping-readonly com.ib.client.CommissionReport
-                     [:commission commission]
-                     [:currency currency]
-                     [:execution-id execId]
-                     [:realized-profit-loss realizedPNL]
-                     [:yield yield]
-                     [:yield-redemption-date yieldRedemptionDate]) ;:translate :yield-redemption-date
+  )

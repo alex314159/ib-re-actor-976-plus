@@ -1,14 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.87] - 2025-01-05
+### Added support for twsapi 10.33.01 which is now the default version
+- New signature for error class in the wrapper
+- New OrderCancel class
+- CommissionAndFeesReport replaces CommissionReport
+
 ## [0.1.86] - 2024-08-04
-### Added support for twsapi 10.30.01 which is now the default version
+### Added support for twsapi 10.30.01
 
 ## [0.1.85] - 2024-01-07
-### Added support for twsapi 10.26.03 which is now the default
+### Added support for twsapi 10.26.03
 
 ## [0.1.84] - 2023-06-25
-### Make 10.22.01 the default implementation
+### Made 10.22.01 the default implementation at the time
 - Better support for uberjar
 
 ## [0.1.83] - 2023-06-18

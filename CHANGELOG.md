@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added support for twsapi 10.33.01 which is now the default version
 - New signature for error class in the wrapper
 - New OrderCancel class
-- CommissionAndFeesReport replaces CommissionReport
+- CommissionAndFeesReport replaces CommissionReport, also in order-state
 
 ## [0.1.86] - 2024-08-04
 ### Added support for twsapi 10.30.01

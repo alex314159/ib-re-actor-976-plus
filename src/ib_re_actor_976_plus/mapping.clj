@@ -222,24 +222,46 @@ create instances, we will only map from objects to clojure maps."
                      [:count count]
                      [:wap wap])
 
-(defmapping-readonly com.ib.client.OrderState
-                     [:status status :translation :order-status]
-                     [:initial-margin-before initMarginBefore]
-                     [:maintenance-margin-before maintMarginBefore]
-                     [:equity-with-loan-before equityWithLoanBefore]
-                     [:initial-margin-change initMarginChange]
-                     [:maintenance-margin-change maintMarginChange]
-                     [:equity-with-loan-change equityWithLoanChange]
-                     [:initial-margin-after initMarginAfter]
-                     [:maintenance-margin-after maintMarginAfter]
-                     [:equity-with-loan-after equityWithLoanAfter]
-                     [:commission commission]
-                     [:minimum-commission minCommission]
-                     [:maximum-commission maxCommission]
-                     [:commission-currency commissionCurrency]
-                     [:warning-text warningText]
-                     [:completed-time completedTime]
-                     [:completed-status completedStatus])
+(if (< (compare tws-version "10.33.01") 0)
+  (defmapping-readonly com.ib.client.OrderState
+                       [:status status :translation :order-status]
+                       [:initial-margin-before initMarginBefore]
+                       [:maintenance-margin-before maintMarginBefore]
+                       [:equity-with-loan-before equityWithLoanBefore]
+                       [:initial-margin-change initMarginChange]
+                       [:maintenance-margin-change maintMarginChange]
+                       [:equity-with-loan-change equityWithLoanChange]
+                       [:initial-margin-after initMarginAfter]
+                       [:maintenance-margin-after maintMarginAfter]
+                       [:equity-with-loan-after equityWithLoanAfter]
+                       [:commission commission]
+                       [:minimum-commission minCommission]
+                       [:maximum-commission maxCommission]
+                       [:commission-currency commissionCurrency]
+                       [:warning-text warningText]
+                       [:completed-time completedTime]
+                       [:completed-status completedStatus])
+  (defmapping-readonly com.ib.client.OrderState
+                       [:status status :translation :order-status]
+                       [:initial-margin-before initMarginBefore]
+                       [:maintenance-margin-before maintMarginBefore]
+                       [:equity-with-loan-before equityWithLoanBefore]
+                       [:initial-margin-change initMarginChange]
+                       [:maintenance-margin-change maintMarginChange]
+                       [:equity-with-loan-change equityWithLoanChange]
+                       [:initial-margin-after initMarginAfter]
+                       [:maintenance-margin-after maintMarginAfter]
+                       [:equity-with-loan-after equityWithLoanAfter]
+                       [:commission-and-fees commissionAndFees]
+                       [:minimum-commission-and-fees minCommissionAndFees]
+                       [:maximum-commission-and-fees maxCommissionAndFees]
+                       [:commission-and-fees-currency commissionAndFeesCurrency]
+                       [:margin-currency marginCurrency]
+                       [:warning-text warningText]
+                       [:completed-time completedTime]
+                       [:completed-status completedStatus])
+
+  )
 
 (if (< (compare tws-version "10.33.01") 0)
   (defmapping-readonly (resolve 'com.ib.client.CommissionReport)

@@ -264,14 +264,14 @@ create instances, we will only map from objects to clojure maps."
   )
 
 (if (< (compare tws-version "10.33.01") 0)
-  (defmapping-readonly (resolve 'com.ib.client.CommissionReport)
+  (defmapping-readonly (eval 'com.ib.client.CommissionReport)
                        [:commission commission]
                        [:currency currency]
                        [:execution-id execId]
                        [:realized-profit-loss realizedPNL]
                        [:yield yield]
                        [:yield-redemption-date yieldRedemptionDate])
-  (defmapping-readonly (resolve 'com.ib.client.CommissionAndFeesReport)
+  (defmapping-readonly (eval 'com.ib.client.CommissionAndFeesReport)
                        [:commission-and-fees commissionAndFees]
                        [:currency currency]
                        [:execution-id execId]

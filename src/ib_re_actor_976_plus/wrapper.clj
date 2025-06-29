@@ -169,7 +169,7 @@
 
 (def reification
   (let [method-entries
-        (into [] (for [mdata ewrapper-java-methods :when (not= (subs mdata 0 10) "void error")] ;filtering for error methods which are implemented separately
+        (into [] (for [mdata ewrapper-java-methods :when (not= (subs mdata 0 11) "void error ")] ;filtering for error methods which are implemented separately. The space after error is to avoid also filtering for errorProto
                    (let [elements (clojure.string/split mdata #" ")
                          [mname arglist] [(second elements) (drop 2 elements)] ; first is return type, not needed
                          arg-names (mapv second (partition 2 arglist)) ; first would be type, not needed

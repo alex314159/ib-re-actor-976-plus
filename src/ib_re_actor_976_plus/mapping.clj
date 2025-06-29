@@ -220,7 +220,7 @@ create instances, we will only map from objects to clojure maps."
                      [:close close]
                      [:volume volume :translation :decimal-to-long]
                      [:count count]
-                     [:wap wap])
+                     [:wap wap :translation :decimal-to-double])
 
 (if (< (compare tws-version "10.33.01") 0)
   (defmapping-readonly com.ib.client.OrderState

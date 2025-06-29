@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.10.37.02] - 2025-06-23
+### Added support for twsapi 10.37.02
+### New versioning scheme to match TWS API version
+- API now supports protocol buffers, leading to a new dependency on `com.google.protobuf/protobuf-java`
+- EWrapper.java has a comment to indicate the start of protocol buffer methods, this required a manual fix to the EWrapper interface
+- Started work on a less brittle reification to support more frequent changes in the EWrapper interface like the one above. Hence new dependency `com.github.javaparser/javaparser-core"`
+
 ## [0.1.87] - 2025-01-05
 ### Added support for twsapi 10.33.01 which is now the default version
 - New signature for error class in the wrapper

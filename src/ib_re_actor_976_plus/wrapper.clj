@@ -4,6 +4,9 @@
     [ib-re-actor-976-plus.mapping :refer [->map]]
     [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate tws-version]])
   (:import
+    (com.github.javaparser StaticJavaParser)
+    (com.github.javaparser.ast.body MethodDeclaration)
+    (com.github.javaparser.ast.comments Comment)
     (com.ib.client EWrapper)                                ;this is important
     (java.io StringWriter PrintWriter)))                         ; Bar TickAttrib Contract ContractDetails ;(java.io ByteArrayInputStream)
 
@@ -122,6 +125,7 @@
 (def text-replacements [["Map<Integer, Entry<String, Character>>" "nestedType"] ;special types, difficult to filter for
                         [#"[,\(\)]" " "]                    ;comma and parentheses become spaces
                         [#"[\t\n]" ""]                      ;get rid of tabs and new lines
+                        [#"// protobuf" ""]                 ;get rid of protobuf comment line
                         [#"  +" " "]])                      ;get rid of double spaces
 
 (defn replace-all [text] (reduce #(clojure.string/replace %1 (first %2) (second %2)) text text-replacements))
@@ -178,3 +182,30 @@
 
 (defn create [cb] (eval (reify-ewrapper this cb)))
 
+(comment
+  "Work in progress to parse EWrapper.java and generate a reify form. Should be less brittle than the current."
+  (defn get-method-signatures
+    "Extracts method signatures from a Java interface AST."
+    [parsed-unit]
+    (->> (.getTypes parsed-unit)
+         (mapcat #(.getMethods %))
+         (mapv (fn [^MethodDeclaration method]
+                 (let [comment (let [c (.getComment method)]
+                                 (if (.isEmpty c) "" (str c)))
+                       params (.getParameters method)
+                       param-details (mapv (fn [p] {:name (.getNameAsString p) :type (.toString (.getType p))}) params)]
+                   {:name        (.getNameAsString method)
+                    :return-type (.toString (.getType method))
+                    :parameters  param-details
+                    :signature   (.toString (.getSignature method))
+                    :comment     comment}))))))
+
+(defn generate-reify
+  "Generates a reify form for the EWrapper interface."
+  [methods]
+  `(reify com.ib.client.EWrapper
+     ~@(map (fn [{:keys [name parameters]}]
+              (let [param-names (mapv (fn [p] (symbol (:name p))) parameters)]
+                `(~(symbol name) [~@param-names]
+                   (println (str "Called " ~name " with " ~param-names)))))
+            methods)))

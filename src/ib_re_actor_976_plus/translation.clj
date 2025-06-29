@@ -1033,6 +1033,9 @@ to check if if a given value is valid (known)."
 (defmethod translate [:from-ib :decimal-to-long] [_ _ val]
   (if use-decimal? (.longValue val) val))
 
+(defmethod translate [:from-ib :decimal-to-double] [_ _ val]
+  (if use-decimal? (.doubleValue (.value val)) val))
+
 
 ;(defmethod translate [:from-ib :yield-redemption-date] [_ _ val]
 ;  (let [year (int (Math/floor (/ val 10000)))

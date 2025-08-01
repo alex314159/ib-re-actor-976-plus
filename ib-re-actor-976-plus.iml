@@ -2,7 +2,7 @@
 <module type="JAVA_MODULE" version="4">
   <component name="BuildSystem">
     <option name="buildSystemId" value="LEININGEN" />
-    <option name="displayName" value="ib-re-actor-976-plus:0.1.10.37.02-SNAPSHOT" />
+    <option name="displayName" value="ib-re-actor-976-plus:0.1.10.39.01-SNAPSHOT" />
   </component>
   <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/target/classes" />
@@ -52,6 +52,6 @@
     <orderEntry type="library" name="Leiningen: org.tcrawley/dynapath:1.1.0" level="project" />
     <orderEntry type="library" name="Leiningen: potemkin:0.4.5" level="project" />
     <orderEntry type="library" name="Leiningen: riddley:0.1.12" level="project" />
-    <orderEntry type="library" name="Leiningen: twsapi:10.37.02" level="project" />
+    <orderEntry type="library" name="Leiningen: twsapi:10.39.01" level="project" />
   </component>
 </module>

@@ -8,7 +8,9 @@ primitives: strings with constant values into keywords, booleans in strings into
 date strings into clj-time dates, etc."
   (:require
     [clojure.string :refer [join]]
-    [ib-re-actor-976-plus.translation :refer [translate tws-version]]))
+    [ib-re-actor-976-plus.translation :refer [translate tws-version]])
+  (:import (com.google.protobuf Descriptors$FieldDescriptor$JavaType Message)
+           (java.util Collections$EmptyList)))
 
 (defprotocol Mappable
   (->map [this]
@@ -143,6 +145,19 @@ create instances, we will only map from objects to clojure maps."
             [:liquid-hours liquidHours]
             [:ev-rule evRule]
             [:ev-multiplier evMultiplier]
+            [:sec-id-list secIdList]                        ; // CUSIP/ISIN/etc.
+            [:agg-group aggGroup]
+            [:under-symbol underSymbol]
+            [:under-sec-type underSecType]
+            [:market-rule-ids marketRuleIds]
+            [:real-expiration-date realExpirationDate]
+            [:last-trade-time lastTradeTime]
+            [:stock-type stockType]                          ; // COMMON, ETF, ADR etc.
+            [:min-size minSize]
+            [:size-increment sizeIncrement]
+            [:suggested-size-increment suggestedSizeIncrement]
+
+            ;bond values
             [:cusip cusip]
             [:ratings ratings]
             [:description-details descAppend]
@@ -157,7 +172,27 @@ create instances, we will only map from objects to clojure maps."
             [:next-option-date nextOptionDate :translation :date]
             [:next-option-type nextOptionType]
             [:next-option-partial nextOptionPartial]
-            [:notes notes])
+            [:notes notes]
+
+            ;fund values
+            [:fund-name fundName]
+            [:fund-family fundFamily]
+            [:fund-type fundType]
+            [:fund-front-load fundFrontLoad]
+            [:fund-back-load fundBackLoad]
+            [:fund-back-load-time-interval fundBackLoadTimeInterval]
+            [:fund-management-fee fundManagementFee]
+            [:fund-closed fundClosed]
+            [:fund-closed-for-new-investors fundClosedForNewInvestors]
+            [:fund-closed-for-new-money fundClosedForNewMoney]
+            [:fund-notify-amount fundNotifyAmount]
+            [:fund-minimum-initial-purchase fundMinimumInitialPurchase]
+            [:fund-subsequent-minimum-purchase fundSubsequentMinimumPurchase]
+            [:fund-blue-sky-states fundBlueSkyStates]
+            [:fund-blue-sky-territories fundBlueSkyTerritories]
+            [:fund-distribution-policiy-indicator fundDistributionPolicyIndicator]
+            [:fund-asset-type fundAssetType]
+            [:ineligibility-reason-list ineligibilityReasonList])
 
 (defmapping com.ib.client.ExecutionFilter
             [:client-id clientId]
@@ -280,3 +315,60 @@ create instances, we will only map from objects to clojure maps."
                        [:yield-redemption-date yieldRedemptionDate])
 
   )
+
+;; PROTOBUF MAPPING
+
+(def field-cache (atom {}))
+
+(defn get-cached-fields
+  [proto-msg]
+  (let [msg-class (class proto-msg)]
+    (or (@field-cache msg-class)
+        (try
+          (let [fields (.getFields (.getDescriptorForType proto-msg))]
+            (swap! field-cache assoc msg-class fields)
+            fields)
+          (catch IllegalArgumentException e
+            (do
+              (swap! field-cache assoc msg-class nil)
+              nil))))))
+
+(defn protobuf->map
+  "Simple benchmarking shows little advantage for transients."
+  ([proto-msg] (protobuf->map proto-msg false false))
+  ([proto-msg include-defaults?] (protobuf->map proto-msg include-defaults? false))
+  ([proto-msg include-defaults? use-transients?]
+   (letfn [(convert-single-value [value field]
+             (condp = (.getJavaType field)
+               Descriptors$FieldDescriptor$JavaType/MESSAGE (protobuf->map value include-defaults?)
+               Descriptors$FieldDescriptor$JavaType/ENUM (.getName value)
+               Descriptors$FieldDescriptor$JavaType/BYTE_STRING (.toByteArray value)
+               value))
+           (convert-value [value field]
+             (if (.isRepeated field)
+               (mapv #(convert-single-value % field) value)
+               (convert-single-value value field)))]
+     (if-let [fields (get-cached-fields proto-msg)]
+       (if use-transients?
+         (persistent!
+           (reduce (fn [acc field]
+                     (let [value (.getField proto-msg field)]
+                       (if (or include-defaults?
+                               (.isRepeated field)
+                               (= (.getJavaType field) Descriptors$FieldDescriptor$JavaType/MESSAGE)
+                               (not= value (.getDefaultValue field)))
+                         (assoc! acc (.getName field) (convert-value value field))
+                         acc)))
+                   (transient {})
+                   fields))
+         (reduce (fn [acc field]
+                   (let [value (.getField proto-msg field)]
+                     (if (or include-defaults?
+                             (.isRepeated field)
+                             (= (.getJavaType field) Descriptors$FieldDescriptor$JavaType/MESSAGE)
+                             (not= value (.getDefaultValue field)))
+                       (assoc acc (.getName field) (convert-value value field))
+                       acc)))
+                 {}
+                 fields))
+       {}))))  ; Return empty map if no fields cached (failed case)

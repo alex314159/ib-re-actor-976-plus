@@ -245,7 +245,8 @@ create instances, we will only map from objects to clojure maps."
             [:all-or-none? allOrNone]
             [:limit-price lmtPrice]
             [:discretionary-amount discretionaryAmt]
-            [:stop-price auxPrice])
+            [:stop-price auxPrice]
+            [:fa-group faGroup])
 
 (defmapping-readonly com.ib.client.Bar
                      [:time time]

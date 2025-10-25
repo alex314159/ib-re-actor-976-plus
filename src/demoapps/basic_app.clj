@@ -1,6 +1,6 @@
 (ns demoapps.basic-app
   (:require [ib-re-actor-976-plus.gateway :as gateway]
-            [ib-re-actor-976-plus.mapping :refer [map->]]
+            [ib-re-actor-976-plus.mapping :refer [map-> protobuf->map]]
             [ib-re-actor-976-plus.client-socket :as cs])
   (:import (com.ib.client Contract Order))
   )
@@ -19,12 +19,21 @@
 (def default-port 7496)
 (def default-paper-port 7497)
 
+(def results (atom []))                                     ;this will accumulate results from the API
+
+(defn result-fn
+  "Very simple function that accumulates results from the API and prints them.
+  You can then explore the accumulator from the REPL."
+  [res]
+  (swap! results conj res)
+  (println res))
+
 ;Create the connection. This will return a map with the client and the subscribers.
-(def connection (gateway/connect 2 "localhost" default-port println)) ;you may need to change the port
+(def connection (gateway/connect 2 "localhost" default-port result-fn)) ;you may need to change the port
 
 ;Create data structures - either plain maps or IB objects
-(def ESU4-map {:symbol "ES" :sec-type "FUT" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20240920" :multiplier 50})
-(def ESU4-contract (map-> com.ib.client.Contract ESU4-map))
+(def ESH6-map {:symbol "ES" :sec-type "FUT" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20260320" :multiplier 50})
+(def ESH6-contract (map-> com.ib.client.Contract ESH6-map))
 
 (def ESU0C3000-map {:symbol "ES" :sec-type "FOP" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20200918" :right :call :strike 3000 :multiplier 50})
 (def ESU0C3000-contract (map-> com.ib.client.Contract ESU0C3000-map))
@@ -42,8 +51,8 @@
   (cs/request-historical-data
     (:ecs connection)
     (swap! requests inc)
-    ESU4-map
-    "20240802 00:00:00 UTC"                                      ;the format is important. It defaults to TWS timezone if not specified
+    ESH6-map
+    "20251610 00:00:00 US/Central"                                      ;the format is important. It defaults to TWS timezone if not specified. Having issues with US/Eastern
     10 :days
     1 :day
     :trades
@@ -55,8 +64,8 @@
   (.reqHistoricalData
     (:ecs connection)
     (swap! requests inc)
-    ESU4-contract
-    "20221210 00:00:00 UTC" ;the format is important. Having issues with US/Eastern
+    ESH6-contract
+    "20251025 14:53:53 US/Central" ;the format is important. Having issues with US/Eastern
     "10 D"
     "1 day"
     "TRADES"
@@ -69,7 +78,7 @@
   (cs/request-market-data
     (:ecs connection)
     (swap! requests inc)
-    ESU4-map
+    ESH6-map
     nil
     false
     false))
@@ -92,6 +101,10 @@
 (defn example-account-data-request []
   ;will keep going until you send the same request with false instead of true
   (cs/request-account-updates (:ecs connection) true account))
+
+(defn example-get-protobuf-data
+  [historical-data-proto-buf-message]
+  (protobuf->map (:historical-data-proto historical-data-proto-buf-message)))
 
 ;;;;;;;;;;;;;;;
 ;END BASIC APP;

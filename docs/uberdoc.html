@@ -2865,8 +2865,8 @@ net.brehaut.ClojureTools = (function (SH) {
     build_tree: build_tree
   };
 })(SyntaxHighlighter);
-</script><title>ib-re-actor-976-plus -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"><a href="https://github.com/alex314159/ib-re-actor-976-plus">ib-re-actor-976-plus</a></h1><h2 class="project-version">0.1.84-SNAPSHOT</h2><br /><p>Clojure friendly wrapper for Interactive Brokers Java API</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.11.1</td></tr><tr><td class="dep-name">org.clojure/tools.logging</td><td class="dotted"><hr /></td><td class="dep-version">1.2.4</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#ib-re-actor-976-plus.mapping">ib-re-actor-976-plus.mapping</a></li><li><a href="#ib-re-actor-976-plus.gateway">ib-re-actor-976-plus.gateway</a></li><li><a href="#ib-re-actor-976-plus.wrapper">ib-re-actor-976-plus.wrapper</a></li><li><a href="#ib-re-actor-976-plus.util">ib-re-actor-976-plus.util</a></li><li><a href="#ib-re-actor-976-plus.core">ib-re-actor-976-plus.core</a></li><li><a href="#ib-re-actor-976-plus.translation">ib-re-actor-976-plus.translation</a></li><li><a href="#ib-re-actor-976-plus.client-socket">ib-re-actor-976-plus.client-socket</a></li><li><a href="#ib-re-actor-976-plus.synchronous">ib-re-actor-976-plus.synchronous</a></li><li><a href="#demoapps.basic-app">demoapps.basic-app</a></li><li><a href="#demoapps.advanced_app">demoapps.advanced_app</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.mapping" name="ib-re-actor-976-plus.mapping"><h1 class="project-name">ib-re-actor-976-plus.mapping</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Functions for mapping to and from Interactive Brokers classes. It is much easier to work
+</script><title>ib-re-actor-976-plus -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"><a href="https://github.com/alex314159/ib-re-actor-976-plus">ib-re-actor-976-plus</a></h1><h2 class="project-version">0.1.10.39.01-SNAPSHOT</h2><br /><p>Clojure friendly wrapper for Interactive Brokers Java API</p>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.12.3</td></tr><tr><td class="dep-name">org.clojure/tools.logging</td><td class="dotted"><hr /></td><td class="dep-version">1.2.4</td></tr><tr><td class="dep-name">com.google.protobuf/protobuf-java</td><td class="dotted"><hr /></td><td class="dep-version">4.29.3</td></tr><tr><td class="dep-name">com.github.javaparser/javaparser-core</td><td class="dotted"><hr /></td><td class="dep-version">3.25.10</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#ib-re-actor-976-plus.mapping">ib-re-actor-976-plus.mapping</a></li><li><a href="#ib-re-actor-976-plus.gateway">ib-re-actor-976-plus.gateway</a></li><li><a href="#ib-re-actor-976-plus.wrapper">ib-re-actor-976-plus.wrapper</a></li><li><a href="#ib-re-actor-976-plus.util">ib-re-actor-976-plus.util</a></li><li><a href="#ib-re-actor-976-plus.core">ib-re-actor-976-plus.core</a></li><li><a href="#ib-re-actor-976-plus.translation">ib-re-actor-976-plus.translation</a></li><li><a href="#ib-re-actor-976-plus.client-socket">ib-re-actor-976-plus.client-socket</a></li><li><a href="#ib-re-actor-976-plus.synchronous">ib-re-actor-976-plus.synchronous</a></li><li><a href="#demoapps.basic-app">demoapps.basic-app</a></li><li><a href="#demoapps.advanced_app">demoapps.advanced_app</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.mapping" name="ib-re-actor-976-plus.mapping"><h1 class="project-name">ib-re-actor-976-plus.mapping</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Functions for mapping to and from Interactive Brokers classes. It is much easier to work
 with maps in clojure, so we use these functions internally on all the data we exchange
 with the Interactive Brokers API.</p>
 
@@ -2876,7 +2876,9 @@ date strings into clj-time dates, etc.</p>
 </td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor-976-plus.mapping
   (:require
     [clojure.string :refer [join]]
-    [ib-re-actor-976-plus.translation :refer [translate]]))</pre></td></tr><tr><td class="docs">
+    [ib-re-actor-976-plus.translation :refer [translate tws-version]])
+  (:import (com.google.protobuf Descriptors$FieldDescriptor$JavaType Message)
+           (java.util Collections$EmptyList)))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defprotocol Mappable
   (-&gt;map [this]
     &quot;Create a map with the all the non-the non-null properties of object.&quot;))</pre></td></tr><tr><td class="docs">
@@ -2994,6 +2996,18 @@ create instances, we will only map from objects to clojure maps.</p>
             [:liquid-hours liquidHours]
             [:ev-rule evRule]
             [:ev-multiplier evMultiplier]
+            [:sec-id-list secIdList]                        ; // CUSIP/ISIN/etc.
+            [:agg-group aggGroup]
+            [:under-symbol underSymbol]
+            [:under-sec-type underSecType]
+            [:market-rule-ids marketRuleIds]
+            [:real-expiration-date realExpirationDate]
+            [:last-trade-time lastTradeTime]
+            [:stock-type stockType]                          ; // COMMON, ETF, ADR etc.
+            [:min-size minSize]
+            [:size-increment sizeIncrement]
+            [:suggested-size-increment suggestedSizeIncrement]
+            ;bond values
             [:cusip cusip]
             [:ratings ratings]
             [:description-details descAppend]
@@ -3008,7 +3022,26 @@ create instances, we will only map from objects to clojure maps.</p>
             [:next-option-date nextOptionDate :translation :date]
             [:next-option-type nextOptionType]
             [:next-option-partial nextOptionPartial]
-            [:notes notes])</pre></td></tr><tr><td class="docs">
+            [:notes notes]
+            ;fund values
+            [:fund-name fundName]
+            [:fund-family fundFamily]
+            [:fund-type fundType]
+            [:fund-front-load fundFrontLoad]
+            [:fund-back-load fundBackLoad]
+            [:fund-back-load-time-interval fundBackLoadTimeInterval]
+            [:fund-management-fee fundManagementFee]
+            [:fund-closed fundClosed]
+            [:fund-closed-for-new-investors fundClosedForNewInvestors]
+            [:fund-closed-for-new-money fundClosedForNewMoney]
+            [:fund-notify-amount fundNotifyAmount]
+            [:fund-minimum-initial-purchase fundMinimumInitialPurchase]
+            [:fund-subsequent-minimum-purchase fundSubsequentMinimumPurchase]
+            [:fund-blue-sky-states fundBlueSkyStates]
+            [:fund-blue-sky-territories fundBlueSkyTerritories]
+            [:fund-distribution-policiy-indicator fundDistributionPolicyIndicator]
+            [:fund-asset-type fundAssetType]
+            [:ineligibility-reason-list ineligibilityReasonList])</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defmapping com.ib.client.ExecutionFilter
             [:client-id clientId]
             [:account-code acctCode]
@@ -3035,7 +3068,9 @@ create instances, we will only map from objects to clojure maps.</p>
             [:ev-rule evRule]
             [:ev-multiplier evMultiplier]
             [:model-code modelCode]
-            [:last-liquidity lastLiquidity])</pre></td></tr><tr><td class="docs">
+            [:last-liquidity lastLiquidity]
+            [:last-liquidity-str lastLiquidityStr]
+            [:pending-price-revision pendingPriceRevision])</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defmapping com.ib.client.Order
             [:account-code account]
             [:order-id orderId]
@@ -3055,7 +3090,8 @@ create instances, we will only map from objects to clojure maps.</p>
             [:all-or-none? allOrNone]
             [:limit-price lmtPrice]
             [:discretionary-amount discretionaryAmt]
-            [:stop-price auxPrice])</pre></td></tr><tr><td class="docs">
+            [:stop-price auxPrice]
+            [:fa-group faGroup])</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defmapping-readonly com.ib.client.Bar
                      [:time time]
                      [:open open]
@@ -3064,33 +3100,114 @@ create instances, we will only map from objects to clojure maps.</p>
                      [:close close]
                      [:volume volume :translation :decimal-to-long]
                      [:count count]
-                     [:wap wap])</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmapping-readonly com.ib.client.OrderState
-                     [:status status :translation :order-status]
-                     [:initial-margin-before initMarginBefore]
-                     [:maintenance-margin-before maintMarginBefore]
-                     [:equity-with-loan-before equityWithLoanBefore]
-                     [:initial-margin-change initMarginChange]
-                     [:maintenance-margin-change maintMarginChange]
-                     [:equity-with-loan-change equityWithLoanChange]
-                     [:initial-margin-after initMarginAfter]
-                     [:maintenance-margin-after maintMarginAfter]
-                     [:equity-with-loan-after equityWithLoanAfter]
-                     [:commission commission]
-                     [:minimum-commission minCommission]
-                     [:maximum-commission maxCommission]
-                     [:commission-currency commissionCurrency]
-                     [:warning-text warningText]
-                     [:completed-time completedTime]
-                     [:completed-status completedStatus])</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmapping-readonly com.ib.client.CommissionReport
-                     [:commission commission]
-                     [:currency currency]
-                     [:execution-id execId]
-                     [:realized-profit-loss realizedPNL]
-                     [:yield yield]
-                     [:yield-redemption-date yieldRedemptionDate]) ;:translate :yield-redemption-date</pre></td></tr><tr><td class="docs"><p>:translate :yield-redemption-date</p>
-</td><td class="codes"></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.gateway" name="ib-re-actor-976-plus.gateway"><h1 class="project-name">ib-re-actor-976-plus.gateway</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>The main user interface. Functions for connecting to Interactive Brokers TWS
+                     [:wap wap :translation :decimal-to-double])</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(if (&lt; (compare tws-version &quot;10.33.01&quot;) 0)
+  (defmapping-readonly com.ib.client.OrderState
+                       [:status status :translation :order-status]
+                       [:initial-margin-before initMarginBefore]
+                       [:maintenance-margin-before maintMarginBefore]
+                       [:equity-with-loan-before equityWithLoanBefore]
+                       [:initial-margin-change initMarginChange]
+                       [:maintenance-margin-change maintMarginChange]
+                       [:equity-with-loan-change equityWithLoanChange]
+                       [:initial-margin-after initMarginAfter]
+                       [:maintenance-margin-after maintMarginAfter]
+                       [:equity-with-loan-after equityWithLoanAfter]
+                       [:commission commission]
+                       [:minimum-commission minCommission]
+                       [:maximum-commission maxCommission]
+                       [:commission-currency commissionCurrency]
+                       [:warning-text warningText]
+                       [:completed-time completedTime]
+                       [:completed-status completedStatus])
+  (defmapping-readonly com.ib.client.OrderState
+                       [:status status :translation :order-status]
+                       [:initial-margin-before initMarginBefore]
+                       [:maintenance-margin-before maintMarginBefore]
+                       [:equity-with-loan-before equityWithLoanBefore]
+                       [:initial-margin-change initMarginChange]
+                       [:maintenance-margin-change maintMarginChange]
+                       [:equity-with-loan-change equityWithLoanChange]
+                       [:initial-margin-after initMarginAfter]
+                       [:maintenance-margin-after maintMarginAfter]
+                       [:equity-with-loan-after equityWithLoanAfter]
+                       [:commission-and-fees commissionAndFees]
+                       [:minimum-commission-and-fees minCommissionAndFees]
+                       [:maximum-commission-and-fees maxCommissionAndFees]
+                       [:commission-and-fees-currency commissionAndFeesCurrency]
+                       [:margin-currency marginCurrency]
+                       [:warning-text warningText]
+                       [:completed-time completedTime]
+                       [:completed-status completedStatus]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(if (&lt; (compare tws-version &quot;10.33.01&quot;) 0)
+  (defmapping-readonly (eval 'com.ib.client.CommissionReport)
+                       [:commission commission]
+                       [:currency currency]
+                       [:execution-id execId]
+                       [:realized-profit-loss realizedPNL]
+                       [:yield yield]
+                       [:yield-redemption-date yieldRedemptionDate])
+  (defmapping-readonly (eval 'com.ib.client.CommissionAndFeesReport)
+                       [:commission-and-fees commissionAndFees]
+                       [:currency currency]
+                       [:execution-id execId]
+                       [:realized-profit-loss realizedPNL]
+                       [:yield yield]
+                       [:yield-redemption-date yieldRedemptionDate])
+
+  )</pre></td></tr><tr><td class="docs"><p>PROTOBUF MAPPING</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def field-cache (atom {}))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn get-cached-fields
+  [proto-msg]
+  (let [msg-class (class proto-msg)]
+    (or (@field-cache msg-class)
+        (try
+          (let [fields (.getFields (.getDescriptorForType proto-msg))]
+            (swap! field-cache assoc msg-class fields)
+            fields)
+          (catch IllegalArgumentException e
+            (do
+              (swap! field-cache assoc msg-class nil)
+              nil))))))</pre></td></tr><tr><td class="docs"><p>Simple benchmarking shows little advantage for transients.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn protobuf-&gt;map
+  ([proto-msg] (protobuf-&gt;map proto-msg false false))
+  ([proto-msg include-defaults?] (protobuf-&gt;map proto-msg include-defaults? false))
+  ([proto-msg include-defaults? use-transients?]
+   (letfn [(convert-single-value [value field]
+             (condp = (.getJavaType field)
+               Descriptors$FieldDescriptor$JavaType/MESSAGE (protobuf-&gt;map value include-defaults?)
+               Descriptors$FieldDescriptor$JavaType/ENUM (.getName value)
+               Descriptors$FieldDescriptor$JavaType/BYTE_STRING (.toByteArray value)
+               value))
+           (convert-value [value field]
+             (if (.isRepeated field)
+               (mapv #(convert-single-value % field) value)
+               (convert-single-value value field)))]
+     (if-let [fields (get-cached-fields proto-msg)]
+       (if use-transients?
+         (persistent!
+           (reduce (fn [acc field]
+                     (let [value (.getField proto-msg field)]
+                       (if (or include-defaults?
+                               (.isRepeated field)
+                               (= (.getJavaType field) Descriptors$FieldDescriptor$JavaType/MESSAGE)
+                               (not= value (.getDefaultValue field)))
+                         (assoc! acc (.getName field) (convert-value value field))
+                         acc)))
+                   (transient {})
+                   fields))
+         (reduce (fn [acc field]
+                   (let [value (.getField proto-msg field)]
+                     (if (or include-defaults?
+                             (.isRepeated field)
+                             (= (.getJavaType field) Descriptors$FieldDescriptor$JavaType/MESSAGE)
+                             (not= value (.getDefaultValue field)))
+                       (assoc acc (.getName field) (convert-value value field))
+                       acc)))
+                 {}
+                 fields))
+       {}))))  ; Return empty map if no fields cached (failed case)</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.gateway" name="ib-re-actor-976-plus.gateway"><h1 class="project-name">ib-re-actor-976-plus.gateway</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>The main user interface. Functions for connecting to Interactive Brokers TWS
   Gateway and sending requests to it.</p>
 
 <p>  The IB API requires consumers to instantiate an object of type
@@ -3413,12 +3530,15 @@ create instances, we will only map from objects to clojure maps.</p>
   (unsubscribe! connection request-id))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.wrapper" name="ib-re-actor-976-plus.wrapper"><h1 class="project-name">ib-re-actor-976-plus.wrapper</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor-976-plus.wrapper
   (:require
+    [clojure.java.io :as io]
     [clojure.tools.logging :as log]
     [ib-re-actor-976-plus.mapping :refer [-&gt;map]]
     [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate tws-version]])
   (:import
-    (com.ib.client EWrapper)                                ;this is important
-    (java.io StringWriter PrintWriter)))                         ; Bar TickAttrib Contract ContractDetails ;(java.io ByteArrayInputStream)</pre></td></tr><tr><td class="docs">
+    (com.github.javaparser StaticJavaParser)
+    (com.github.javaparser.ast.body MethodDeclaration)
+    (com.ib.client EWrapper)
+    (java.io StringWriter PrintWriter)))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn- get-stack-trace [ex]
   (let [sw (StringWriter.)
         pw (PrintWriter. sw)]
@@ -3494,48 +3614,166 @@ create instances, we will only map from objects to clojure maps.</p>
       (clojure.string/replace #&quot;([a-z0-9])([A-Z])&quot; &quot;$1-$2&quot;)
       (clojure.string/replace #&quot;([A-Z])([A-Z])(?=[a-z])&quot; &quot;$1-$2&quot;)
       (.toLowerCase)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- dispatch-message [cb msg] (cb msg))</pre></td></tr><tr><td class="docs"><p>ERROR METHODS - NECESSARY IN BOTH IMPLEMENTATIONS ;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>These methods need to be implemented separately as they're overloaded - same name with different signature.
+  Interestingly, even though the type hints don't appear in the REPL, they're there and removing them makes reify fail.
+  cb is the name of the dispatch function</p>
+</td><td class="codes"><pre class="brush: clojure">(def error-method-implementations
+  (let [tv (read-string (clojure.string/replace (subs tws-version 0 5) &quot;.&quot; &quot;&quot;))]
+    [(if
+       (&gt; tv 1011)
+       (if (&gt;= tv 1033)
+         (list (quote ^void error) [(quote this)
+                                    (quote ^int id)
+                                    (quote ^long errorTime)
+                                    (quote ^int errorCode)
+                                    (quote ^String errorMsg)
+                                    (quote ^String advancedOrderRejectJson)]
+               (list dispatch-message (quote cb) {:type                       :error
+                                                  :id                         (quote id)
+                                                  :time                       (quote errorTime)
+                                                  :code                       (quote errorCode)
+                                                  :message                    (quote errorMsg)
+                                                  :advanced-order-reject-json (quote advancedOrderRejectJson)}))
+         (list (quote ^void error) [(quote this)
+                                    (quote ^int id)
+                                    (quote ^int errorCode)
+                                    (quote ^String errorMsg)
+                                    (quote ^String advancedOrderRejectJson)]
+               (list dispatch-message (quote cb) {:type                       :error
+                                                  :id                         (quote id)
+                                                  :code                       (quote errorCode)
+                                                  :message                    (quote errorMsg)
+                                                  :advanced-order-reject-json (quote advancedOrderRejectJson)})))
+       (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String message)]
+             (list dispatch-message (quote cb) {:type    :error
+                                                :id      (quote id)
+                                                :code    (quote errorCode)
+                                                :message (quote message)})))
+     (list (quote ^void error) [(quote this) (quote ^Exception ex)]
+           (list dispatch-message (quote cb) {:type :error
+                                              :ex   (quote ex)}))
+     (list (quote ^void error) [(quote this) (quote ^String message)]
+           (list dispatch-message (quote cb) {:type    :error
+                                              :message (quote message)}))]))</pre></td></tr><tr><td class="docs"><p>JavaParser-based method extraction</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>Parse EWrapper Java interface using JavaParser to extract method signatures.
+  Returns a vector of maps with :name, :return-type, :parameters for each method.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn parse-ewrapper-methods
+  [version]
+  (let [java-source (slurp (io/resource (str &quot;EWrapper_&quot; version &quot;.java&quot;)))
+        parsed-unit (StaticJavaParser/parse java-source)]
+    (-&gt;&gt; (.getTypes parsed-unit)
+         (mapcat #(.getMethods %))
+         (mapv (fn [^MethodDeclaration method]
+                 (let [params (.getParameters method)
+                       param-details (mapv (fn [p] {:name (.getNameAsString p) :type (.toString (.getType p))}) params)]
+                   {:name        (.getNameAsString method)
+                    :return-type (.toString (.getType method))
+                    :parameters  param-details}))))))</pre></td></tr><tr><td class="docs"><p>(defn method-signature
+ "Generate a unique signature for a method based on name and parameter types.
+ Used to identify overloaded methods."
+ [{:keys [name parameters]}]
+ (str name "(" (clojure.string/join "," (map :type parameters)) ")"))</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>Generate a reify method implementation from a parsed method map.
+  Returns a list form like: (methodName [this param1 param2] (dispatch-message cb {...}))
+  NO type hints - they cause 'Can't find matching method' errors in reify.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn method-&gt;implementation
+  [{:keys [name parameters]}]
+  (let [param-names (mapv :name parameters)
+        param-symbols (mapv symbol param-names)
+        param-camel-keywords (mapv (comp keyword camel-to-kebab) param-names)
+        message-map (assoc (zipmap param-camel-keywords param-symbols) :type (keyword (camel-to-kebab name)))]
+    (list (symbol name) (into [(quote this)] param-symbols) (list (quote dispatch-message) (quote cb) message-map))))</pre></td></tr><tr><td class="docs"><p>All methods except error methods, which are handled specially</p>
+</td><td class="codes"><pre class="brush: clojure">(def non-error-methods
+  (remove #(= (:name %) &quot;error&quot;) (parse-ewrapper-methods tws-version)))</pre></td></tr><tr><td class="docs"><p>NEW: The complete reify form for EWrapper interface using JavaParser for non-error methods.
+  Error methods use the old hardcoded implementation (they need type hints for overloading).</p>
+</td><td class="codes"><pre class="brush: clojure">(def reification-new
+  (concat [(quote reify) (quote EWrapper)] (mapv method-&gt;implementation non-error-methods) error-method-implementations))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmacro reify-ewrapper-new [this cb] reification-new)
+(defn create-new [cb] (eval (reify-ewrapper-new this cb)))</pre></td></tr><tr><td class="docs"><p>OLD text-based implementation</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def text-replacements [[&quot;Map&lt;Integer, Entry&lt;String, Character&gt;&gt;&quot; &quot;nestedType&quot;] ;special types, difficult to filter for
                         [#&quot;[,\(\)]&quot; &quot; &quot;]                    ;comma and parentheses become spaces
                         [#&quot;[\t\n]&quot; ]                      ;get rid of tabs and new lines
+                        [#&quot;// protobuf&quot; ]                 ;get rid of protobuf comment line
                         [#&quot;  +&quot; &quot; &quot;]])                      ;get rid of double spaces</pre></td></tr><tr><td class="docs"><p>get rid of double spaces</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn replace-all [text] (reduce #(clojure.string/replace %1 (first %2) (second %2)) text text-replacements))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn remove-header [s] (subs s (.indexOf s &quot;void&quot;)))</pre></td></tr><tr><td class="docs"><p>We try and find the right version - if not revert to default which is 10.22.01</p>
+</td><td class="codes"><pre class="brush: clojure">(defn remove-header [s] (subs s (.indexOf s &quot;void&quot;)))</pre></td></tr><tr><td class="docs"><p>OLD: Default version is managed in translation.clj</p>
 </td><td class="codes"><pre class="brush: clojure">(def ewrapper-java-methods
   (mapv clojure.string/trim
         (drop-last
-          (-&gt; (slurp (if-let [res (clojure.java.io/resource (str &quot;EWrapper_&quot; tws-version &quot;.java&quot;))]
-                       res
-                       (clojure.java.io/resource &quot;EWrapper_10.22.01.java&quot;)))
+          (-&gt; (slurp (clojure.java.io/resource (str &quot;EWrapper_&quot; tws-version &quot;.java&quot;)))
               (remove-header)
               (replace-all)
               (clojure.string/split #&quot;;&quot;)))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn- dispatch-message [cb msg] (cb msg))</pre></td></tr><tr><td class="docs"><p>These methods need to be implemented separately as they're overloaded - same name with different signature.
-  Interestingly, even though the type hints don't appear in the REPL, they're there and removing them makes reify fail.
-  cb is the name of the dispatch function</p>
-</td><td class="codes"><pre class="brush: clojure">(def error-methods
-  [(if (&gt; (read-string (clojure.string/replace (subs tws-version 0 5) &quot;.&quot; &quot;&quot;)) 1011)
-     (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String errorMsg) (quote ^String advancedOrderRejectJson)]
-           (list dispatch-message (quote cb) {:type :error :id (quote id) :code (quote errorCode) :message (quote errorMsg) :advanced-order-reject-json (quote advancedOrderRejectJson)}))
-     (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String message)]
-           (list dispatch-message (quote cb) {:type :error :id (quote id) :code (quote errorCode) :message (quote message)})))
-   (list (quote ^void error) [(quote this) (quote ^Exception ex)]
-         (list dispatch-message (quote cb) {:type :error :ex (quote ex)}))
-   (list (quote ^void error) [(quote this) (quote ^String message)]
-         (list dispatch-message (quote cb) {:type :error :message (quote message)}))
-   ])</pre></td></tr><tr><td class="docs">
+</td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def reification
   (let [method-entries
-        (into [] (for [mdata ewrapper-java-methods :when (not= (subs mdata 0 10) &quot;void error&quot;)] ;filtering for error methods which are implemented separately
+        (into [] (for [mdata ewrapper-java-methods :when (not= (subs mdata 0 11) &quot;void error &quot;)] ;filtering for error methods which are implemented separately. The space after error is to avoid also filtering for errorProto
                    (let [elements (clojure.string/split mdata #&quot; &quot;)
                          [mname arglist] [(second elements) (drop 2 elements)] ; first is return type, not needed
                          arg-names (mapv second (partition 2 arglist)) ; first would be type, not needed
                          arg-names-kebab-kw (map (comp keyword camel-to-kebab) arg-names)]
                      (list (symbol mname) (into [] (concat [(quote this)] (mapv symbol arg-names)))
                            (list (quote dispatch-message) (quote cb) (merge {:type (keyword (camel-to-kebab mname))} (zipmap arg-names-kebab-kw (mapv symbol arg-names))))))))]
-    (concat [(quote reify) (quote EWrapper)] (concat error-methods method-entries))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmacro reify-ewrapper [this cb] reification)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn create [cb] (eval (reify-ewrapper this cb)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.util" name="ib-re-actor-976-plus.util"><h1 class="project-name">ib-re-actor-976-plus.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+    (concat [(quote reify) (quote EWrapper)] (concat error-method-implementations method-entries))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmacro reify-ewrapper [this cb] reification)
+(defn create [cb] (eval (reify-ewrapper this cb)))</pre></td></tr><tr><td class="docs"><p>Comparison and testing utilities</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(comment
+  &quot;To compare old vs new implementations in REPL:
+
+  ; See parsed methods from JavaParser:
+  (take 5 ewrapper-methods)
+
+  ; See old text-parsed methods:
+  (take 5 ewrapper-java-methods)
+
+  ; Compare method counts:
+  (count ewrapper-methods)    ; NEW JavaParser-based
+  (count ewrapper-java-methods)  ; OLD text-based
+
+  ; See generated reification forms:
+  (take 10 reification)       ; OLD
+  (take 10 reification-new)   ; NEW
+
+  ; Test creating wrapper (both should work):
+  (def test-cb (fn [msg] (println \&quot;Got:\&quot; msg)))
+  (def wrapper-old (create test-cb))
+  (def wrapper-new (create-new test-cb))
+
+  ; Example error method signatures from JavaParser:
+  (filter error-method? ewrapper-methods)
+
+  ; Compare specific method parsing for complex types:
+  (filter #(clojure.string/includes? (:name %) \&quot;smartComponents\&quot;) ewrapper-methods)
+  &quot;)</pre></td></tr><tr><td class="docs"><p>Extracts method signatures from a Java interface AST.</p>
+</td><td class="codes"><pre class="brush: clojure">(comment
+  &quot;Work in progress to parse EWrapper.java and generate a reify form. Should be less
+  brittle than the current.&quot;
+  (defn get-method-signatures
+    [parsed-unit]
+    (-&gt;&gt; (.getTypes parsed-unit)
+         (mapcat #(.getMethods %))
+         (mapv (fn [^MethodDeclaration method]
+                 (let [comment (let [c (.getComment method)]
+                                 (if (.isEmpty c) &quot;&quot; (str c)))
+                       params (.getParameters method)
+                       param-details (mapv (fn [p] {:name (.getNameAsString p) :type (.toString (.getType p))}) params)]
+                   {:name        (.getNameAsString method)
+                    :return-type (.toString (.getType method))
+                    :parameters  param-details
+                    :signature   (.toString (.getSignature method))
+                    :comment     comment}))))))</pre></td></tr><tr><td class="docs"><p>Generates a reify form for the EWrapper interface.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn generate-reify
+  [methods]
+  `(reify com.ib.client.EWrapper
+     ~@(map (fn [{:keys [name parameters]}]
+              (let [param-names (mapv (fn [p] (symbol (:name p))) parameters)]
+                `(~(symbol name) [~@param-names]
+                   (println (str &quot;Called &quot; ~name &quot; with &quot; ~param-names)))))
+            methods)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#ib-re-actor-976-plus.util" name="ib-re-actor-976-plus.util"><h1 class="project-name">ib-re-actor-976-plus.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns ib-re-actor-976-plus.util
   (:require
     [ib-re-actor-976-plus.translation :as t]))</pre></td></tr><tr><td class="docs">
@@ -3595,7 +3833,7 @@ create instances, we will only map from objects to clojure maps.</p>
                   (System/getProperty &quot;java.class.path&quot;) #&quot;:&quot;)))
             separator))))
     (catch Exception e
-      &quot;10.22.01&quot;)))</pre></td></tr><tr><td class="docs">
+      &quot;10.33.01&quot;)))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def use-decimal?
   (let [v (map #(Long/parseLong %) (clojure.string/split tws-version #&quot;\.&quot;))]
     (and (&gt;= (first v) 10) (&gt;= (second v) 10))))</pre></td></tr><tr><td class="docs"><p>Translate to or from a value from the Interactive Brokers API.</p>
@@ -3997,6 +4235,11 @@ to check if if a given value is valid (known).</p>
                     :etf-frozen-nav-last          97
                     :etf-nav-high                 98
                     :etf-nav-low                  99
+                    :social-market-analytics     100
+                    :estimated-ipo-midpoint      101
+                    :final-ipo-last              102
+                    :delayed-yield-bid           103
+                    :delayed-yield-ask           104
                     }
                    )</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(translation-table generic-tick-type
@@ -4525,7 +4768,9 @@ Solution below works. Other solution marginally faster and feels more clojuresqu
     (if (or (number? val) (string? val)) (com.ib.client.Decimal/parse (str val)) val)
     val))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :decimal-to-long] [_ _ val]
-  (if use-decimal? (.longValue val) val))</pre></td></tr><tr><td class="docs"><p>(defmethod translate [:from-ib :yield-redemption-date] [_ _ val]
+  (if use-decimal? (.longValue val) val))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod translate [:from-ib :decimal-to-double] [_ _ val]
+  (if use-decimal? (.doubleValue (.value val)) val))</pre></td></tr><tr><td class="docs"><p>(defmethod translate [:from-ib :yield-redemption-date] [_ _ val]
  (let [year (int (Math/floor (/ val 10000)))
        month (int (Math/floor (/ (mod val 10000) 100)))
        day (int (Math/floor (mod 19720427 100)))]
@@ -4606,7 +4851,7 @@ include-expired? contracts, as trading-hours seems to be nil/empty for that
     [ib-re-actor-976-plus.mapping :refer [map-&gt;]]
     [ib-re-actor-976-plus.translation :refer [translate]])
   (:import
-    (com.ib.client EClientSocket EReader EJavaSignal)))</pre></td></tr><tr><td class="docs"><p>Connection and Server</p>
+    (com.ib.client EClientSocket EReader EJavaSignal OrderCancel)))</pre></td></tr><tr><td class="docs"><p>Connection and Server</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn -process-messages [client reader signal]
   (while (.isConnected client)
@@ -4743,7 +4988,7 @@ include-expired? contracts, as trading-hours seems to be nil/empty for that
                 (map-&gt; com.ib.client.Order order))))</pre></td></tr><tr><td class="docs"><p>Call this method to cancel an order.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn cancel-order
   [ecs order-id]
-  (.cancelOrder ecs order-id))</pre></td></tr><tr><td class="docs"><p>Call this method to request any open orders that were placed from this API
+  (.cancelOrder ecs order-id (OrderCancel.)))</pre></td></tr><tr><td class="docs"><p>Call this method to request any open orders that were placed from this API
   client. Each open order will be fed back through the openOrder() and
   orderStatus() methods on the EWrapper.</p>
 
@@ -5211,8 +5456,8 @@ We will create a connection that simply prints IB messages</p>
 (def default-paper-port 7497)</pre></td></tr><tr><td class="docs"><p>Create the connection. This will return a map with the client and the subscribers.</p>
 </td><td class="codes"><pre class="brush: clojure">(def connection (gateway/connect 2 &quot;localhost&quot; default-port println)) ;you may need to change the port</pre></td></tr><tr><td class="docs"><p>you may need to change the port</p>
 </td><td class="codes"></td></tr><tr><td class="docs"><p>Create data structures - either plain maps or IB objects</p>
-</td><td class="codes"><pre class="brush: clojure">(def ESZ2-map {:symbol &quot;ES&quot; :sec-type &quot;FUT&quot; :exchange &quot;CME&quot; :currency &quot;USD&quot; :last-trade-date-or-contract-month &quot;20221216&quot; :multiplier 50})
-(def ESZ2-contract (map-&gt; com.ib.client.Contract ESZ2-map))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def ESH6-map {:symbol &quot;ES&quot; :sec-type &quot;FUT&quot; :exchange &quot;CME&quot; :currency &quot;USD&quot; :last-trade-date-or-contract-month &quot;20260320&quot; :multiplier 50})
+(def ESH6-contract (map-&gt; com.ib.client.Contract ESH6-map))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def ESU0C3000-map {:symbol &quot;ES&quot; :sec-type &quot;FOP&quot; :exchange &quot;CME&quot; :currency &quot;USD&quot; :last-trade-date-or-contract-month &quot;20200918&quot; :right :call :strike 3000 :multiplier 50})
 (def ESU0C3000-contract (map-&gt; com.ib.client.Contract ESU0C3000-map))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def MSFT-map {:symbol &quot;MSFT&quot; :sec-type &quot;STK&quot; :currency &quot;USD&quot; :exchange &quot;SMART&quot; :primary-exch &quot;NASDAQ&quot;})
@@ -5224,8 +5469,8 @@ We will create a connection that simply prints IB messages</p>
   (cs/request-historical-data
     (:ecs connection)
     (swap! requests inc)
-    ESZ2-map
-    &quot;20221210 00:00:00 UTC&quot;                                      ;the format is important. It defaults to TWS timezone if not specified
+    ESH6-map
+    &quot;20251610 00:00:00 UTC&quot;                                      ;the format is important. It defaults to TWS timezone if not specified
     10 :days
     1 :day
     :trades
@@ -5236,8 +5481,8 @@ We will create a connection that simply prints IB messages</p>
   (.reqHistoricalData
     (:ecs connection)
     (swap! requests inc)
-    ESZ2-contract
-    &quot;20221210 00:00:00 UTC&quot; ;the format is important. Having issues with US/Eastern
+    ESH6-contract
+    &quot;20251610 00:00:00 UTC&quot; ;the format is important. Having issues with US/Eastern
     &quot;10 D&quot;
     &quot;1 day&quot;
     &quot;TRADES&quot;
@@ -5249,7 +5494,7 @@ We will create a connection that simply prints IB messages</p>
   (cs/request-market-data
     (:ecs connection)
     (swap! requests inc)
-    ESZ2-map
+    ESH6-map
     nil
     false
     false))</pre></td></tr><tr><td class="docs">

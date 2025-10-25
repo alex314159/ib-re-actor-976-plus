@@ -1,9 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.1.10.***]
-### Added support for twsapi ***
+## [0.1.10.40.01] - 2025-10-25
+### Added support for twsapi 10.40.01
+### Moved reification from being text-based to javaparser. Old reification kept in case.
+- this should make future updates simpler.
 ### Added `protobuf->map` function in mapping.clj. This should be used at the edge of your project when using protocol buffer methods.
+- protocol buffers are new. Whilst they feel very natural to use in Clojure, use with caution in live trading.
+- note that at the moment the IB API fires two events on every request, one old style and one through a protocol buffer. In live trading silence either.
+- added a small example in the demo basic_app
 
 ## [0.1.10.39.01] - 2025-08-01
 ### Added support for twsapi 10.39.01

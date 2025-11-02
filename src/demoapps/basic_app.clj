@@ -52,7 +52,7 @@
     (:ecs connection)
     (swap! requests inc)
     ESH6-map
-    "20251610 00:00:00 US/Central"                                      ;the format is important. It defaults to TWS timezone if not specified. Having issues with US/Eastern
+    "20251031 00:00:00 US/Central"                                      ;the format is important. It defaults to TWS timezone if not specified. Having issues with US/Eastern
     10 :days
     1 :day
     :trades

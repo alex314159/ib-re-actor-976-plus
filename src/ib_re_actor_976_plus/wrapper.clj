@@ -210,53 +210,57 @@
   "All methods except error methods, which are handled specially"
   (remove #(= (:name %) "error") (parse-ewrapper-methods tws-version)))
 
-(def reification-new
+(def reification
   "NEW: The complete reify form for EWrapper interface using JavaParser for non-error methods.
   Error methods use the old hardcoded implementation (they need type hints for overloading)."
   (concat [(quote reify) (quote EWrapper)] (mapv method->implementation non-error-methods) error-method-implementations))
 
-(defmacro reify-ewrapper-new [this cb] reification-new)
-(defn create-new [cb] (eval (reify-ewrapper-new this cb)))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; OLD text-based implementation
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def text-replacements [["Map<Integer, Entry<String, Character>>" "nestedType"] ;special types, difficult to filter for
-                        [#"[,\(\)]" " "]                    ;comma and parentheses become spaces
-                        [#"[\t\n]" ""]                      ;get rid of tabs and new lines
-                        [#"// protobuf" ""]                 ;get rid of protobuf comment line
-                        [#"  +" " "]])                      ;get rid of double spaces
-
-(defn replace-all [text] (reduce #(clojure.string/replace %1 (first %2) (second %2)) text text-replacements))
-
-(defn remove-header [s] (subs s (.indexOf s "void")))
-
-(def ewrapper-java-methods
-  "OLD: Default version is managed in translation.clj"
-  (mapv clojure.string/trim
-        (drop-last
-          (-> (slurp (clojure.java.io/resource (str "EWrapper_" tws-version ".java")))
-              (remove-header)
-              (replace-all)
-              (clojure.string/split #";")))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def reification
-  (let [method-entries
-        (into [] (for [mdata ewrapper-java-methods :when (not= (subs mdata 0 11) "void error ")] ;filtering for error methods which are implemented separately. The space after error is to avoid also filtering for errorProto
-                   (let [elements (clojure.string/split mdata #" ")
-                         [mname arglist] [(second elements) (drop 2 elements)] ; first is return type, not needed
-                         arg-names (mapv second (partition 2 arglist)) ; first would be type, not needed
-                         arg-names-kebab-kw (map (comp keyword camel-to-kebab) arg-names)]
-                     (list (symbol mname) (into [] (concat [(quote this)] (mapv symbol arg-names)))
-                           (list (quote dispatch-message) (quote cb) (merge {:type (keyword (camel-to-kebab mname))} (zipmap arg-names-kebab-kw (mapv symbol arg-names))))))))]
-    (concat [(quote reify) (quote EWrapper)] (concat error-method-implementations method-entries))))
-
 (defmacro reify-ewrapper [this cb] reification)
 (defn create [cb] (eval (reify-ewrapper this cb)))
+
+
+(comment
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; OLD text-based implementation
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (def text-replacements [["Map<Integer, Entry<String, Character>>" "nestedType"] ;special types, difficult to filter for
+                          [#"[,\(\)]" " "]                  ;comma and parentheses become spaces
+                          [#"[\t\n]" ""]                    ;get rid of tabs and new lines
+                          [#"// protobuf" ""]               ;get rid of protobuf comment line
+                          [#"  +" " "]])                    ;get rid of double spaces
+
+  (defn replace-all [text] (reduce #(clojure.string/replace %1 (first %2) (second %2)) text text-replacements))
+
+  (defn remove-header [s] (subs s (.indexOf s "void")))
+
+  (def ewrapper-java-methods
+    "OLD: Default version is managed in translation.clj"
+    (mapv clojure.string/trim
+          (drop-last
+            (-> (slurp (clojure.java.io/resource (str "EWrapper_" tws-version ".java")))
+                (remove-header)
+                (replace-all)
+                (clojure.string/split #";")))))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (def reification-old
+    (let [method-entries
+          (into [] (for [mdata ewrapper-java-methods :when (not= (subs mdata 0 11) "void error ")] ;filtering for error methods which are implemented separately. The space after error is to avoid also filtering for errorProto
+                     (let [elements (clojure.string/split mdata #" ")
+                           [mname arglist] [(second elements) (drop 2 elements)] ; first is return type, not needed
+                           arg-names (mapv second (partition 2 arglist)) ; first would be type, not needed
+                           arg-names-kebab-kw (map (comp keyword camel-to-kebab) arg-names)]
+                       (list (symbol mname) (into [] (concat [(quote this)] (mapv symbol arg-names)))
+                             (list (quote dispatch-message) (quote cb) (merge {:type (keyword (camel-to-kebab mname))} (zipmap arg-names-kebab-kw (mapv symbol arg-names))))))))]
+      (concat [(quote reify) (quote EWrapper)] (concat error-method-implementations method-entries))))
+
+  (defmacro reify-ewrapper-old [this cb] reification-old)
+  (defn create-old [cb] (eval (reify-ewrapper-old this cb)))
+
+  ;END COMMENT
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -292,33 +296,3 @@
   (filter #(clojure.string/includes? (:name %) \"smartComponents\") ewrapper-methods)
   ")
 
-
-
-(comment
-  "Work in progress to parse EWrapper.java and generate a reify form. Should be less
-  brittle than the current."
-  (defn get-method-signatures
-    "Extracts method signatures from a Java interface AST."
-    [parsed-unit]
-    (->> (.getTypes parsed-unit)
-         (mapcat #(.getMethods %))
-         (mapv (fn [^MethodDeclaration method]
-                 (let [comment (let [c (.getComment method)]
-                                 (if (.isEmpty c) "" (str c)))
-                       params (.getParameters method)
-                       param-details (mapv (fn [p] {:name (.getNameAsString p) :type (.toString (.getType p))}) params)]
-                   {:name        (.getNameAsString method)
-                    :return-type (.toString (.getType method))
-                    :parameters  param-details
-                    :signature   (.toString (.getSignature method))
-                    :comment     comment}))))))
-
-(defn generate-reify
-  "Generates a reify form for the EWrapper interface."
-  [methods]
-  `(reify com.ib.client.EWrapper
-     ~@(map (fn [{:keys [name parameters]}]
-              (let [param-names (mapv (fn [p] (symbol (:name p))) parameters)]
-                `(~(symbol name) [~@param-names]
-                   (println (str "Called " ~name " with " ~param-names)))))
-            methods)))

@@ -12,5 +12,6 @@ pom.xml
 /ticks.csv
 /.nrepl-port
 /.idea
+*.iml
 /.lein-repl-history
 CLAUDE.md

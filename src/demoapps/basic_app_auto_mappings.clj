@@ -1,4 +1,4 @@
-(ns demoapps.basic-app
+(ns demoapps.basic-app-auto-mappings
   (:require [ib-re-actor-976-plus.gateway :as gateway]
             [ib-re-actor-976-plus.mapping-auto :refer [->map map->]]
             [ib-re-actor-976-plus.generated-mappings]
@@ -36,13 +36,13 @@
 (def ESH6-map {:symbol "ES" :sec-type :future :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20260320" :multiplier 50})
 (def ESH6-contract (map-> com.ib.client.Contract ESH6-map))
 
-(def ESH6C8000-map {:symbol "ES" :sec-type :future-option :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20260320" :right :call :strike 3000 :multiplier 50})
+(def ESH6C8000-map {:symbol "ES" :sec-type :future-option :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20260320" :right :call :strike 8000 :multiplier 50})
 (def ESH6C8000-contract (map-> com.ib.client.Contract ESH6C8000-map))
 
 (def MSFT-map {:symbol "MSFT" :sec-type :equity :currency "USD" :exchange "SMART"})
 (def MSFT-contract (map-> com.ib.client.Contract MSFT-map))
 
-(def safe-limit-buy-order-map {:action :buy :quantity 2 :order-type :limit :limit-price 1})
+(def safe-limit-buy-order-map {:action :buy :total-quantity 2 :order-type :limit :lmt-price 1})
 (def safe-limit-buy-order-order (map-> com.ib.client.Order safe-limit-buy-order-map))
 
 
@@ -53,7 +53,7 @@
     (:ecs connection)
     (swap! requests inc)
     ESH6-map
-    "20251031 00:00:00 US/Central"                                      ;the format is important. It defaults to TWS timezone if not specified. Having issues with US/Eastern
+    "20251222 00:00:00 US/Central"                                      ;the format is important. It defaults to TWS timezone if not specified. Having issues with US/Eastern
     10 :days
     1 :day
     :trades

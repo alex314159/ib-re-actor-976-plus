@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.10.42.01] - 2026-01-02
+### Added support for twsapi 10.42.01. This includes updating the protobuf-java version to 4.29.5.
+### Breaking backwards support - use the wrapper version that matches the TWS API version. This greatly simplifies code.
+### Experimental: generating mappings off underlying classes with javaparser. Can be used by requiring generated_mappings instead of mapping. Has much better coverage but use at your own risk.
+
 ## [0.1.10.40.01] - 2025-10-25
 ### Added support for twsapi 10.40.01
 ### Moved reification from being text-based to javaparser. Old reification kept in case.

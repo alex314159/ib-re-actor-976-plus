@@ -108,23 +108,26 @@ create instances, we will only map from objects to clojure maps."
 
 (defmapping com.ib.client.Contract
             [:conid conid]
-            [:currency currency]
+            [:symbol symbol]
+            [:sec-type secType :translation :security-type]
+            [:last-trade-date-or-contract-month lastTradeDateOrContractMonth]
+            [:last-trade-date lastTradeDate]
+            [:strike strike]
+            [:right right :translation :right]
+            [:multiplier multiplier :translation :double-string]
             [:exchange exchange]
-            [:last-trade-date-or-contract-month lastTradeDateOrContractMonth] ;:translation :expiry
+            [:primary-exch primaryExch]
+            [:currency currency]
             [:local-symbol localSymbol]
             [:trading-class tradingClass]
-            [:multiplier multiplier :translation :double-string]
-            [:primary-exch primaryExch]
-            [:right right :translation :right]
-            [:sec-id secId]
             [:sec-id-type secIdType :translation :security-id-type]                        ;
-            [:sec-type secType :translation :security-type]
-            [:strike strike]
-            [:symbol symbol]
+            [:sec-id secId]
+            [:description description]
+            [:issuer-id issuerId]
             [:delta-neutral-contract deltaNeutralContract]
             [:include-expired includeExpired]
-            [:combo-legs comboLegs]
-            [:combo-legs-descrip comboLegsDescrip])
+            [:combo-legs-descrip comboLegsDescrip]
+            [:combo-legs comboLegs])
 
 
 (defmapping com.ib.client.ContractDetails
@@ -258,64 +261,47 @@ create instances, we will only map from objects to clojure maps."
                      [:count count]
                      [:wap wap :translation :decimal-to-double])
 
-(if (< (compare tws-version "10.33.01") 0)
-  (defmapping-readonly com.ib.client.OrderState
-                       [:status status :translation :order-status]
-                       [:initial-margin-before initMarginBefore]
-                       [:maintenance-margin-before maintMarginBefore]
-                       [:equity-with-loan-before equityWithLoanBefore]
-                       [:initial-margin-change initMarginChange]
-                       [:maintenance-margin-change maintMarginChange]
-                       [:equity-with-loan-change equityWithLoanChange]
-                       [:initial-margin-after initMarginAfter]
-                       [:maintenance-margin-after maintMarginAfter]
-                       [:equity-with-loan-after equityWithLoanAfter]
-                       [:commission commission]
-                       [:minimum-commission minCommission]
-                       [:maximum-commission maxCommission]
-                       [:commission-currency commissionCurrency]
-                       [:warning-text warningText]
-                       [:completed-time completedTime]
-                       [:completed-status completedStatus])
-  (defmapping-readonly com.ib.client.OrderState
-                       [:status status :translation :order-status]
-                       [:initial-margin-before initMarginBefore]
-                       [:maintenance-margin-before maintMarginBefore]
-                       [:equity-with-loan-before equityWithLoanBefore]
-                       [:initial-margin-change initMarginChange]
-                       [:maintenance-margin-change maintMarginChange]
-                       [:equity-with-loan-change equityWithLoanChange]
-                       [:initial-margin-after initMarginAfter]
-                       [:maintenance-margin-after maintMarginAfter]
-                       [:equity-with-loan-after equityWithLoanAfter]
-                       [:commission-and-fees commissionAndFees]
-                       [:minimum-commission-and-fees minCommissionAndFees]
-                       [:maximum-commission-and-fees maxCommissionAndFees]
-                       [:commission-and-fees-currency commissionAndFeesCurrency]
-                       [:margin-currency marginCurrency]
-                       [:warning-text warningText]
-                       [:completed-time completedTime]
-                       [:completed-status completedStatus])
+(defmapping-readonly com.ib.client.OrderState
+                     [:status status] ;actually looks like still a string, no need for translation? ;:translation :order-status
+                     [:initial-margin-before initMarginBefore]
+                     [:maintenance-margin-before maintMarginBefore]
+                     [:equity-with-loan-before equityWithLoanBefore]
+                     [:initial-margin-change initMarginChange]
+                     [:maintenance-margin-change maintMarginChange]
+                     [:equity-with-loan-change equityWithLoanChange]
+                     [:initial-margin-after initMarginAfter]
+                     [:maintenance-margin-after maintMarginAfter]
+                     [:equity-with-loan-after equityWithLoanAfter]
+                     [:commission-and-fees commissionAndFees]
+                     [:minimum-commission-and-fees minCommissionAndFees]
+                     [:maximum-commission-and-fees maxCommissionAndFees]
+                     [:commission-and-fees-currency commissionAndFeesCurrency]
+                     [:margin-currency marginCurrency]
 
-  )
+                     ;private double m_initMarginBeforeOutsideRTH;
+                     ;private double m_maintMarginBeforeOutsideRTH;
+                     ;private double m_equityWithLoanBeforeOutsideRTH;
+                     ;private double m_initMarginChangeOutsideRTH;
+                     ;private double m_maintMarginChangeOutsideRTH;
+                     ;private double m_equityWithLoanChangeOutsideRTH;
+                     ;private double m_initMarginAfterOutsideRTH;
+                     ;private double m_maintMarginAfterOutsideRTH;
+                     ;private double m_equityWithLoanAfterOutsideRTH;
+                     ;private Decimal m_suggestedSize;
+                     ;private String m_rejectReason;
+                     ;private List<OrderAllocation> m_orderAllocations;
 
-(if (< (compare tws-version "10.33.01") 0)
-  (defmapping-readonly (eval 'com.ib.client.CommissionReport)
-                       [:commission commission]
-                       [:currency currency]
-                       [:execution-id execId]
-                       [:realized-profit-loss realizedPNL]
-                       [:yield yield]
-                       [:yield-redemption-date yieldRedemptionDate])
-  (defmapping-readonly (eval 'com.ib.client.CommissionAndFeesReport)
-                       [:commission-and-fees commissionAndFees]
-                       [:currency currency]
-                       [:execution-id execId]
-                       [:realized-profit-loss realizedPNL]
-                       [:yield yield]
-                       [:yield-redemption-date yieldRedemptionDate])
+                     [:warning-text warningText]
+                     [:completed-time completedTime]
+                     [:completed-status completedStatus])
 
-  )
+(defmapping-readonly (eval 'com.ib.client.CommissionAndFeesReport)
+                     [:commission-and-fees commissionAndFees]
+                     [:currency currency]
+                     [:execution-id execId]
+                     [:realized-profit-loss realizedPNL]
+                     [:yield yield]
+                     [:yield-redemption-date yieldRedemptionDate])
 
 ;; PROTOBUF MAPPING
 

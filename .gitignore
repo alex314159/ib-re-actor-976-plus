@@ -15,3 +15,4 @@ pom.xml
 *.iml
 /.lein-repl-history
 CLAUDE.md
+resources/com/

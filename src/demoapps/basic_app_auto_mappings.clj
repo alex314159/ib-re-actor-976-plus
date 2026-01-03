@@ -1,6 +1,7 @@
 (ns demoapps.basic-app
   (:require [ib-re-actor-976-plus.gateway :as gateway]
-            [ib-re-actor-976-plus.mapping :refer [map-> protobuf->map]]
+            [ib-re-actor-976-plus.mapping-auto :refer [->map map->]]
+            [ib-re-actor-976-plus.generated-mappings]
             [ib-re-actor-976-plus.client-socket :as cs])
   (:import (com.ib.client Contract Order))
   )
@@ -32,14 +33,13 @@
 (def connection (gateway/connect 2 "localhost" default-port result-fn)) ;you may need to change the port
 
 ;Create data structures - either plain maps or IB objects
-(def ESH6-map {:symbol "ES" :sec-type "FUT" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20260320" :multiplier 50})
+(def ESH6-map {:symbol "ES" :sec-type :future :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20260320" :multiplier 50})
 (def ESH6-contract (map-> com.ib.client.Contract ESH6-map))
-(def ESH6-contract-gm (gm/->map))
 
-(def ESU0C3000-map {:symbol "ES" :sec-type "FOP" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20200918" :right :call :strike 3000 :multiplier 50})
-(def ESU0C3000-contract (map-> com.ib.client.Contract ESU0C3000-map))
+(def ESH6C8000-map {:symbol "ES" :sec-type :future-option :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20260320" :right :call :strike 3000 :multiplier 50})
+(def ESH6C8000-contract (map-> com.ib.client.Contract ESH6C8000-map))
 
-(def MSFT-map {:symbol "MSFT" :sec-type "STK" :currency "USD" :exchange "SMART" :primary-exch "NASDAQ"})
+(def MSFT-map {:symbol "MSFT" :sec-type :equity :currency "USD" :exchange "SMART"})
 (def MSFT-contract (map-> com.ib.client.Contract MSFT-map))
 
 (def safe-limit-buy-order-map {:action :buy :quantity 2 :order-type :limit :limit-price 1})
@@ -66,7 +66,7 @@
     (:ecs connection)
     (swap! requests inc)
     ESH6-contract
-    "20251025 14:53:53 US/Central" ;the format is important. Having issues with US/Eastern
+    "20251222 14:53:53 US/Central" ;the format is important. Having issues with US/Eastern
     "10 D"
     "1 day"
     "TRADES"
@@ -103,9 +103,6 @@
   ;will keep going until you send the same request with false instead of true
   (cs/request-account-updates (:ecs connection) true account))
 
-(defn example-get-protobuf-data
-  [historical-data-proto-buf-message]
-  (protobuf->map (:historical-data-proto historical-data-proto-buf-message)))
 
 ;;;;;;;;;;;;;;;
 ;END BASIC APP;

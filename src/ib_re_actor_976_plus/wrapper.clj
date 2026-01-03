@@ -132,43 +132,28 @@
   "These methods need to be implemented separately as they're overloaded - same name with different signature.
   Interestingly, even though the type hints don't appear in the REPL, they're there and removing them makes reify fail.
   cb is the name of the dispatch function"
-  (let [tv (read-string (clojure.string/replace (subs tws-version 0 5) "." ""))]
-    [(if
-       (> tv 1011)
-       (if (>= tv 1033)
-         (list (quote ^void error) [(quote this)
-                                    (quote ^int id)
-                                    (quote ^long errorTime)
-                                    (quote ^int errorCode)
-                                    (quote ^String errorMsg)
-                                    (quote ^String advancedOrderRejectJson)]
-               (list dispatch-message (quote cb) {:type                       :error
-                                                  :id                         (quote id)
-                                                  :time                       (quote errorTime)
-                                                  :code                       (quote errorCode)
-                                                  :message                    (quote errorMsg)
-                                                  :advanced-order-reject-json (quote advancedOrderRejectJson)}))
-         (list (quote ^void error) [(quote this)
-                                    (quote ^int id)
-                                    (quote ^int errorCode)
-                                    (quote ^String errorMsg)
-                                    (quote ^String advancedOrderRejectJson)]
-               (list dispatch-message (quote cb) {:type                       :error
-                                                  :id                         (quote id)
-                                                  :code                       (quote errorCode)
-                                                  :message                    (quote errorMsg)
-                                                  :advanced-order-reject-json (quote advancedOrderRejectJson)})))
-       (list (quote ^void error) [(quote this) (quote ^int id) (quote ^int errorCode) (quote ^String message)]
-             (list dispatch-message (quote cb) {:type    :error
-                                                :id      (quote id)
-                                                :code    (quote errorCode)
-                                                :message (quote message)})))
-     (list (quote ^void error) [(quote this) (quote ^Exception ex)]
-           (list dispatch-message (quote cb) {:type :error
-                                              :ex   (quote ex)}))
-     (list (quote ^void error) [(quote this) (quote ^String message)]
-           (list dispatch-message (quote cb) {:type    :error
-                                              :message (quote message)}))]))
+  [
+
+   (list (quote ^void error) [(quote this)
+                              (quote ^int id)
+                              (quote ^long errorTime)
+                              (quote ^int errorCode)
+                              (quote ^String errorMsg)
+                              (quote ^String advancedOrderRejectJson)]
+         (list dispatch-message (quote cb) {:type                       :error
+                                            :id                         (quote id)
+                                            :time                       (quote errorTime)
+                                            :code                       (quote errorCode)
+                                            :message                    (quote errorMsg)
+                                            :advanced-order-reject-json (quote advancedOrderRejectJson)}))
+
+
+   (list (quote ^void error) [(quote this) (quote ^Exception ex)]
+         (list dispatch-message (quote cb) {:type :error
+                                            :ex   (quote ex)}))
+   (list (quote ^void error) [(quote this) (quote ^String message)]
+         (list dispatch-message (quote cb) {:type    :error
+                                            :message (quote message)}))])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; JavaParser-based method extraction
@@ -243,7 +228,6 @@
                 (replace-all)
                 (clojure.string/split #";")))))
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (def reification-old
     (let [method-entries
@@ -259,40 +243,38 @@
   (defmacro reify-ewrapper-old [this cb] reification-old)
   (defn create-old [cb] (eval (reify-ewrapper-old this cb)))
 
-  ;END COMMENT
-  )
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; Comparison and testing utilities
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Comparison and testing utilities
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (comment
+    "To compare old vs new implementations in REPL:
 
-(comment
-  "To compare old vs new implementations in REPL:
+    ; See parsed methods from JavaParser:
+    (take 5 ewrapper-methods)
 
-  ; See parsed methods from JavaParser:
-  (take 5 ewrapper-methods)
+    ; See old text-parsed methods:
+    (take 5 ewrapper-java-methods)
 
-  ; See old text-parsed methods:
-  (take 5 ewrapper-java-methods)
+    ; Compare method counts:
+    (count ewrapper-methods)    ; NEW JavaParser-based
+    (count ewrapper-java-methods)  ; OLD text-based
 
-  ; Compare method counts:
-  (count ewrapper-methods)    ; NEW JavaParser-based
-  (count ewrapper-java-methods)  ; OLD text-based
+    ; See generated reification forms:
+    (take 10 reification)       ; OLD
+    (take 10 reification-new)   ; NEW
 
-  ; See generated reification forms:
-  (take 10 reification)       ; OLD
-  (take 10 reification-new)   ; NEW
+    ; Test creating wrapper (both should work):
+    (def test-cb (fn [msg] (println \"Got:\" msg)))
+    (def wrapper-old (create test-cb))
+    (def wrapper-new (create-new test-cb))
 
-  ; Test creating wrapper (both should work):
-  (def test-cb (fn [msg] (println \"Got:\" msg)))
-  (def wrapper-old (create test-cb))
-  (def wrapper-new (create-new test-cb))
+    ; Example error method signatures from JavaParser:
+    (filter error-method? ewrapper-methods)
 
-  ; Example error method signatures from JavaParser:
-  (filter error-method? ewrapper-methods)
-
-  ; Compare specific method parsing for complex types:
-  (filter #(clojure.string/includes? (:name %) \"smartComponents\") ewrapper-methods)
-  ")
+    ; Compare specific method parsing for complex types:
+    (filter #(clojure.string/includes? (:name %) \"smartComponents\") ewrapper-methods)
+    "))
 

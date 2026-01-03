@@ -5,8 +5,6 @@
     ;[clj-time.format :as tf]
     [clojure.string :as str]))
 
-;Unfortunately it is important to know the TWS version here, because of the Decimal issue
-
 (def tws-version
   (try
     (let [separator (if (= (subs (System/getProperty "os.name") 0 3) "Win") #"\\" #"/")]
@@ -20,11 +18,8 @@
                   (System/getProperty "java.class.path") #":")))
             separator))))
     (catch Exception e
-      "10.33.01")))
+      "unknown TWS API version")))
 
-(def use-decimal?
-  (let [v (map #(Long/parseLong %) (clojure.string/split tws-version #"\."))]
-    (and (>= (first v) 10) (>= (second v) 10))))
 
 (defmulti ^:dynamic translate
           "Translate to or from a value from the Interactive Brokers API.
@@ -129,35 +124,30 @@ to check if if a given value is valid (known)."
     :years [val :years]))
 
 (translation-table security-type
-                   (merge
-                     {
-                      :none              com.ib.client.Types$SecType/None
-                      :equity            com.ib.client.Types$SecType/STK
-                      :option            com.ib.client.Types$SecType/OPT
-                      :future            com.ib.client.Types$SecType/FUT
-                      :continuous-future com.ib.client.Types$SecType/CONTFUT
-                      :cash              com.ib.client.Types$SecType/CASH
-                      :bond              com.ib.client.Types$SecType/BOND
-                      :cfd               com.ib.client.Types$SecType/CFD
-                      :future-option     com.ib.client.Types$SecType/FOP
-                      :warrant           com.ib.client.Types$SecType/WAR
-                      :iopt              com.ib.client.Types$SecType/IOPT
-                      :fwd               com.ib.client.Types$SecType/FWD
-                      :bag               com.ib.client.Types$SecType/BAG
-                      :index             com.ib.client.Types$SecType/IND
-                      :bill              com.ib.client.Types$SecType/BILL
-                      :fund              com.ib.client.Types$SecType/FUND
-                      :fixed             com.ib.client.Types$SecType/FIXED
-                      :slb               com.ib.client.Types$SecType/SLB
-                      :news              com.ib.client.Types$SecType/NEWS
-                      :commodity         com.ib.client.Types$SecType/CMDTY
-                      :bsk               com.ib.client.Types$SecType/BSK
-                      :icu               com.ib.client.Types$SecType/ICU
-                      :ics               com.ib.client.Types$SecType/ICS}
-                     (if (>= (read-string (clojure.string/replace (subs tws-version 0 5) "." "")) 1010)
-                       {:crypto            (eval (symbol "com.ib.client.Types$SecType/ICS"))}
-                       {})
-                     ))
+                   {:none              com.ib.client.Types$SecType/None
+                    :equity            com.ib.client.Types$SecType/STK
+                    :option            com.ib.client.Types$SecType/OPT
+                    :future            com.ib.client.Types$SecType/FUT
+                    :continuous-future com.ib.client.Types$SecType/CONTFUT
+                    :cash              com.ib.client.Types$SecType/CASH
+                    :bond              com.ib.client.Types$SecType/BOND
+                    :cfd               com.ib.client.Types$SecType/CFD
+                    :future-option     com.ib.client.Types$SecType/FOP
+                    :warrant           com.ib.client.Types$SecType/WAR
+                    :iopt              com.ib.client.Types$SecType/IOPT
+                    :fwd               com.ib.client.Types$SecType/FWD
+                    :bag               com.ib.client.Types$SecType/BAG
+                    :index             com.ib.client.Types$SecType/IND
+                    :bill              com.ib.client.Types$SecType/BILL
+                    :fund              com.ib.client.Types$SecType/FUND
+                    :fixed             com.ib.client.Types$SecType/FIXED
+                    :slb               com.ib.client.Types$SecType/SLB
+                    :news              com.ib.client.Types$SecType/NEWS
+                    :commodity         com.ib.client.Types$SecType/CMDTY
+                    :bsk               com.ib.client.Types$SecType/BSK
+                    :icu               com.ib.client.Types$SecType/ICU
+                    :ics               com.ib.client.Types$SecType/ICS
+                    :crypto            com.ib.client.Types$SecType/CRYPTO})
 
 (defmethod translate [:to-ib :bar-size-unit] [_ _ unit]
   (case unit
@@ -267,78 +257,10 @@ to check if if a given value is valid (known)."
                     :pegged-to-market-vol             com.ib.client.OrderType/PEG_MKT_VOL
                     :pegged-to-srf-vol                com.ib.client.OrderType/PEG_SRF_VOL
 
-                    ;:ACTIVETIM "ACTIVETIM"
-                    ;:ADJUST "ADJUST"
-                    ;:ALERT "ALERT"
-                    ;:ALGO "ALGO"
-                    ;:ALGOLTH "ALGOLTH"
-                    ;:ALLOC "ALLOC"
-                    ;:AON "AON"
-                    ;:AUC "AUC"
-                    ;:average-cost "AVGCOST"
-                    ;:basket "BASKET"
-                    ;:BOARDLOT "BOARDLOT"
-                    ;:COND "COND"
-                    ;:CONDORDER "CONDORDER"
-                    ;:CONSCOST "CONSCOST"
-                    ;:DARKPOLL "DARKPOLL"
-                    ;:DAY "DAY"
-                    ;:DEACT "DEACT"
-                    ;:DEACTDIS "DEACTDIS"
-                    ;:DEACTEOD "DEACTEOD"
-                    ;:DIS "DIS"
-                    ;:EVRULE "EVRULE"
-                    ;:FOK "FOK"
-                    ;:good-after-time "GAT"
-                    ;:good-till-date "GTD"
-                    ;:good-till-canceled "GTC"
-                    ;:GTT "GTT"
-                    ;:HID "HID"
-                    ;:ICE "ICE"
-                    ;:IMB "IMB"
-                    ;:immediate-or-cancel "IOC"
-                    ;:limit-close "LMTCLS"
-                    ;:limit-on-open "LOO"
-                    ;:LTH "LTH"
-                    ;:market-close "MKTCLS"
-                    ;:market-on-open "MOO"
-                    ;:NONALGO "NONALGO"
-                    ;:one-cancels-all "OCA"
-                    ;:OPG "OPG"
-                    ;:OPGREROUT "OPGREROUT"
-                    ;:POSTONLY "POSTONLY"
-                    ;:PREOPGRTH "PREOPGRTH"
-                    ;:request-for-quote "QUOTE"
-                    ;:RTH "RTH"
-                    ;:RTHIGNOPG "RTHIGNOPG"
-                    ;:scale "SCALE"
-                    ;:SCALERST "SCALERST"
-                    ;:SWEEP "SWEEP"
-                    ;:TIMEPRIO "TIMEPRIO"
-                    ;:trailing-stop "TRAIL"
-                    ;:trailing-stop-limit "TRAILLMT"
-                    ;:what-if "WHATIF"
                     })
 
-;
-;(translation-table order-status
-;                   {
-;                    :pending-submit "PendingSubmit"
-;                    :pending-cancel "PendingCancel"
-;                    :pre-submitted "PreSubmitted"
-;                    :submitted "Submitted"
-;                    :cancelled "Cancelled"
-;                    :filled "Filled"
-;                    :inactive "Inactive"
-;                    :api-pending "ApiPending"
-;                    :api-cancelled "ApiCancelled"
-;                    :unknown "Unknown"
-;                    })
-
-; ORDER STATUS IS STILL SENT AS A STRING IN EWRAPPER - NO NEED FOR THIS FOR NOW
 (translation-table order-status
-                   {
-                    :pending-submit     com.ib.client.OrderStatus/PendingSubmit
+                   {:pending-submit     com.ib.client.OrderStatus/PendingSubmit
                     :pending-cancel     com.ib.client.OrderStatus/PendingCancel
                     :pre-submitted      com.ib.client.OrderStatus/PreSubmitted
                     :submitted          com.ib.client.OrderStatus/Submitted
@@ -347,8 +269,7 @@ to check if if a given value is valid (known)."
                     :inactive           com.ib.client.OrderStatus/Inactive
                     :api-pending        com.ib.client.OrderStatus/ApiPending
                     :api-cancelled      com.ib.client.OrderStatus/ApiCancelled
-                    :unknown            com.ib.client.OrderStatus/Unknown
-                    })
+                    :unknown            com.ib.client.OrderStatus/Unknown})
 
 
 (translation-table security-id-type
@@ -998,43 +919,19 @@ to check if if a given value is valid (known)."
 (defmethod translate [:to-ib :exchanges] [_ _ val]
   (str/join "," val))
 
-;;This is necessary because the com.ib.client.Decimal doesn't exist in previous versions of twsapi
-;;Solution below works. Other solution marginally faster and feels more clojuresque
-;(def ^java.lang.reflect.Method val->decimal
-;  (when use-decimal?
-;    (.getMethod (Class/forName "com.ib.client.Decimal")
-;                "parse"
-;                (into-array [java.lang.String]))))
-;
-;;only for 10.10 onwards
-;(defmethod translate [:to-ib :string-to-decimal] [_ _ val]
-;  ;we coerce val to str, just in case
-;  (if val->decimal
-;    (.invoke val->decimal nil (into-array [(str val)]))
-;    val))
-
-(defmacro if-decimal?
-  [if-form else-form]
-  (if use-decimal?
-    `(do ~if-form)
-    `(do ~else-form)))
-
-;only for 10.10 onwards
 (defmethod translate [:to-ib :string-to-decimal] [_ _ val]
   ;we coerce val to str, just in case
-  (if-decimal? (com.ib.client.Decimal/parse (str val)) val))
+  (com.ib.client.Decimal/parse (str val)))
 
 (defmethod translate [:from-ib :string-to-decimal] [_ _ val]
   ;we coerce val to str, just in case
-  (if-decimal?
-    (if (or (number? val) (string? val)) (com.ib.client.Decimal/parse (str val)) val)
-    val))
+  (if (or (number? val) (string? val)) (com.ib.client.Decimal/parse (str val)) val))
 
 (defmethod translate [:from-ib :decimal-to-long] [_ _ val]
-  (if use-decimal? (.longValue val) val))
+  (.longValue val))
 
 (defmethod translate [:from-ib :decimal-to-double] [_ _ val]
-  (if use-decimal? (.doubleValue (.value val)) val))
+  (.doubleValue (.value val)))
 
 
 ;(defmethod translate [:from-ib :yield-redemption-date] [_ _ val]

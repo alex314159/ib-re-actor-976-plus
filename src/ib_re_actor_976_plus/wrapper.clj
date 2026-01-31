@@ -32,10 +32,10 @@
 
 
 (defn matching-message? [handle-type id
-                         {:keys [type request-id order-id ticker-id] :as message}]
+                         {:keys [type req-id order-id ticker-id] :as message}]
   (and (= handle-type type)
        (or (nil? id)
-           (= id (or request-id order-id ticker-id)))))
+           (= id (or req-id order-id ticker-id)))))
 
 
 (defn warning-code?
@@ -103,11 +103,12 @@
 
   message-type is the type of the data coming in. For example: :price-bar
   or :open-order."
-  [message-type req-id
-   {:keys [type request-id order-id ticker-id] :as msg}]
+  [message-type id
+   {:keys [type req-id order-id ticker-id] :as msg}]
+  (println message-type id type req-id order-id ticker-id (end-message-type message-type))
   (and (= type (end-message-type message-type))
-       (or (nil? req-id)
-           (= req-id (or request-id order-id ticker-id)))))
+       (or (nil? id)
+           (= id (or req-id order-id ticker-id)))))
 
 
 

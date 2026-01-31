@@ -34,7 +34,7 @@
 ;Create data structures - either plain maps or IB objects
 (def ESH6-map {:symbol "ES" :sec-type "FUT" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20260320" :multiplier 50})
 (def ESH6-contract (map-> com.ib.client.Contract ESH6-map))
-(def ESH6-contract-gm (gm/->map))
+;(def ESH6-contract-gm (gm/->map))
 
 (def ESU0C3000-map {:symbol "ES" :sec-type "FOP" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20200918" :right :call :strike 3000 :multiplier 50})
 (def ESU0C3000-contract (map-> com.ib.client.Contract ESU0C3000-map))

@@ -5,11 +5,22 @@
   These are much easier to use in an interactive context (such as when using the
   REPL) but probably not what you would want to use in an application, as the
   asynchronous API is a much more natural fit for building programs that react
-  to events in market data."
-  (:require
-    [clojure.tools.logging :as log]
-    [ib-re-actor-976-plus.gateway :as g]))
+  to events in market data.
 
+  IMPORTANT: Functions in this namespace require a connection created with
+  `gateway/connect`, which includes automatic request ID management via the
+  :next-id atom.
+
+  Example usage:
+    (require '[ib-re-actor-976-plus.gateway :as g])
+    (require '[ib-re-actor-976-plus.synchronous :as sync])
+    (def conn (g/connect 1))  ; client-id 1, paper trading on localhost
+    (sync/server-time conn)
+    (sync/contract-details conn {:symbol \"AAPL\" :sec-type :stock :exchange \"SMART\" :currency \"USD\"})
+    (g/disconnect conn)"
+  (:require
+   [clojure.tools.logging :as log]
+   [ib-re-actor-976-plus.gateway :as g]))
 
 (defn single-value-handlers
   "This returns a map of handlers suitable for calls that will provide a single
@@ -18,7 +29,6 @@
   {:data #(deliver result %)
    :error #(do (log/error %)
                (deliver result %))})
-
 
 (defn resetting-handlers
   "This returns a map of handlers suitable for calls in which you are interested
@@ -30,16 +40,14 @@
      :error #(do (log/error %)
                  (deliver result %))}))
 
-
 (defn conjing-handlers
   "This returns a map of handlers suitable for calls that return a collection of
   items and you want to return them all."
   [result]
   (let [data (atom nil)]
     {:data #(swap! data conj %)
-     :end #(deliver result @data)
+     :end  #(deliver result @data)
      :error #(deliver result %)}))
-
 
 (defn server-time
   "Returns the server time"
@@ -48,7 +56,6 @@
     (g/request-current-time connection
                             (single-value-handlers result))
     @result))
-
 
 (defn market-snapshot
   "Returns a snapshot of the market for the specified contract."
@@ -61,7 +68,6 @@
     (g/request-market-data connection contract nil true handlers)
     @result))
 
-
 (defn implied-vol
   "Returns detailed information about an option contract based on its price
   including implied volatility, greeks, etc."
@@ -70,7 +76,6 @@
     (g/calculate-implied-vol connection contract option-price underlying-price
                              (single-value-handlers result))
     @result))
-
 
 (defn option-price
   "Returns detailed information about an option contract based on its volatility
@@ -81,7 +86,6 @@
                               (single-value-handlers result))
     @result))
 
-
 (defn execute-order
   "Executes an order, returning only when the order is filled or canceled."
   [connection contract order]
@@ -89,7 +93,6 @@
     (g/place-and-monitor-order connection contract order
                                (resetting-handlers result))
     @result))
-
 
 (defn open-orders
   "Returns open orders"
@@ -99,14 +102,12 @@
                            (conjing-handlers result))
     @result))
 
-
 (defn positions
   "Return account positions"
   [connection]
   (let [result (promise)]
     (g/request-positions connection (conjing-handlers result))
     @result))
-
 
 (defn contract-details
   "Gets details for the specified contract.
@@ -118,7 +119,6 @@
     (g/request-contract-details connection contract
                                 (conjing-handlers result))
     @result))
-
 
 (defn historical-data
   "Gets historical price bars for a contract."

@@ -29,9 +29,9 @@
   3. Request the generation of the appropriate event using the request-* functions
   4. Cancel the request with the cancel-* when done."
   (:require
-    [clojure.tools.logging :as log]
-    [ib-re-actor-976-plus.client-socket :as cs]
-    [ib-re-actor-976-plus.wrapper :as wrapper :refer [error-end? matching-message? request-end?]])
+   [clojure.tools.logging :as log]
+   [ib-re-actor-976-plus.client-socket :as cs]
+   [ib-re-actor-976-plus.wrapper :as wrapper :refer [error-end? matching-message? request-end?]])
   (:import (com.ib.client EJavaSignal)))
 
 ;; Default port for live trading
@@ -41,27 +41,23 @@
 
 (defonce default-server-log-level :error)
 
-
 (defn next-id-updater
   "Returns a function that will take the value from :next-valid-order-id
   messages and update the next-id atom accordingly."
   [next-id]
   (fn [{:keys [type value]}]
     (when (= :next-valid-order-id type)
-      (log/info "Next ID:" value)
+      (log/info "Next valid order ID:" value)
       (reset! next-id value))))
 
-
 (defn next-id
-  "Use this utility function to get the next valid id.
-
-  type should be one of :order :ticker :request
-  "
+  "Use this utility function to get the next valid request id.
+  Used for ticker-id, request-id, and order-id which IB requires to be
+  unique and increasing integers."
   [connection]
   (let [id @(:next-id connection)]
     (swap! (:next-id connection) inc)
     id))
-
 
 (defn error-printer
   "Subscribe this function to a connection to print error messages."
@@ -69,13 +65,11 @@
   (when (= :error (:type message))
     (println message)))
 
-
 (defn error-logger
   "Subscribe this function to a connection to log error messages."
   [message]
   (when (= :error (:type message))
     (log/error message)))
-
 
 (defn subscribe!
   "Adds f to the functions that will get called with every message that is
@@ -97,35 +91,30 @@
    (swap! (:subscribers connection) assoc id f)
    connection))
 
-
 (defmulti unsubscribe!
-          "Removes the function passed in or the function associated with the id passed
+  "Removes the function passed in or the function associated with the id passed
           in from the list of functions that will get called with every message from the
           server."
-          (fn [_ x]
-            (cond
-              (number? x) :number
-              (fn? x) :fn
-              :else :unknown)))
-
+  (fn [_ x]
+    (cond
+      (number? x) :number
+      (fn? x) :fn
+      :else :unknown)))
 
 (defmethod unsubscribe! :default
   [_ x]
   (log/error "Don't know how to unsubscribe" x))
-
 
 (defmethod unsubscribe! :number
   [connection id]
   (swap! (:subscribers connection) dissoc id)
   connection)
 
-
 (defmethod unsubscribe! :fn
   [connection f]
   (swap! (:subscribers connection)
          #(into {} (filter (comp (partial not= f) second) %)))
   connection)
-
 
 (defn- message-dispatcher
   "Returns a closure responsible for calling every subscriber with messages
@@ -138,13 +127,21 @@
         (catch Throwable t
           (log/error t "Error dispatching" message "to" f))))))
 
-
 ;;;
-;;; Synchronous calls
+;;; Connection functions
 ;;;
 (defn connect
   "Returns a connection that is required for all other calls.
   If the connection fails, returns nil. See log in that case.
+
+  This connection includes:
+  - :next-id atom - automatically updated when IB sends :next-valid-order-id
+  - :subscribers atom - for registering/unregistering listeners dynamically
+  - :ecs - the underlying EClientSocket
+
+  The :next-id is required by gateway functions like request-market-data,
+  request-contract-details, place-and-monitor-order, etc. that need to generate
+  unique request/order IDs.
 
   client-id identifies this connection. Only one connection can be made per
   client-id to the same server.
@@ -152,15 +149,19 @@
   host is the hostname or address of the server running IB Gateway or TWS.
 
   port is the port configured for that server.
+
+  listener-function (optional) is a function that will receive all messages.
+  Additional listeners can be added/removed via subscribe!/unsubscribe!.
   "
   ([client-id]
-   (connect client-id "localhost" default-paper-port println))
-  ([client-id host port listener-function] ;ADD ONE VARIABLE
-   (let [subscribers (atom {listener-function listener-function})
-         ;next-id (atom 1)
-         ;id-updater (next-id-updater next-id)
-         ]
-     ;     (swap! subscribers assoc listener-function listener-function) ; MAIN CHANGE
+   (connect client-id "localhost" default-paper-port))
+  ([client-id host port]
+   (connect client-id host port nil))
+  ([client-id host port listener-function]
+   (let [next-id (atom 1)
+         id-updater (next-id-updater next-id)
+         subscribers (atom (cond-> {:id-updater id-updater}
+                             listener-function (assoc :listener listener-function)))]
      (try
        (let [wr (wrapper/create (message-dispatcher subscribers))
              signal (EJavaSignal.)
@@ -169,16 +170,21 @@
            (cs/set-server-log-level ecs default-server-log-level))
          {:ecs         ecs
           :subscribers subscribers
-          ;:next-id     next-id
-          })
+          :next-id next-id})
        (catch Exception ex
-         (log/error "Error trying to connect to " host ":" port ": " ex)))))
-  )
+         (log/error "Error trying to connect to " host ":" port ": " ex))))))
 
 (defn connect-simple
-  "Same as above but this connection only accepts one listener, set at creation.
-  It returns the same object type as connect but is immutable.
-  This is useful in a real world application where your listener is a multi-method.
+  "Returns a connection with a single, immutable listener set at creation.
+
+  This is useful when your listener is a multi-method that handles all message types.
+  It is a better way to build complex apps, as you can include all your business logic
+  inside the listener function. It is a good idea to start things that take time
+  in separate threads so the listener is always free.
+
+  Note: This connection does NOT include :next-id, so it cannot be used with
+  gateway functions that require request IDs (request-market-data, request-contract-details,
+  place-and-monitor-order, etc.). Use `connect` instead.
   "
   ([client-id]
    (connect-simple client-id "localhost" default-paper-port println))
@@ -200,16 +206,13 @@
   (and (:ecs connection)
        (cs/is-connected? (:ecs connection))))
 
-
 (defonce default-handlers
-         {:data #(log/info "Received:" %)
-          :end #(log/info "End of the request.")
-          :error #(log/error "Error: " %)})
-
+  {:data #(log/info "Received:" %)
+   :end #(log/info "End of the request.")
+   :error #(log/error "Error: " %)})
 
 (defonce nil-handlers
-         {})
-
+  {})
 
 (defn single-message-handler
   "Handler to wait for a single message, call the appropriate handlers and
@@ -217,14 +220,13 @@
   [connection handle-type id {:keys [data end error]}]
   (fn this [msg]
     (cond
-      (matching-message? handle-type id msg) (do (and data (data (:value msg)))
+      (matching-message? handle-type id msg) (do (and data (data msg))
                                                  (and end (end))
                                                  (unsubscribe! connection this))
 
       (error-end? id msg) (do (and error (error msg))
                               (and end (end))
                               (unsubscribe! connection this)))))
-
 
 (defn multiple-messages-handler
   "Handler to wait for multiple messages and eventually the appropriate end
@@ -233,7 +235,7 @@
   [connection handle-type id {:keys [data end error]}]
   (fn this [msg]
     (cond
-      (matching-message? handle-type id msg) (and data (data (:value msg)))
+      (matching-message? handle-type id msg) (and data (data msg))
 
       (request-end? handle-type id msg) (do (and end (end))
                                             (unsubscribe! connection this))
@@ -242,12 +244,10 @@
                               (and end (end))
                               (unsubscribe! connection this)))))
 
-
 (defn request-current-time [connection handlers]
   (subscribe! connection
               (single-message-handler connection :current-time nil handlers))
   (cs/request-current-time (:ecs connection)))
-
 
 (defn request-market-data
   "Returns the ticker-id that can be used to cancel the request."
@@ -261,11 +261,9 @@
                              ticker-id contract tick-list snapshot? false)
      ticker-id)))
 
-
 (defn cancel-market-data [connection ticker-id]
   (cs/cancel-market-data (:ecs connection) ticker-id)
   (unsubscribe! connection ticker-id))
-
 
 (defn calculate-implied-vol
   "Returns the ticker-id that can be used to cancel the request."
@@ -278,12 +276,10 @@
                                      option-price underlying-price)
     ticker-id))
 
-
 (defn cancel-calculate-implied-vol
   [connection ticker-id]
   (cs/cancel-calculate-implied-volatility (:ecs connection) ticker-id)
   (unsubscribe! connection ticker-id))
-
 
 (defn calculate-option-price
   "Returns the ticker-id that can be used to cancel the request."
@@ -296,13 +292,10 @@
                                volatility underlying-price)
     ticker-id))
 
-
 (defn cancel-calculate-option-price
   [connection ticker-id]
   (cs/cancel-calculate-option-price (:ecs connection) ticker-id)
   (unsubscribe! connection ticker-id))
-
-
 
 (defn order-monitor-handler
   "Listen for messages about the order and forwards them to the :data handler
@@ -325,7 +318,6 @@
                                    (and end (end))
                                    (unsubscribe! connection this))))))
 
-
 (defn place-and-monitor-order
   "Returns the order-id that can be used to cancel or modify the order."
   [connection contract order handlers]
@@ -336,17 +328,14 @@
                     order-id contract (assoc order :order-id order-id))
     order-id))
 
-
 (defn modify-order [connection order-id contract order]
   (cs/place-order (:ecs connection)
                   order-id contract (assoc order :order-id order-id))
   order-id)
 
-
 (defn cancel-order [connection order-id]
   (cs/cancel-order (:ecs connection) order-id)
   (unsubscribe! connection order-id))
-
 
 (defn request-open-orders [connection handlers]
   (subscribe! connection
@@ -355,13 +344,11 @@
   (cs/request-open-orders (:ecs connection))
   connection)
 
-
 (defn cancel-all-orders
   "This will cancel all orders including the ones entered in TWS."
   [connection]
   (cs/request-global-cancel (:ecs connection))
   connection)
-
 
 (defn request-positions [connection handlers]
   (subscribe! connection (multiple-messages-handler connection
@@ -369,11 +356,9 @@
   (cs/request-positions (:ecs connection))
   connection)
 
-
 (defn cancel-positions [connection]
   (cs/cancel-positions (:ecs connection))
   connection)
-
 
 (defn request-contract-details [connection contract handlers]
   (let [request-id (next-id connection)]
@@ -382,7 +367,6 @@
                                            :contract-details request-id handlers))
     (cs/request-contract-details (:ecs connection) request-id contract)
     request-id))
-
 
 (defn request-historical-data
   ([connection contract end
@@ -405,7 +389,6 @@
    (request-historical-data connection contract end duration duration-unit
                             bar-size bar-size-unit :trades true handlers)))
 
-
 (defn request-fundamental-data
   [connection contract report-type handlers]
   (let [request-id (next-id connection)]
@@ -414,7 +397,6 @@
                                            handlers))
     (cs/request-fundamental-data (:ecs connection) request-id contract report-type)
     request-id))
-
 
 (defn cancel-fundamental-data
   [connection request-id]

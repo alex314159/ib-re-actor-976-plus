@@ -350,9 +350,15 @@
   (cs/request-global-cancel (:ecs connection))
   connection)
 
-(defn request-positions [connection handlers]
-  (subscribe! connection (multiple-messages-handler connection
-                                                    :position nil handlers))
+(defn request-positions
+  [connection handlers]
+  (subscribe! connection (multiple-messages-handler connection :position nil handlers))
+  (cs/request-positions (:ecs connection))
+  connection)
+
+(defn request-positions-proto-buf
+  [connection handlers]
+  (subscribe! connection (multiple-messages-handler connection :position-proto-buf nil handlers))
   (cs/request-positions (:ecs connection))
   connection)
 

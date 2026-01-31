@@ -94,7 +94,11 @@
                        :contract-details :contract-details-end
                        :execution-details :execution-details-end
                        :price-bar :price-bar-complete
-                       :scan-result :scan-end})
+                       :scan-result :scan-end
+
+                       :position-proto-buf :position-end-proto-buf
+                       :account-summary-proto-buf :account-summary-end-proto-buf
+                       })
 
 
 (defn request-end?

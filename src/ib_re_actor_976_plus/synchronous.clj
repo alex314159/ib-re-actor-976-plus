@@ -109,6 +109,13 @@
     (g/request-positions connection (conjing-handlers result))
     @result))
 
+(defn positions-proto-buf
+  "Return account positions"
+  [connection]
+  (let [result (promise)]
+    (g/request-positions-proto-buf connection (conjing-handlers result))
+    @result))
+
 (defn contract-details
   "Gets details for the specified contract.
 

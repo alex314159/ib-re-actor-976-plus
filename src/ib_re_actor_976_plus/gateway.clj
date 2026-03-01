@@ -31,6 +31,7 @@
   (:require
    [clojure.tools.logging :as log]
    [ib-re-actor-976-plus.client-socket :as cs]
+   [ib-re-actor-976-plus.mapping :refer [decode-protobuf-vals]]
    [ib-re-actor-976-plus.wrapper :as wrapper :refer [error-end? matching-message? request-end?]])
   (:import (com.ib.client EJavaSignal)))
 
@@ -219,14 +220,15 @@
   unsubscribe from the connection when there is nothing else to be done."
   [connection handle-type id {:keys [data end error]}]
   (fn this [msg]
-    (cond
-      (matching-message? handle-type id msg) (do (and data (data msg))
-                                                 (and end (end))
-                                                 (unsubscribe! connection this))
+    (let [decoded (decode-protobuf-vals msg)]
+      (cond
+        (matching-message? handle-type id decoded) (do (and data (data decoded))
+                                                       (and end (end))
+                                                       (unsubscribe! connection this))
 
-      (error-end? id msg) (do (and error (error msg))
-                              (and end (end))
-                              (unsubscribe! connection this)))))
+        (error-end? id decoded) (do (and error (error decoded))
+                                    (and end (end))
+                                    (unsubscribe! connection this))))))
 
 (defn multiple-messages-handler
   "Handler to wait for multiple messages and eventually the appropriate end
@@ -234,19 +236,25 @@
   and unsubscribe from the connection when there is nothing else to be done."
   [connection handle-type id {:keys [data end error]}]
   (fn this [msg]
-    (cond
-      (matching-message? handle-type id msg) (and data (data msg))
+    (let [decoded (decode-protobuf-vals msg)]
+      (cond
+        (matching-message? handle-type id decoded) (and data (data decoded))
 
-      (request-end? handle-type id msg) (do (and end (end))
-                                            (unsubscribe! connection this))
+        (request-end? handle-type id decoded) (do (and end (end))
+                                                  (unsubscribe! connection this))
 
-      (error-end? id msg) (do (and error (error msg))
-                              (and end (end))
-                              (unsubscribe! connection this)))))
+        (error-end? id decoded) (do (and error (error decoded))
+                                    (and end (end))
+                                    (unsubscribe! connection this))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn request-current-time [connection handlers]
-  (subscribe! connection
-              (single-message-handler connection :current-time nil handlers))
+  (subscribe! connection (single-message-handler connection :current-time nil handlers))
+  (cs/request-current-time (:ecs connection)))
+
+(defn request-current-time-proto-buf [connection handlers]
+  (subscribe! connection (single-message-handler connection :current-time-proto-buf nil handlers))
   (cs/request-current-time (:ecs connection)))
 
 (defn request-market-data
@@ -368,9 +376,13 @@
 
 (defn request-contract-details [connection contract handlers]
   (let [request-id (next-id connection)]
-    (subscribe! connection request-id
-                (multiple-messages-handler connection
-                                           :contract-details request-id handlers))
+    (subscribe! connection request-id (multiple-messages-handler connection :contract-details request-id handlers))
+    (cs/request-contract-details (:ecs connection) request-id contract)
+    request-id))
+
+(defn request-contract-details-proto-buf [connection contract handlers]
+  (let [request-id (next-id connection)]
+    (subscribe! connection request-id (multiple-messages-handler connection :contract-data-proto-buf request-id handlers))
     (cs/request-contract-details (:ecs connection) request-id contract)
     request-id))
 

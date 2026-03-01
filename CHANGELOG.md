@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.10.44.01] - 2026-03-01
+### Added support for twsapi 10.44.01.
+### Repaired some synchronous functions, see the synchronous_app.clj file in the demoapps folder.
+
 ## [0.1.10.42.01] - 2026-01-02
 ### Added support for twsapi 10.42.01. This includes updating the protobuf-java version to 4.29.5.
 ### Breaking backwards support - use the wrapper version that matches the TWS API version. This greatly simplifies code.

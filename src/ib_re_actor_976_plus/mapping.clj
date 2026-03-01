@@ -7,8 +7,8 @@ In addition to just converting to maps, we also use these functions to translate
 primitives: strings with constant values into keywords, booleans in strings into booleans,
 date strings into clj-time dates, etc."
   (:require
-    [clojure.string :refer [join]]
-    [ib-re-actor-976-plus.translation :refer [translate tws-version]])
+   [clojure.string :refer [join]]
+   [ib-re-actor-976-plus.translation :refer [translate tws-version]])
   (:import (com.google.protobuf Descriptors$FieldDescriptor$JavaType Message)
            (java.util Collections$EmptyList)))
 
@@ -89,7 +89,7 @@ convert maps into instances of the IB class."
        (extend-type ~c
          Mappable
          (->map [~this]
-                (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))
+           (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))
 
        (defmethod map-> ~c [_# ~field-map]
          (let [~this (new ~c)]
@@ -104,179 +104,177 @@ create instances, we will only map from objects to clojure maps."
     `(extend-type ~c
        Mappable
        (->map [~this]
-              (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))))
+         (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))))
 
 (defmapping com.ib.client.Contract
-            [:conid conid]
-            [:symbol symbol]
-            [:sec-type secType :translation :security-type]
-            [:last-trade-date-or-contract-month lastTradeDateOrContractMonth]
-            [:last-trade-date lastTradeDate]
-            [:strike strike]
-            [:right right :translation :right]
-            [:multiplier multiplier :translation :double-string]
-            [:exchange exchange]
-            [:primary-exch primaryExch]
-            [:currency currency]
-            [:local-symbol localSymbol]
-            [:trading-class tradingClass]
-            [:sec-id-type secIdType :translation :security-id-type]                        ;
-            [:sec-id secId]
-            [:description description]
-            [:issuer-id issuerId]
-            [:delta-neutral-contract deltaNeutralContract]
-            [:include-expired includeExpired]
-            [:combo-legs-descrip comboLegsDescrip]
-            [:combo-legs comboLegs])
-
+  [:conid conid]
+  [:symbol symbol]
+  [:sec-type secType :translation :security-type]
+  [:last-trade-date-or-contract-month lastTradeDateOrContractMonth]
+  [:last-trade-date lastTradeDate]
+  [:strike strike]
+  [:right right :translation :right]
+  [:multiplier multiplier :translation :double-string]
+  [:exchange exchange]
+  [:primary-exch primaryExch]
+  [:currency currency]
+  [:local-symbol localSymbol]
+  [:trading-class tradingClass]
+  [:sec-id-type secIdType :translation :security-id-type]                        ;
+  [:sec-id secId]
+  [:description description]
+  [:issuer-id issuerId]
+  [:delta-neutral-contract deltaNeutralContract]
+  [:include-expired includeExpired]
+  [:combo-legs-descrip comboLegsDescrip]
+  [:combo-legs comboLegs])
 
 (defmapping com.ib.client.ContractDetails
-            [:contract contract]
-            [:market-name marketName]
-            [:min-tick minTick]
-            [:price-magnifier priceMagnifier]
-            [:order-types orderTypes :translation :order-types]
-            [:valid-exchanges validExchanges :translation :exchanges]
-            [:underlying-contract-id underConid]
-            [:long-name longName]
-            [:contract-month contractMonth]
-            [:industry industry]
-            [:category category]
-            [:subcategory subcategory]
-            [:time-zone-id timeZoneId]
-            [:trading-hours tradingHours]
-            [:liquid-hours liquidHours]
-            [:ev-rule evRule]
-            [:ev-multiplier evMultiplier]
-            [:sec-id-list secIdList]                        ; // CUSIP/ISIN/etc.
-            [:agg-group aggGroup]
-            [:under-symbol underSymbol]
-            [:under-sec-type underSecType]
-            [:market-rule-ids marketRuleIds]
-            [:real-expiration-date realExpirationDate]
-            [:last-trade-time lastTradeTime]
-            [:stock-type stockType]                          ; // COMMON, ETF, ADR etc.
-            [:min-size minSize]
-            [:size-increment sizeIncrement]
-            [:suggested-size-increment suggestedSizeIncrement]
+  [:contract contract]
+  [:market-name marketName]
+  [:min-tick minTick]
+  [:price-magnifier priceMagnifier]
+  [:order-types orderTypes :translation :order-types]
+  [:valid-exchanges validExchanges :translation :exchanges]
+  [:underlying-contract-id underConid]
+  [:long-name longName]
+  [:contract-month contractMonth]
+  [:industry industry]
+  [:category category]
+  [:subcategory subcategory]
+  [:time-zone-id timeZoneId]
+  [:trading-hours tradingHours]
+  [:liquid-hours liquidHours]
+  [:ev-rule evRule]
+  [:ev-multiplier evMultiplier]
+  [:sec-id-list secIdList]                        ; // CUSIP/ISIN/etc.
+  [:agg-group aggGroup]
+  [:under-symbol underSymbol]
+  [:under-sec-type underSecType]
+  [:market-rule-ids marketRuleIds]
+  [:real-expiration-date realExpirationDate]
+  [:last-trade-time lastTradeTime]
+  [:stock-type stockType]                          ; // COMMON, ETF, ADR etc.
+  [:min-size minSize]
+  [:size-increment sizeIncrement]
+  [:suggested-size-increment suggestedSizeIncrement]
 
             ;bond values
-            [:cusip cusip]
-            [:ratings ratings]
-            [:description-details descAppend]
-            [:bond-type bondType]
-            [:coupon-type couponType]
-            [:callable? callable]
-            [:putable? putable]
-            [:coupon coupon]
-            [:convertible? convertible]
-            [:maturity maturity :translation :date]
-            [:issue-date issueDate :translation :date]
-            [:next-option-date nextOptionDate :translation :date]
-            [:next-option-type nextOptionType]
-            [:next-option-partial nextOptionPartial]
-            [:notes notes]
+  [:cusip cusip]
+  [:ratings ratings]
+  [:description-details descAppend]
+  [:bond-type bondType]
+  [:coupon-type couponType]
+  [:callable? callable]
+  [:putable? putable]
+  [:coupon coupon]
+  [:convertible? convertible]
+  [:maturity maturity :translation :date]
+  [:issue-date issueDate :translation :date]
+  [:next-option-date nextOptionDate :translation :date]
+  [:next-option-type nextOptionType]
+  [:next-option-partial nextOptionPartial]
+  [:notes notes]
 
             ;fund values
-            [:fund-name fundName]
-            [:fund-family fundFamily]
-            [:fund-type fundType]
-            [:fund-front-load fundFrontLoad]
-            [:fund-back-load fundBackLoad]
-            [:fund-back-load-time-interval fundBackLoadTimeInterval]
-            [:fund-management-fee fundManagementFee]
-            [:fund-closed fundClosed]
-            [:fund-closed-for-new-investors fundClosedForNewInvestors]
-            [:fund-closed-for-new-money fundClosedForNewMoney]
-            [:fund-notify-amount fundNotifyAmount]
-            [:fund-minimum-initial-purchase fundMinimumInitialPurchase]
-            [:fund-subsequent-minimum-purchase fundSubsequentMinimumPurchase]
-            [:fund-blue-sky-states fundBlueSkyStates]
-            [:fund-blue-sky-territories fundBlueSkyTerritories]
-            [:fund-distribution-policiy-indicator fundDistributionPolicyIndicator]
-            [:fund-asset-type fundAssetType]
-            [:ineligibility-reason-list ineligibilityReasonList])
+  [:fund-name fundName]
+  [:fund-family fundFamily]
+  [:fund-type fundType]
+  [:fund-front-load fundFrontLoad]
+  [:fund-back-load fundBackLoad]
+  [:fund-back-load-time-interval fundBackLoadTimeInterval]
+  [:fund-management-fee fundManagementFee]
+  [:fund-closed fundClosed]
+  [:fund-closed-for-new-investors fundClosedForNewInvestors]
+  [:fund-closed-for-new-money fundClosedForNewMoney]
+  [:fund-notify-amount fundNotifyAmount]
+  [:fund-minimum-initial-purchase fundMinimumInitialPurchase]
+  [:fund-subsequent-minimum-purchase fundSubsequentMinimumPurchase]
+  [:fund-blue-sky-states fundBlueSkyStates]
+  [:fund-blue-sky-territories fundBlueSkyTerritories]
+  [:fund-distribution-policiy-indicator fundDistributionPolicyIndicator]
+  [:fund-asset-type fundAssetType]
+  [:ineligibility-reason-list ineligibilityReasonList])
 
 (defmapping com.ib.client.ExecutionFilter
-            [:client-id clientId]
-            [:account-code acctCode]
-            [:after-time time ]                                       ;:translation :timestamp
-            [:order-symbol symbol]
-            [:security-type secType :translation :security-type]
-            [:exchange exchange]
-            [:side side :translation :order-action])
+  [:client-id clientId]
+  [:account-code acctCode]
+  [:after-time time]                                       ;:translation :timestamp
+  [:order-symbol symbol]
+  [:security-type secType :translation :security-type]
+  [:exchange exchange]
+  [:side side :translation :order-action])
 
 (defmapping com.ib.client.Execution
-            [:account-code acctNumber]
-            [:average-price avgPrice]
-            [:client-id clientId]
-            [:cumulative-quantity cumQty :translation :decimal-to-long]
-            [:exchange exchange]
-            [:execution-id execId]
-            [:liquidate-last liquidation]
-            [:order-id orderId]
-            [:permanent-id permId]
-            [:price price]
-            [:shares shares :translation :decimal-to-long]
-            [:side side :translation :execution-side]
-            [:time time]
-            [:order-ref orderRef]
-            [:ev-rule evRule]
-            [:ev-multiplier evMultiplier]
-            [:model-code modelCode]
-            [:last-liquidity lastLiquidity]
-            [:last-liquidity-str lastLiquidityStr]
-            [:pending-price-revision pendingPriceRevision])
-
+  [:account-code acctNumber]
+  [:average-price avgPrice]
+  [:client-id clientId]
+  [:cumulative-quantity cumQty :translation :decimal-to-long]
+  [:exchange exchange]
+  [:execution-id execId]
+  [:liquidate-last liquidation]
+  [:order-id orderId]
+  [:permanent-id permId]
+  [:price price]
+  [:shares shares :translation :decimal-to-long]
+  [:side side :translation :execution-side]
+  [:time time]
+  [:order-ref orderRef]
+  [:ev-rule evRule]
+  [:ev-multiplier evMultiplier]
+  [:model-code modelCode]
+  [:last-liquidity lastLiquidity]
+  [:last-liquidity-str lastLiquidityStr]
+  [:pending-price-revision pendingPriceRevision])
 
 (defmapping com.ib.client.Order
-            [:account-code account]
-            [:order-id orderId]
-            [:client-id clientId]
-            [:permanent-id permId]
-            [:transmit? transmit]
-            [:quantity totalQuantity :translation :string-to-decimal]
-            [:action action :translation :order-action]
-            [:type orderType :translation :order-type]
-            [:block-order? blockOrder]
-            [:sweep-to-fill? sweepToFill]
-            [:time-in-force tif :translation :time-in-force]
-            [:good-after-time goodAfterTime]
-            [:good-till-date goodTillDate]
-            [:outside-regular-trading-hours? outsideRth]
-            [:hidden? hidden]
-            [:all-or-none? allOrNone]
-            [:limit-price lmtPrice]
-            [:discretionary-amount discretionaryAmt]
-            [:stop-price auxPrice]
-            [:fa-group faGroup])
+  [:account-code account]
+  [:order-id orderId]
+  [:client-id clientId]
+  [:permanent-id permId]
+  [:transmit? transmit]
+  [:quantity totalQuantity :translation :string-to-decimal]
+  [:action action :translation :order-action]
+  [:type orderType :translation :order-type]
+  [:block-order? blockOrder]
+  [:sweep-to-fill? sweepToFill]
+  [:time-in-force tif :translation :time-in-force]
+  [:good-after-time goodAfterTime]
+  [:good-till-date goodTillDate]
+  [:outside-regular-trading-hours? outsideRth]
+  [:hidden? hidden]
+  [:all-or-none? allOrNone]
+  [:limit-price lmtPrice]
+  [:discretionary-amount discretionaryAmt]
+  [:stop-price auxPrice]
+  [:fa-group faGroup])
 
 (defmapping-readonly com.ib.client.Bar
-                     [:time time]
-                     [:open open]
-                     [:high high]
-                     [:low low]
-                     [:close close]
-                     [:volume volume :translation :decimal-to-long]
-                     [:count count]
-                     [:wap wap :translation :decimal-to-double])
+  [:time time]
+  [:open open]
+  [:high high]
+  [:low low]
+  [:close close]
+  [:volume volume :translation :decimal-to-long]
+  [:count count]
+  [:wap wap :translation :decimal-to-double])
 
 (defmapping-readonly com.ib.client.OrderState
-                     [:status status] ;actually looks like still a string, no need for translation? ;:translation :order-status
-                     [:initial-margin-before initMarginBefore]
-                     [:maintenance-margin-before maintMarginBefore]
-                     [:equity-with-loan-before equityWithLoanBefore]
-                     [:initial-margin-change initMarginChange]
-                     [:maintenance-margin-change maintMarginChange]
-                     [:equity-with-loan-change equityWithLoanChange]
-                     [:initial-margin-after initMarginAfter]
-                     [:maintenance-margin-after maintMarginAfter]
-                     [:equity-with-loan-after equityWithLoanAfter]
-                     [:commission-and-fees commissionAndFees]
-                     [:minimum-commission-and-fees minCommissionAndFees]
-                     [:maximum-commission-and-fees maxCommissionAndFees]
-                     [:commission-and-fees-currency commissionAndFeesCurrency]
-                     [:margin-currency marginCurrency]
+  [:status status] ;actually looks like still a string, no need for translation? ;:translation :order-status
+  [:initial-margin-before initMarginBefore]
+  [:maintenance-margin-before maintMarginBefore]
+  [:equity-with-loan-before equityWithLoanBefore]
+  [:initial-margin-change initMarginChange]
+  [:maintenance-margin-change maintMarginChange]
+  [:equity-with-loan-change equityWithLoanChange]
+  [:initial-margin-after initMarginAfter]
+  [:maintenance-margin-after maintMarginAfter]
+  [:equity-with-loan-after equityWithLoanAfter]
+  [:commission-and-fees commissionAndFees]
+  [:minimum-commission-and-fees minCommissionAndFees]
+  [:maximum-commission-and-fees maxCommissionAndFees]
+  [:commission-and-fees-currency commissionAndFeesCurrency]
+  [:margin-currency marginCurrency]
 
                      ;private double m_initMarginBeforeOutsideRTH;
                      ;private double m_maintMarginBeforeOutsideRTH;
@@ -291,17 +289,17 @@ create instances, we will only map from objects to clojure maps."
                      ;private String m_rejectReason;
                      ;private List<OrderAllocation> m_orderAllocations;
 
-                     [:warning-text warningText]
-                     [:completed-time completedTime]
-                     [:completed-status completedStatus])
+  [:warning-text warningText]
+  [:completed-time completedTime]
+  [:completed-status completedStatus])
 
 (defmapping-readonly (eval 'com.ib.client.CommissionAndFeesReport)
-                     [:commission-and-fees commissionAndFees]
-                     [:currency currency]
-                     [:execution-id execId]
-                     [:realized-profit-loss realizedPNL]
-                     [:yield yield]
-                     [:yield-redemption-date yieldRedemptionDate])
+  [:commission-and-fees commissionAndFees]
+  [:currency currency]
+  [:execution-id execId]
+  [:realized-profit-loss realizedPNL]
+  [:yield yield]
+  [:yield-redemption-date yieldRedemptionDate])
 
 ;; PROTOBUF MAPPING
 
@@ -338,16 +336,16 @@ create instances, we will only map from objects to clojure maps."
      (if-let [fields (get-cached-fields proto-msg)]
        (if use-transients?
          (persistent!
-           (reduce (fn [acc field]
-                     (let [value (.getField proto-msg field)]
-                       (if (or include-defaults?
-                               (.isRepeated field)
-                               (= (.getJavaType field) Descriptors$FieldDescriptor$JavaType/MESSAGE)
-                               (not= value (.getDefaultValue field)))
-                         (assoc! acc (.getName field) (convert-value value field))
-                         acc)))
-                   (transient {})
-                   fields))
+          (reduce (fn [acc field]
+                    (let [value (.getField proto-msg field)]
+                      (if (or include-defaults?
+                              (.isRepeated field)
+                              (= (.getJavaType field) Descriptors$FieldDescriptor$JavaType/MESSAGE)
+                              (not= value (.getDefaultValue field)))
+                        (assoc! acc (.getName field) (convert-value value field))
+                        acc)))
+                  (transient {})
+                  fields))
          (reduce (fn [acc field]
                    (let [value (.getField proto-msg field)]
                      (if (or include-defaults?
@@ -359,3 +357,9 @@ create instances, we will only map from objects to clojure maps."
                  {}
                  fields))
        {}))))  ; Return empty map if no fields cached (failed case)
+
+(defn decode-protobuf-vals
+  "Replace any protobuf Message values in the map with their decoded form."
+  [m]
+  (update-vals m #(if (instance? Message %) (protobuf->map %) %)))
+

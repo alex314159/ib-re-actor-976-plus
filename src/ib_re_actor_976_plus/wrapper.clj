@@ -1,23 +1,20 @@
 (ns ib-re-actor-976-plus.wrapper
   (:require
-    [clojure.java.io :as io]
-    [clojure.tools.logging :as log]
-    [ib-re-actor-976-plus.mapping :refer [->map]]
-    [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate tws-version]])
+   [clojure.java.io :as io]
+   [clojure.tools.logging :as log]
+   [ib-re-actor-976-plus.mapping :refer [->map]]
+   [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate tws-version]])
   (:import
-    (com.github.javaparser StaticJavaParser)
-    (com.github.javaparser.ast.body MethodDeclaration)
-    (com.ib.client EWrapper)
-    (java.io StringWriter PrintWriter)))
-
-
+   (com.github.javaparser StaticJavaParser)
+   (com.github.javaparser.ast.body MethodDeclaration)
+   (com.ib.client EWrapper)
+   (java.io StringWriter PrintWriter)))
 
 (defn- get-stack-trace [ex]
   (let [sw (StringWriter.)
         pw (PrintWriter. sw)]
     (.printStackTrace ex pw)
     (.toString sw)))
-
 
 (defn- log-exception
   ([ex msg]
@@ -26,17 +23,25 @@
   ([ex]
    (log-exception ex "Error")))
 
-
 (defn- is-finish? [date-string]
   (.startsWith date-string "finished"))
 
+(defn- proto-id
+  "Extracts an ID from any decoded protobuf values (maps with string keys)
+  in the message map, checking for reqId, orderId, tickerId."
+  [msg]
+  (some (fn [[_ v]]
+          (when (map? v)
+            (or (get v "reqId")
+                (get v "orderId")
+                (get v "tickerId"))))
+        msg))
 
 (defn matching-message? [handle-type id
                          {:keys [type req-id order-id ticker-id] :as message}]
   (and (= handle-type type)
        (or (nil? id)
-           (= id (or req-id order-id ticker-id)))))
-
+           (= id (or req-id order-id ticker-id (proto-id message))))))
 
 (defn warning-code?
   "One would think that warnings start at 2100 but there are error codes
@@ -44,16 +49,13 @@
   [code]
   (<= 2100 code 2200))
 
-
 (defn error-code? [code]
   (complement warning-code?))
-
 
 (defn connection-error-code? [code]
   (#{504                                ; Not connected
      1100                               ; Connectivity between IB and TWS has been lost
      } code))
-
 
 (defn warning?
   "A message is a warning if it has :type :error and has a code that is a
@@ -68,11 +70,9 @@
        (or (and code (warning-code? code))
            (and message (re-seq #"Warning:" message)))))
 
-
 (defn error? [{:keys [type] :as message}]
   (and (= :error type)
        (not (warning? message))))
-
 
 (defn error-end?
   "Determines if a message is an error message that ends a request.
@@ -83,7 +83,6 @@
   ([req-id {:keys [type code id] :as msg}]
    (and (error? msg)
         (= req-id id))))
-
 
 (def end-message-type {:tick :tick-snapshot-end
                        :open-order :open-order-end
@@ -98,8 +97,7 @@
 
                        :position-proto-buf :position-end-proto-buf
                        :account-summary-proto-buf :account-summary-end-proto-buf
-                       })
-
+                       :contract-data-proto-buf :contract-data-end-proto-buf})
 
 (defn request-end?
   "Predicate to determine if a message indicates a series of responses for a
@@ -109,13 +107,9 @@
   or :open-order."
   [message-type id
    {:keys [type req-id order-id ticker-id] :as msg}]
-  (println message-type id type req-id order-id ticker-id (end-message-type message-type))
   (and (= type (end-message-type message-type))
        (or (nil? id)
-           (= id (or req-id order-id ticker-id)))))
-
-
-
+           (= id (or req-id order-id ticker-id (proto-id msg))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Parsing EWrapper.java to implement interface;
@@ -137,9 +131,7 @@
   "These methods need to be implemented separately as they're overloaded - same name with different signature.
   Interestingly, even though the type hints don't appear in the REPL, they're there and removing them makes reify fail.
   cb is the name of the dispatch function"
-  [
-
-   (list (quote ^void error) [(quote this)
+  [(list (quote ^void error) [(quote this)
                               (quote ^int id)
                               (quote ^long errorTime)
                               (quote ^int errorCode)
@@ -151,7 +143,6 @@
                                             :code                       (quote errorCode)
                                             :message                    (quote errorMsg)
                                             :advanced-order-reject-json (quote advancedOrderRejectJson)}))
-
 
    (list (quote ^void error) [(quote this) (quote ^Exception ex)]
          (list dispatch-message (quote cb) {:type :error
@@ -208,7 +199,6 @@
 (defmacro reify-ewrapper [this cb] reification)
 (defn create [cb] (eval (reify-ewrapper this cb)))
 
-
 (comment
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; OLD text-based implementation
@@ -228,11 +218,10 @@
     "OLD: Default version is managed in translation.clj"
     (mapv clojure.string/trim
           (drop-last
-            (-> (slurp (clojure.java.io/resource (str "EWrapper_" tws-version ".java")))
-                (remove-header)
-                (replace-all)
-                (clojure.string/split #";")))))
-
+           (-> (slurp (clojure.java.io/resource (str "EWrapper_" tws-version ".java")))
+               (remove-header)
+               (replace-all)
+               (clojure.string/split #";")))))
 
   (def reification-old
     (let [method-entries

@@ -7,7 +7,7 @@
   To regenerate, run: (require 'ib-re-actor-976-plus.mapping-generator)
                       (ib-re-actor-976-plus.mapping-generator/write-generated-mappings!)
 
-  Generated on: 2026-01-03T09:20:02.662247Z
+  Generated on: 2026-02-28T20:50:41.303977Z
 
   Usage:
     (require '[ib-re-actor-976-plus.mapping-auto :refer [->map map->]])
@@ -103,6 +103,8 @@
             [:size-increment sizeIncrement :translation :string-to-decimal]
             [:suggested-size-increment suggestedSizeIncrement :translation :string-to-decimal]
             [:min-algo-size minAlgoSize :translation :string-to-decimal]
+            [:last-price-precision lastPricePrecision :translation :string-to-decimal]
+            [:last-size-precision lastSizePrecision :translation :string-to-decimal]
             [:cusip cusip]
             [:ratings ratings]
             [:desc-append descAppend]

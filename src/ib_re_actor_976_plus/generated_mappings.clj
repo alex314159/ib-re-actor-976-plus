@@ -7,7 +7,7 @@
   To regenerate, run: (require 'ib-re-actor-976-plus.mapping-generator)
                       (ib-re-actor-976-plus.mapping-generator/write-generated-mappings!)
 
-  Generated on: 2026-02-28T20:50:41.303977Z
+  Generated on: 2026-04-24T21:10:33.592293Z
 
   Usage:
     (require '[ib-re-actor-976-plus.mapping-auto :refer [->map map->]])
@@ -292,6 +292,7 @@
             [:scale-table scaleTable]
             [:hedge-type hedgeType]
             [:hedge-param hedgeParam]
+            [:hedge-max-size hedgeMaxSize]
             [:algo-strategy algoStrategy]
             [:algo-params algoParams]
             [:algo-id algoId]

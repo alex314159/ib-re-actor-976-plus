@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.10.46.01] - 2026-04-24
+### Added support for twsapi 10.46.01.
+### New Order field: hedgeMaxSize.
+### New tick types: oddLotBid (105), oddLotAsk (106), oddLotBidSize (107), oddLotAskSize (108), oddLotBidExch (109), oddLotAskExch (110).
+### New generic tick 787 (odd lots).
+
 ## [0.1.10.44.01] - 2026-03-01
 ### Added support for twsapi 10.44.01.
 ### Repaired some synchronous functions, see the synchronous_app.clj file in the demoapps folder.

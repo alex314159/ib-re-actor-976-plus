@@ -3,43 +3,42 @@
     ;[clj-time.coerce :as tc]
     ;[clj-time.core :as time]
     ;[clj-time.format :as tf]
-    [clojure.string :as str]))
+   [clojure.string :as str]))
 
 (def tws-version
   (try
     (let [separator (if (= (subs (System/getProperty "os.name") 0 3) "Win") #"\\" #"/")]
       (last
-        (drop-last
-          (clojure.string/split
-            (first
-              (filter
-                #(clojure.string/includes? % "twsapi")
-                (clojure.string/split
-                  (System/getProperty "java.class.path") #":")))
-            separator))))
+       (drop-last
+        (clojure.string/split
+         (first
+          (filter
+           #(clojure.string/includes? % "twsapi")
+           (clojure.string/split
+            (System/getProperty "java.class.path") #":")))
+         separator))))
     (catch Exception e
       "unknown TWS API version")))
 
-
 (defmulti ^:dynamic translate
-          "Translate to or from a value from the Interactive Brokers API.
+  "Translate to or from a value from the Interactive Brokers API.
 
         Examples:
         user> (translate :to-ib :duration-unit :seconds)
         \"S\"
         user> (translate :from-ib :duration-unit \"S\")
         :second"
-          (fn [direction table-name _] [direction table-name]))
+  (fn [direction table-name _] [direction table-name]))
 
 (defmulti ^:dynamic valid?
-          "Check to see if a given value is an entry in the translation table.
+  "Check to see if a given value is an entry in the translation table.
 
         Examples:
         user> (valid? :to-ib :duration-unit :s)
         false
         user> (valid? :to-ib :duration-unit :seconds)
         true"
-          (fn [direction table-name _] [direction table-name]))
+  (fn [direction table-name _] [direction table-name]))
 
 (defmacro translation-table
   "Creates a table for translating to and from string values from the Interactive
@@ -160,8 +159,7 @@ to check if if a given value is valid (known)."
     :day "day"
     :days "days"
     :week "W"
-    :month "M"
-    ))
+    :month "M"))
 
 (defmethod translate [:from-ib :bar-size-unit] [_ _ unit]
   (case unit
@@ -188,9 +186,7 @@ to check if if a given value is valid (known)."
                     :yield-bid                  com.ib.client.Types$WhatToShow/YIELD_BID
                     :yield-bid-ask              com.ib.client.Types$WhatToShow/YIELD_BID_ASK
                     :yield-last                 com.ib.client.Types$WhatToShow/YIELD_LAST
-                    :adjusted-last              com.ib.client.Types$WhatToShow/ADJUSTED_LAST
-                    })
-
+                    :adjusted-last              com.ib.client.Types$WhatToShow/ADJUSTED_LAST})
 
 (translation-table time-in-force
                    {:day                  com.ib.client.Types$TimeInForce/DAY
@@ -203,16 +199,12 @@ to check if if a given value is valid (known)."
                     :gtt                  com.ib.client.Types$TimeInForce/GTT
                     :auc                  com.ib.client.Types$TimeInForce/AUC
                     :gtx                  com.ib.client.Types$TimeInForce/GTX
-                    :dtc                  com.ib.client.Types$TimeInForce/DTC
-                    })
+                    :dtc                  com.ib.client.Types$TimeInForce/DTC})
 
 (translation-table order-action
                    {:buy        com.ib.client.Types$Action/BUY
                     :sell       com.ib.client.Types$Action/SELL
                     :sell-short com.ib.client.Types$Action/SSHORT})
-
-
-
 
 ; POSSIBLE THAT THIS IF MESS-UP AND STRINGS WAS ENOUGH
 (translation-table order-type
@@ -255,9 +247,7 @@ to check if if a given value is valid (known)."
                     :pegged-to-primary-vol            com.ib.client.OrderType/PEG_PRIM_VOL
                     :pegged-to-mid-vol                com.ib.client.OrderType/PEG_MID_VOL
                     :pegged-to-market-vol             com.ib.client.OrderType/PEG_MKT_VOL
-                    :pegged-to-srf-vol                com.ib.client.OrderType/PEG_SRF_VOL
-
-                    })
+                    :pegged-to-srf-vol                com.ib.client.OrderType/PEG_SRF_VOL})
 
 (translation-table order-status
                    {:pending-submit     com.ib.client.OrderStatus/PendingSubmit
@@ -270,7 +260,6 @@ to check if if a given value is valid (known)."
                     :api-pending        com.ib.client.OrderStatus/ApiPending
                     :api-cancelled      com.ib.client.OrderStatus/ApiCancelled
                     :unknown            com.ib.client.OrderStatus/Unknown})
-
 
 (translation-table security-id-type
                    {:none   com.ib.client.Types$SecIdType/None
@@ -384,12 +373,15 @@ to check if if a given value is valid (known)."
                     :final-ipo-last              102
                     :delayed-yield-bid           103
                     :delayed-yield-ask           104
-                    }
-                   )
+                    :odd-lot-bid                 105
+                    :odd-lot-ask                 106
+                    :odd-lot-bid-size            107
+                    :odd-lot-ask-size            108
+                    :odd-lot-bid-exch            109
+                    :odd-lot-ask-exch            110})
 
 (translation-table generic-tick-type
-                   {
-                    :option-volume                  100     ; :option-call-volume, :option-put-volume
+                   {:option-volume                  100     ; :option-call-volume, :option-put-volume
                     :option-open-interest           101     ; :option-call-open-interest, :option-put-open-interest
                     :historical-volatility          104     ; :option-historical-volatility
                     :option-implied-volatility      106     ; :option-implied-volatility
@@ -403,7 +395,7 @@ to check if if a given value is valid (known)."
                     :fundamental-ratios             258     ; :fundamental-ratios
                     :realtime-historical-volatility 411     ; 58?
                     :short-term-volume              595
-                    })
+                    :odd-lots                       787})
 
 (translation-table log-level
                    {:system        1
@@ -426,8 +418,7 @@ to check if if a given value is valid (known)."
        (clojure.string/join ",")))
 
 (translation-table fundamental-ratio
-                   {
-                    :closing-price                      "NPRICE"
+                   {:closing-price                      "NPRICE"
                     :3-year-ttm-growth                  "Three_Year_TTM_Growth"
                     :ttm-over-ttm                       "TTM_over_TTM"
                     :12-month-high                      "NHIG"
@@ -477,8 +468,7 @@ to check if if a given value is valid (known)."
                     :dividend-growth                    "DIVGRPCT"})
 
 (translation-table account-value-key
-                   {
-                    :account-code                                          "AccountCode"
+                   {:account-code                                          "AccountCode"
                     :account-ready                                         "AccountReady"
                     :account-type                                          "AccountType"
                     :account-or-group                                      "AccountOrGroup"
@@ -641,8 +631,7 @@ to check if if a given value is valid (known)."
                     :unaltered-maintenance-margin-requirement              "UnalteredMaintMarginReq"
                     :unrealized-profit-loss                                "UnrealizedPnL"
                     :warrants-value                                        "WarrantValue"
-                    :what-if-portfolio-margin-enabled                      "WhatIfPMEnabled"
-                    })
+                    :what-if-portfolio-margin-enabled                      "WhatIfPMEnabled"})
 
 (defn numeric-account-value? [key]
   (contains? #{:accrued-cash :accrued-cash-commodities :accrued-cash-stock :accrued-cash-regulated
@@ -687,29 +676,23 @@ to check if if a given value is valid (known)."
                :total-cash-value :total-cash-value-commodities :total-cash-value-stock :total-cash-value-regulated
                :total-debit-card-pending-charges :total-debit-card-pending-charges-commodities :total-debit-card-pending-charges-stock :total-debit-card-pending-charges-regulated
                :unaltered-initial-margin-requirement :unaltered-maintenance-margin-requirement
-               :unrealized-profit-loss :warrants-value
-               } key))
+               :unrealized-profit-loss :warrants-value} key))
 
 (defn integer-account-value? [key]
   (contains? #{:day-trades-remaining :day-trades-remaining-T+1 :day-trades-remaining-T+2
-               :day-trades-remaining-T+3 :day-trades-remaining-T+4
-               } key))
+               :day-trades-remaining-T+3 :day-trades-remaining-T+4} key))
 
 (defn boolean-account-value? [key]
   (contains? #{:account-ready :profit-loss :what-if-portfolio-margin-enabled} key))
 
 (translation-table market-depth-row-operation
-                   {
-                    :insert 0
+                   {:insert 0
                     :update 1
-                    :delete 2
-                    })
+                    :delete 2})
 
 (translation-table market-depth-side
-                   {
-                    :ask 0
-                    :bid 1
-                    })
+                   {:ask 0
+                    :bid 1})
 
 (translation-table report-type
                    {:company-overview     "ReportSnapshot"
@@ -717,8 +700,7 @@ to check if if a given value is valid (known)."
                     :financial-ratios     "ReportRatios"
                     :financial-statements "ReportsFinStatements"
                     :analyst-estimates    "RESC"
-                    :company-calendar     "CalendarReport"
-                    })
+                    :company-calendar     "CalendarReport"})
 
 (translation-table rule-80A
                    {:individual              "I"
@@ -766,8 +748,6 @@ to check if if a given value is valid (known)."
 ;                    "C" :call
 ;                    "0" :none
 ;                    "?" :unknown})
-
-
 
 (defmethod translate [:to-ib :duration] [_ _ [val unit]]
   (str val " " (translate :to-ib :duration-unit unit)))
@@ -933,13 +913,11 @@ to check if if a given value is valid (known)."
 (defmethod translate [:from-ib :decimal-to-double] [_ _ val]
   (.doubleValue (.value val)))
 
-
 ;(defmethod translate [:from-ib :yield-redemption-date] [_ _ val]
 ;  (let [year (int (Math/floor (/ val 10000)))
 ;        month (int (Math/floor (/ (mod val 10000) 100)))
 ;        day (int (Math/floor (mod 19720427 100)))]
 ;    (time/date-time year month day)))
-
 
 ;;; -----
 ;;; ## Deals with the trading hours reporting.  This is really ugly.

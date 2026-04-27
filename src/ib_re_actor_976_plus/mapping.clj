@@ -9,8 +9,8 @@ date strings into clj-time dates, etc."
   (:require
    [clojure.string :refer [join]]
    [ib-re-actor-976-plus.translation :refer [translate tws-version]])
-  (:import (com.google.protobuf Descriptors$FieldDescriptor$JavaType Message)
-           (java.util Collections$EmptyList)))
+  (:import [com.google.protobuf Descriptors$FieldDescriptor$JavaType Message]
+           [java.util Collections$EmptyList]))
 
 (defprotocol Mappable
   (->map [this]
@@ -300,6 +300,29 @@ create instances, we will only map from objects to clojure maps."
   [:realized-profit-loss realizedPNL]
   [:yield yield]
   [:yield-redemption-date yieldRedemptionDate])
+
+(defmapping com.ib.client.ScannerSubscription
+  [:number-of-rows numberOfRows]
+  [:instrument instrument]
+  [:location-code locationCode]
+  [:scan-code scanCode]
+  [:above-price abovePrice]
+  [:below-price belowPrice]
+  [:above-volume aboveVolume]
+  [:average-option-volume-above averageOptionVolumeAbove]
+  [:market-cap-above marketCapAbove]
+  [:market-cap-below marketCapBelow]
+  [:moody-rating-above moodyRatingAbove]
+  [:moody-rating-below moodyRatingBelow]
+  [:sp-rating-above spRatingAbove]
+  [:sp-rating-below spRatingBelow]
+  [:maturity-date-above maturityDateAbove]
+  [:maturity-date-below maturityDateBelow]
+  [:coupon-rate-above couponRateAbove]
+  [:coupon-rate-below couponRateBelow]
+  [:exclude-convertible excludeConvertible]
+  [:scanner-setting-pairs scannerSettingPairs]
+  [:stock-type-filter stockTypeFilter])
 
 ;; PROTOBUF MAPPING
 

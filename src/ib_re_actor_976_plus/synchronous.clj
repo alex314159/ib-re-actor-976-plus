@@ -168,6 +168,25 @@
     (g/request-contract-details-proto-buf connection contract (conjing-handlers-proto-buf result))
     @result))
 
+(defn scanner-subscription
+  "Returns scanner results for the given subscription criteria.
+
+  subscription is a map with at minimum :scan-code, e.g.:
+    {:instrument \"STK\" :location-code \"STK.US.MAJOR\"
+     :scan-code \"HIGH_OPT_IMP_VOLAT\" :number-of-rows 25}
+
+  filter-options (optional) is a map of additional TagValue filters
+  supported by TWS v974+, e.g. {:optVolumeAbove 1000}
+
+  Each result in the returned list is a raw :scanner-data event map
+  whose :contract-details key holds a com.ib.client.ContractDetails object."
+  ([connection subscription]
+   (scanner-subscription connection subscription {}))
+  ([connection subscription filter-options]
+   (let [result (promise)]
+     (g/request-scanner-subscription connection subscription filter-options (conjing-handlers result))
+     @result)))
+
 (defn historical-data
   "Gets historical price bars for a contract."
   ([connection contract end-time duration duration-unit bar-size bar-size-unit

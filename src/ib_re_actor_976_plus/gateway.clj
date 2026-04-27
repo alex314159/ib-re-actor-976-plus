@@ -406,7 +406,6 @@
     duration duration-unit bar-size bar-size-unit handlers]
    (request-historical-data connection contract end duration duration-unit
                             bar-size bar-size-unit :trades true handlers)))
-
 (defn request-fundamental-data
   [connection contract report-type handlers]
   (let [request-id (next-id connection)]
@@ -419,4 +418,15 @@
 (defn cancel-fundamental-data
   [connection request-id]
   (cs/cancel-fundamental-data (:ecs connection) request-id)
+  (unsubscribe! connection request-id))
+
+(defn request-scanner-subscription
+  [connection subscription filter-options handlers]
+  (let [request-id (next-id connection)]
+    (subscribe! connection request-id (multiple-messages-handler connection :scanner-data request-id handlers))
+    (cs/req-scanner-subscription (:ecs connection) request-id subscription {} filter-options)
+    request-id))
+
+(defn cancel-scanner-subscription [connection request-id]
+  (cs/cancel-scanner-subscription (:ecs connection) request-id)
   (unsubscribe! connection request-id))

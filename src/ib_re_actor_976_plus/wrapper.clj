@@ -94,6 +94,7 @@
                        :execution-details :execution-details-end
                        :price-bar :price-bar-complete
                        :scan-result :scan-end
+                       :scanner-data :scanner-data-end
 
                        :position-proto-buf :position-end-proto-buf
                        :account-summary-proto-buf :account-summary-end-proto-buf

@@ -14,7 +14,8 @@
     [ib-re-actor-976-plus.mapping :refer [map->]]
     [ib-re-actor-976-plus.translation :refer [translate]])
   (:import
-    (com.ib.client EClientSocket EReader EJavaSignal OrderCancel)))
+    (com.ib.client EClientSocket EReader EJavaSignal OrderCancel ScannerSubscription TagValue)
+    (java.util ArrayList)))
 
 ;;;
 ;;; Connection and Server
@@ -731,3 +732,51 @@
 (defn unsubscribe-from-group-events
   [ecs request-id]
   (.unsubscribeFromGroupEvents ecs request-id))
+
+(defn- tag-value-list
+  "Convert a map {:usdMarketCapAbove 10000 :optVolumeAbove 1000}
+   into a java.util.List<com.ib.client.TagValue>, as required by
+   reqScannerSubscription for generic filter options (TWS v974+)."
+  [m]
+  (let [xs (ArrayList.)]
+    (doseq [[k v] m]
+      (.add xs (TagValue. (name k) (str v))))
+    xs))
+
+(defn req-scanner-subscription
+  "Start a streaming scanner subscription.
+
+  Args:
+    ecs - the EClientSocket from your connection
+    request-id — unique int, used to correlate results and to cancel via cancel-scanner-subscription
+    subscription - a Clojure map (see map->scanner-subscription) OR a pre-built ScannerSubscription
+    scanner-options — map of extra options (usually {}); reserved by IB, pass {} unless you know you need it
+    filter-options  — map of generic filter TagValues, e.g. {:usdMarketCapAbove 10000 :optVolumeAbove 1000}
+
+  Results arrive on the listener as a sequence of {:type :scanner-data ...} events 
+  followed by one {:type :scanner-data-end :req-id req-id}.
+
+  The subscription is persistent — results refresh periodically until
+  cancelled. Cancel with cancel-scanner-subscription using the same req-id.
+  Limits: max 50 results per scan, max 10 concurrent scans per connection."
+  ([ecs request-id subscription]
+   (req-scanner-subscription ecs request-id subscription {} {}))
+  ([ecs request-id subscription filter-options]
+   (req-scanner-subscription ecs request-id subscription {} filter-options))
+  ([ecs request-id subscription scanner-options filter-options]
+   (let [sub (if (instance? ScannerSubscription subscription)
+               subscription
+               (map-> com.ib.client.ScannerSubscription subscription))]
+     (.reqScannerSubscription ecs
+                              (int request-id)
+                              sub
+                              (tag-value-list scanner-options)
+                              (tag-value-list filter-options)))))
+
+(defn cancel-scanner-subscription
+  "Cancel a streaming scanner subscription. Use the same req-id that
+  was passed to req-scanner-subscription."
+  [ecs request-id]
+  (.cancelScannerSubscription ecs (int request-id)))
+
+

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### New Order field: hedgeMaxSize.
 ### New tick types: oddLotBid (105), oddLotAsk (106), oddLotBidSize (107), oddLotAskSize (108), oddLotBidExch (109), oddLotAskExch (110).
 ### New generic tick 787 (odd lots).
+### Add scanner subscription support #8 
 
 ## [0.1.10.44.01] - 2026-03-01
 ### Added support for twsapi 10.44.01.

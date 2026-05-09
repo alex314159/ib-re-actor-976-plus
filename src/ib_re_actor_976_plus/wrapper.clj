@@ -2,7 +2,7 @@
   (:require
    [clojure.java.io :as io]
    [clojure.tools.logging :as log]
-   [ib-re-actor-976-plus.mapping-auto :refer [->map]]
+   [ib-re-actor-976-plus.mapping :refer [->map]]
    [ib-re-actor-976-plus.translation :refer [boolean-account-value? integer-account-value? numeric-account-value? translate tws-version]])
   (:import
    (com.github.javaparser StaticJavaParser)

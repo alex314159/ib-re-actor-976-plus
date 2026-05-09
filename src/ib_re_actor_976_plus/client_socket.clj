@@ -11,7 +11,7 @@
   https://www.interactivebrokers.com/en/software/api/api.htm
   "
   (:require
-   [ib-re-actor-976-plus.mapping-auto :refer [map->]]
+   [ib-re-actor-976-plus.mapping :refer [map->]]
    [ib-re-actor-976-plus.translation :refer [translate]])
   (:import
    (com.ib.client EClientSocket EReader EJavaSignal OrderCancel ScannerSubscription TagValue)

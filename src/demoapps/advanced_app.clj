@@ -2,7 +2,7 @@
   (:require [ib-re-actor-976-plus.gateway :as gateway]
             [clojure.tools.logging :as log]
             [ib-re-actor-976-plus.translation :as translation]
-            [ib-re-actor-976-plus.mapping-auto :refer [->map map->]]
+            [ib-re-actor-976-plus.mapping :refer [->map map->]]
             [ib-re-actor-976-plus.client-socket :as cs])
   (:import (com.ib.client Contract ContractDetails)
            (java.time ZonedDateTime)))

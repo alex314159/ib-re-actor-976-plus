@@ -10,14 +10,14 @@
   Generated on: 2026-05-07T22:12:55.950936Z
 
   Usage:
-    (require '[ib-re-actor-976-plus.mapping-auto :refer [->map map->]])
+    (require '[ib-re-actor-976-plus.mapping :refer [->map map->]])
     (require '[ib-re-actor-976-plus.generated-mappings])  ; Loads implementations
 
     (->map java-object)              ; Java → Clojure map
     (map-> Class clojure-map)        ; Clojure map → Java
   "
   (:require
-    [ib-re-actor-976-plus.mapping-auto :refer [defmapping defmapping-readonly]]))
+    [ib-re-actor-976-plus.mapping :refer [defmapping defmapping-readonly]]))
 
 (defmapping com.ib.client.ComboLeg
             [:conid conid]

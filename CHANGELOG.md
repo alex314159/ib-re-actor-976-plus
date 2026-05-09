@@ -2,15 +2,13 @@
 All notable changes to this project will be documented in this file.
 
 ## [0.2.10.46.01] - 2026-05-09
-### Fixed missing ->map support for read-only callback classes:
-- `Bar`, `HistoricalTick`, `HistoricalTickBidAsk`, `HistoricalTickLast`, `HistoricalSession`, `SoftDollarTier` now implement `->map`. These classes have no public setters so the generator skips them; mappings are hand-written in `mapping_auto.clj` and are safe from regeneration.
-- Fixed `advanced_app.clj` demo: `(map-> bar)` → `(->map bar)`.
-- Added `MAPPING_GENERATOR.md` documenting the two-step update process and the requirement to manually maintain read-only callback class mappings.
-
-## [0.2.10.46.01] - 2026-05-07
 ### Refactored mapping namespaces:
+- `mapping_auto` renamed back to `mapping` — simpler and consistent with prior versions. Users only need `[ib-re-actor-976-plus.mapping :refer [->map map->]]`.
 - Protobuf functions extracted to dedicated `protobuf` namespace.
-- Legacy mapping moved to `mapping-legacy` namespace; all active code now uses `mapping-auto` and `generated-mappings`. *This means some of the old mappings may fail,* we are much closer to the original Java names now, for instance `:quantity` is now `:total-quantity` and `:limit-price` is now `:lmt-price`.
+- Legacy mapping moved to `mapping-legacy` namespace; all active code now uses `mapping` and `generated-mappings`. *This means some of the old mappings may fail* — field names are closer to the Java API now, e.g. `:quantity` → `:total-quantity`, `:limit-price` → `:lmt-price`.
+- Fixed missing `->map` support for read-only callback-delivered classes (`Bar`, `HistoricalTick`, `HistoricalTickBidAsk`, `HistoricalTickLast`, `HistoricalSession`, `SoftDollarTier`). These have no public setters so the generator skips them; mappings are hand-written in `mapping.clj` and are safe from regeneration.
+- Fixed `advanced_app.clj` demo: `(map-> bar)` → `(->map bar)`.
+- Added `MAPPING_GENERATOR.md` documenting the regeneration process and the requirement to maintain read-only callback class mappings manually.
 ### translation.clj improvements:
 - Fixed `:day-till-cancelled` incorrectly mapping to FOK; now correctly maps to DTC.
 - Added missing `what-to-show` values: `:schedule`, `:agg-trades`.

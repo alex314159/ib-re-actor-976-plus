@@ -1,11 +1,11 @@
-(ns ib-re-actor-976-plus.mapping-auto
+(ns ib-re-actor-976-plus.mapping
   "Core mapping infrastructure for auto-generated IB class mappings.
 
   This namespace provides the protocol, multimethod, and macros needed for
   bidirectional conversion between IB Java classes and Clojure maps.
 
   Usage:
-    (require '[ib-re-actor-976-plus.mapping-auto :refer [->map map->]])
+    (require '[ib-re-actor-976-plus.mapping :refer [->map map->]])
     (require '[ib-re-actor-976-plus.generated-mappings])  ; Load implementations
 
     ;; Java object → Clojure map
@@ -201,6 +201,6 @@
   [:value value]
   [:display-name displayName])
 
-; generated-mappings requires mapping-auto (circular if in ns :require), so we load it here
-; after the macros are defined. Callers then only need to require mapping-auto.
+; generated-mappings requires mapping (circular if in ns :require), so we load it here
+; after the macros are defined. Callers then only need to require mapping.
 (require 'ib-re-actor-976-plus.generated-mappings)

@@ -313,14 +313,14 @@
   Generated on: " timestamp "
 
   Usage:
-    (require '[ib-re-actor-976-plus.mapping-auto :refer [->map map->]])
+    (require '[ib-re-actor-976-plus.mapping :refer [->map map->]])
     (require '[ib-re-actor-976-plus.generated-mappings])  ; Loads implementations
 
     (->map java-object)              ; Java → Clojure map
     (map-> Class clojure-map)        ; Clojure map → Java
   \"
   (:require
-    [ib-re-actor-976-plus.mapping-auto :refer [defmapping defmapping-readonly]]))\n\n")]
+    [ib-re-actor-976-plus.mapping :refer [defmapping defmapping-readonly]]))\n\n")]
     (spit output-file
           (str header
                (str/join "\n\n" (map format-mapping-declaration mappings))))

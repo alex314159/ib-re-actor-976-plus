@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.2.10.46.01] - 2026-05-09
+### Fixed missing ->map support for read-only callback classes:
+- `Bar`, `HistoricalTick`, `HistoricalTickBidAsk`, `HistoricalTickLast`, `HistoricalSession`, `SoftDollarTier` now implement `->map`. These classes have no public setters so the generator skips them; mappings are hand-written in `mapping_auto.clj` and are safe from regeneration.
+- Fixed `advanced_app.clj` demo: `(map-> bar)` → `(->map bar)`.
+- Added `MAPPING_GENERATOR.md` documenting the two-step update process and the requirement to manually maintain read-only callback class mappings.
+
 ## [0.2.10.46.01] - 2026-05-07
 ### Refactored mapping namespaces:
 - Protobuf functions extracted to dedicated `protobuf` namespace.

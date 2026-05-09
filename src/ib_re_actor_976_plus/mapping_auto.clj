@@ -157,6 +157,50 @@
        (->map [~this]
          (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))))
 
+; The following classes have no setters and no public no-arg constructor, so the generator
+; skips them. They appear in EWrapper callbacks and need ->map support.
+
+(defmapping-readonly com.ib.client.Bar
+  [:time time]
+  [:open open]
+  [:high high]
+  [:low low]
+  [:close close]
+  [:volume volume :translation :decimal-to-long]
+  [:count count]
+  [:wap wap :translation :decimal-to-double])
+
+(defmapping-readonly com.ib.client.HistoricalTick
+  [:time time]
+  [:price price]
+  [:size size :translation :decimal-to-double])
+
+(defmapping-readonly com.ib.client.HistoricalTickBidAsk
+  [:time time]
+  [:tick-attrib-bid-ask tickAttribBidAsk :nested com.ib.client.TickAttribBidAsk]
+  [:price-bid priceBid]
+  [:price-ask priceAsk]
+  [:size-bid sizeBid :translation :decimal-to-double]
+  [:size-ask sizeAsk :translation :decimal-to-double])
+
+(defmapping-readonly com.ib.client.HistoricalTickLast
+  [:time time]
+  [:tick-attrib-last tickAttribLast :nested com.ib.client.TickAttribLast]
+  [:price price]
+  [:size size :translation :decimal-to-double]
+  [:exchange exchange]
+  [:special-conditions specialConditions])
+
+(defmapping-readonly com.ib.client.HistoricalSession
+  [:start-date-time startDateTime]
+  [:end-date-time endDateTime]
+  [:ref-date refDate])
+
+(defmapping-readonly com.ib.client.SoftDollarTier
+  [:name name]
+  [:value value]
+  [:display-name displayName])
+
 ; generated-mappings requires mapping-auto (circular if in ns :require), so we load it here
 ; after the macros are defined. Callers then only need to require mapping-auto.
 (require 'ib-re-actor-976-plus.generated-mappings)

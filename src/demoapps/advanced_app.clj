@@ -2,7 +2,7 @@
   (:require [ib-re-actor-976-plus.gateway :as gateway]
             [clojure.tools.logging :as log]
             [ib-re-actor-976-plus.translation :as translation]
-            [ib-re-actor-976-plus.mapping-auto :refer [map->]]
+            [ib-re-actor-976-plus.mapping-auto :refer [->map map->]]
             [ib-re-actor-976-plus.client-socket :as cs])
   (:import (com.ib.client Contract ContractDetails)
            (java.time ZonedDateTime)))
@@ -80,7 +80,7 @@
 
 (defmethod listener :historical-data [account message]
   (let [{:keys [req-id bar]} message
-        {:keys [time open high low close volume]} (map-> bar)]
+        {:keys [time open high low close volume]} (->map bar)]
     (swap! IB-state update-in [:historical-data-requests req-id] conj [(read-string time) open high low close volume])))
 
 (defmethod listener :historical-data-end [account message] (deliver (get-in @IB-state [:req-id-complete account (:req-id message)]) true))

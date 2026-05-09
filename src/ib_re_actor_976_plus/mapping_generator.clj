@@ -10,14 +10,14 @@
     (generate-all-mappings)
     (write-generated-mappings!)"
   (:require
-    [clojure.java.io :as io]
-    [clojure.string :as str]
-    [clojure.pprint :refer [pprint]])
+   [clojure.java.io :as io]
+   [clojure.string :as str]
+   [clojure.pprint :refer [pprint]])
   (:import
-    (com.github.javaparser StaticJavaParser)
-    (com.github.javaparser.ast.body ClassOrInterfaceDeclaration FieldDeclaration MethodDeclaration)
-    (com.github.javaparser.ast.type PrimitiveType ClassOrInterfaceType)
-    (java.io File)))
+   (com.github.javaparser StaticJavaParser)
+   (com.github.javaparser.ast.body ClassOrInterfaceDeclaration FieldDeclaration MethodDeclaration)
+   (com.github.javaparser.ast.type PrimitiveType ClassOrInterfaceType)
+   (java.io File)))
 
 (defn camel-to-kebab
   "Convert camelCase to kebab-case"
@@ -82,20 +82,20 @@
                           (remove :is-static)
                           vec)
               methods (->> (.getMethods class-decl)
-                          (mapv (fn [^MethodDeclaration method]
-                                  {:name (.getNameAsString method)
-                                   :return-type (.toString (.getType method))
-                                   :parameters (mapv #(.getNameAsString %) (.getParameters method))
-                                   :is-public (.isPublic method)}))
-                          (filter :is-public)
-                          vec)
+                           (mapv (fn [^MethodDeclaration method]
+                                   {:name (.getNameAsString method)
+                                    :return-type (.toString (.getType method))
+                                    :parameters (mapv #(.getNameAsString %) (.getParameters method))
+                                    :is-public (.isPublic method)}))
+                           (filter :is-public)
+                           vec)
               ; Check for public no-arg constructors (they're separate from methods in JavaParser)
               ; We need a no-arg constructor to use (new ClassName) in defmapping
               constructors (.getConstructors class-decl)
               has-public-noarg-ctor (some (fn [ctor]
-                                           (and (.isPublic ctor)
-                                                (zero? (.size (.getParameters ctor)))))
-                                         constructors)]
+                                            (and (.isPublic ctor)
+                                                 (zero? (.size (.getParameters ctor)))))
+                                          constructors)]
           {:class-name class-name
            :full-class-name (str "com.ib.client." class-name)
            :fields fields
@@ -118,20 +118,20 @@
         ; Prefer parameterless accessor (e.g., 'right') over JavaBean style (e.g., 'getRight')
         ; This is critical for IB's pattern where both exist with different return types
         getter-candidates [field-base  ; FIRST: parameterless (returns typed enum)
-                          (str "get" (str/capitalize field-base))  ; SECOND: JavaBean style
-                          (str "is" (str/capitalize field-base))]  ; THIRD: boolean convention
+                           (str "get" (str/capitalize field-base))  ; SECOND: JavaBean style
+                           (str "is" (str/capitalize field-base))]  ; THIRD: boolean convention
         setter-candidates [field-base  ; Parameterless setter (accepts typed enum)
-                          (str "set" (str/capitalize field-base))]
+                           (str "set" (str/capitalize field-base))]
         getter (some (fn [candidate]
-                      (when (some #(= (:name %) candidate) methods)
-                        candidate))
-                    getter-candidates)
+                       (when (some #(= (:name %) candidate) methods)
+                         candidate))
+                     getter-candidates)
         setter (some (fn [candidate]
-                      (when (some #(and (= (:name %) candidate)
-                                       (= 1 (count (:parameters %))))
-                                 methods)
-                        candidate))
-                    setter-candidates)]
+                       (when (some #(and (= (:name %) candidate)
+                                         (= 1 (count (:parameters %))))
+                                   methods)
+                         candidate))
+                     setter-candidates)]
     {:getter getter :setter setter}))
 
 (defn infer-translation
@@ -148,6 +148,11 @@
     (or (str/includes? field-type "Types$SecIdType") (= field-type "SecIdType")) :security-id-type
     (or (str/includes? field-type "Types$Action") (= field-type "Action")) :order-action
     (or (str/includes? field-type "Types$TimeInForce") (= field-type "TimeInForce")) :time-in-force
+    (or (str/includes? field-type "Types$VolatilityType") (= field-type "VolatilityType")) :volatility-type
+    (or (str/includes? field-type "Types$TriggerMethod") (= field-type "TriggerMethod")) :trigger-method
+    (or (str/includes? field-type "Types$OcaType") (= field-type "OcaType")) :oca-type
+    (or (str/includes? field-type "Types$HedgeType") (= field-type "HedgeType")) :hedge-type
+    (or (str/includes? field-type "Types$ReferencePriceType") (= field-type "ReferencePriceType")) :reference-price-type
     (str/includes? field-type "OrderType") :order-type
     (str/includes? field-type "OrderStatus") :order-status
 
@@ -229,9 +234,9 @@
             getter-return-type (:return-type getter-method)
             ; Try translation inference on getter return type first, then field type
             translation (or (infer-translation getter-return-type name)
-                           (infer-translation type name))
+                            (infer-translation type name))
             nested-type (or (infer-nested-type getter-return-type)
-                           (infer-nested-type type))
+                            (infer-nested-type type))
             base-mapping [kebab-key (symbol getter)]]
         (cond
           translation (conj base-mapping :translation translation)
@@ -255,7 +260,7 @@
     (when (.exists resources-dir)
       (->> (.listFiles resources-dir)
            (filter #(and (.isFile %)
-                        (str/ends-with? (.getName %) ".java")))
+                         (str/ends-with? (.getName %) ".java")))
            (sort-by #(.getName %))))))
 
 (defn generate-mapping-for-class
@@ -284,8 +289,8 @@
         fields (drop 2 decl)
         ; Group fields into rows of reasonable width
         formatted-fields (map (fn [field]
-                               (str "            " (pr-str field)))
-                             fields)]
+                                (str "            " (pr-str field)))
+                              fields)]
     (str "(" macro-name " " class-name "\n"
          (str/join "\n" formatted-fields)
          ")\n")))
@@ -350,5 +355,4 @@
 
   ; Just see what would be generated
   (count (generate-all-mappings))
-  (take 3 (generate-all-mappings))
-  )
+  (take 3 (generate-all-mappings)))

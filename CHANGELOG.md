@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.2.10.46.01] - 2026-05-07
+### Refactored mapping namespaces:
+- Protobuf functions extracted to dedicated `protobuf` namespace.
+- Legacy mapping moved to `mapping-legacy` namespace; all active code now uses `mapping-auto` and `generated-mappings`. *This means some of the old mappings may fail,* we are much closer to the original Java names now, for instance `:quantity` is now `:total-quantity` and `:limit-price` is now `:lmt-price`.
+### translation.clj improvements:
+- Fixed `:day-till-cancelled` incorrectly mapping to FOK; now correctly maps to DTC.
+- Added missing `what-to-show` values: `:schedule`, `:agg-trades`.
+- Added missing `time-in-force` value: `:minutes`.
+- Added missing `report-type` value: `:ownership`.
+- Added missing `market-data-type` value: `:unknown`.
+- Added missing `order-type` values: `:midprice`, `:pegged-to-best`.
+- New translation tables: `exercise-action`, `tick-by-tick-type`, `volatility-type`, `trigger-method`, `oca-type`, `hedge-type`, `reference-price-type`.
+- `mapping_generator.clj` updated to auto-detect the new enum types; regenerate with `write-generated-mappings!`.
+- Fixed `exercise-options` in `client_socket.clj` which was calling a non-existent translation (would have thrown at runtime).
+- Fixed `request-tick-by-tick-data` and `request-sec-def-option-parameters` to translate their enum parameters rather than passing raw values.
+### Added ibflex namespace to make IB Flex queries. This is separate to the TWS API but often used in parallel, hence inclusion.
+
 ## [0.1.10.46.01] - 2026-04-24
 ### Added support for twsapi 10.46.01.
 ### New Order field: hedgeMaxSize.

@@ -21,7 +21,7 @@
   (:require
    [clojure.tools.logging :as log]
    [ib-re-actor-976-plus.gateway :as g]
-   [ib-re-actor-976-plus.mapping :as m]))
+   [ib-re-actor-976-plus.protobuf :as m]))
 
 (defn single-value-handlers
   "This returns a map of handlers suitable for calls that will provide a single
@@ -84,7 +84,7 @@
   [connection]
   (let [result (promise)]
     (g/request-current-time-proto-buf connection
-                            (single-value-handlers-proto-buf result))
+                                      (single-value-handlers-proto-buf result))
     @result))
 
 (defn market-snapshot

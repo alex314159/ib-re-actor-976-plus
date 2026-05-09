@@ -1,4 +1,4 @@
-(defproject ib-re-actor-976-plus "0.1.10.46.01-SNAPSHOT"
+(defproject ib-re-actor-976-plus "0.2.10.46.01-SNAPSHOT"
   :description "Clojure friendly wrapper for Interactive Brokers Java API"
   :url "https://github.com/alex314159/ib-re-actor-976-plus"
   :license {:name "Eclipse Public License"

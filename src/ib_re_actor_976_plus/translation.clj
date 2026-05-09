@@ -1,8 +1,5 @@
 (ns ib-re-actor-976-plus.translation
   (:require
-    ;[clj-time.coerce :as tc]
-    ;[clj-time.core :as time]
-    ;[clj-time.format :as tf]
    [clojure.string :as str]))
 
 (def tws-version
@@ -186,7 +183,9 @@ to check if if a given value is valid (known)."
                     :yield-bid                  com.ib.client.Types$WhatToShow/YIELD_BID
                     :yield-bid-ask              com.ib.client.Types$WhatToShow/YIELD_BID_ASK
                     :yield-last                 com.ib.client.Types$WhatToShow/YIELD_LAST
-                    :adjusted-last              com.ib.client.Types$WhatToShow/ADJUSTED_LAST})
+                    :adjusted-last              com.ib.client.Types$WhatToShow/ADJUSTED_LAST
+                    :schedule                   com.ib.client.Types$WhatToShow/SCHEDULE
+                    :agg-trades                 com.ib.client.Types$WhatToShow/AGGTRADES})
 
 (translation-table time-in-force
                    {:day                  com.ib.client.Types$TimeInForce/DAY
@@ -195,11 +194,12 @@ to check if if a given value is valid (known)."
                     :good-till-date       com.ib.client.Types$TimeInForce/GTD
                     :on-open              com.ib.client.Types$TimeInForce/OPG
                     :fill-or-kill         com.ib.client.Types$TimeInForce/FOK
-                    :day-till-cancelled   com.ib.client.Types$TimeInForce/FOK
+                    :day-till-cancelled   com.ib.client.Types$TimeInForce/DTC
                     :gtt                  com.ib.client.Types$TimeInForce/GTT
                     :auc                  com.ib.client.Types$TimeInForce/AUC
                     :gtx                  com.ib.client.Types$TimeInForce/GTX
-                    :dtc                  com.ib.client.Types$TimeInForce/DTC})
+                    :dtc                  com.ib.client.Types$TimeInForce/DTC
+                    :minutes              com.ib.client.Types$TimeInForce/Minutes})
 
 (translation-table order-action
                    {:buy        com.ib.client.Types$Action/BUY
@@ -247,7 +247,52 @@ to check if if a given value is valid (known)."
                     :pegged-to-primary-vol            com.ib.client.OrderType/PEG_PRIM_VOL
                     :pegged-to-mid-vol                com.ib.client.OrderType/PEG_MID_VOL
                     :pegged-to-market-vol             com.ib.client.OrderType/PEG_MKT_VOL
-                    :pegged-to-srf-vol                com.ib.client.OrderType/PEG_SRF_VOL})
+                    :pegged-to-srf-vol                com.ib.client.OrderType/PEG_SRF_VOL
+                    :midprice                         com.ib.client.OrderType/MIDPRICE
+                    :pegged-to-best                   com.ib.client.OrderType/PEG_BEST})
+
+(translation-table exercise-action
+                   {:exercise com.ib.client.Types$ExerciseType/Exercise
+                    :lapse    com.ib.client.Types$ExerciseType/Lapse})
+
+(translation-table tick-by-tick-type
+                   {:none     com.ib.client.Types$TickByTickType/None
+                    :last     com.ib.client.Types$TickByTickType/Last
+                    :all-last com.ib.client.Types$TickByTickType/AllLast
+                    :bid-ask  com.ib.client.Types$TickByTickType/BidAsk
+                    :midpoint com.ib.client.Types$TickByTickType/MidPoint})
+
+(translation-table volatility-type
+                   {:none   com.ib.client.Types$VolatilityType/None
+                    :daily  com.ib.client.Types$VolatilityType/Daily
+                    :annual com.ib.client.Types$VolatilityType/Annual})
+
+(translation-table trigger-method
+                   {:default         com.ib.client.Types$TriggerMethod/Default
+                    :double-bid-ask  com.ib.client.Types$TriggerMethod/DoubleBidAsk
+                    :last            com.ib.client.Types$TriggerMethod/Last
+                    :double-last     com.ib.client.Types$TriggerMethod/DoubleLast
+                    :bid-ask         com.ib.client.Types$TriggerMethod/BidAsk
+                    :last-or-bid-ask com.ib.client.Types$TriggerMethod/LastOrBidAsk
+                    :midpoint        com.ib.client.Types$TriggerMethod/Midpoint})
+
+(translation-table oca-type
+                   {:none                    com.ib.client.Types$OcaType/None
+                    :cancel-with-blocking    com.ib.client.Types$OcaType/CancelWithBlocking
+                    :reduce-with-blocking    com.ib.client.Types$OcaType/ReduceWithBlocking
+                    :reduce-without-blocking com.ib.client.Types$OcaType/ReduceWithoutBlocking})
+
+(translation-table hedge-type
+                   {:none  com.ib.client.Types$HedgeType/None
+                    :delta com.ib.client.Types$HedgeType/Delta
+                    :beta  com.ib.client.Types$HedgeType/Beta
+                    :fx    com.ib.client.Types$HedgeType/Fx
+                    :pair  com.ib.client.Types$HedgeType/Pair})
+
+(translation-table reference-price-type
+                   {:none       com.ib.client.Types$ReferencePriceType/None
+                    :midpoint   com.ib.client.Types$ReferencePriceType/Midpoint
+                    :bid-or-ask com.ib.client.Types$ReferencePriceType/BidOrAsk})
 
 (translation-table order-status
                    {:pending-submit     com.ib.client.OrderStatus/PendingSubmit
@@ -700,7 +745,8 @@ to check if if a given value is valid (known)."
                     :financial-ratios     "ReportRatios"
                     :financial-statements "ReportsFinStatements"
                     :analyst-estimates    "RESC"
-                    :company-calendar     "CalendarReport"})
+                    :company-calendar     "CalendarReport"
+                    :ownership            "ReportsOwnership"})
 
 (translation-table rule-80A
                    {:individual              "I"
@@ -714,7 +760,8 @@ to check if if a given value is valid (known)."
                     :agent-other-member-PT   "N"})
 
 (translation-table market-data-type
-                   {:real-time-streaming 1
+                   {:unknown             0
+                    :real-time-streaming 1
                     :frozen              2
                     :delayed             3
                     :delayed-frozen      4})

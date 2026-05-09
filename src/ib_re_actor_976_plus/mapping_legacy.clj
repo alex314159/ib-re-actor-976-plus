@@ -1,4 +1,4 @@
-(ns ib-re-actor-976-plus.mapping
+(ns ib-re-actor-976-plus.mapping-legacy
   "Functions for mapping to and from Interactive Brokers classes. It is much easier to work
 with maps in clojure, so we use these functions internally on all the data we exchange
 with the Interactive Brokers API.

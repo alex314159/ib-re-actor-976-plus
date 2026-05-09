@@ -1,10 +1,9 @@
 (ns demoapps.basic-app
   (:require [ib-re-actor-976-plus.gateway :as gateway]
-            [ib-re-actor-976-plus.mapping :refer [map-> protobuf->map]]
+            [ib-re-actor-976-plus.mapping-auto :refer [map->]]
+            [ib-re-actor-976-plus.protobuf :refer [protobuf->map]]
             [ib-re-actor-976-plus.client-socket :as cs])
-  (:import (com.ib.client Contract Order))
-  )
-
+  (:import (com.ib.client Contract Order)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;EXAMPLES WORKFLOWS;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -32,57 +31,59 @@
 (def connection (gateway/connect 2 "localhost" default-port result-fn)) ;you may need to change the port
 
 ;Create data structures - either plain maps or IB objects
-(def ESH6-map {:symbol "ES" :sec-type "FUT" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20260320" :multiplier 50})
-(def ESH6-contract (map-> com.ib.client.Contract ESH6-map))
-;(def ESH6-contract-gm (gm/->map))
+;sec-type can be a string ("FUT", "STK" etc.) or a keyword (:future, :equity etc.) - both work
+(def ESZ6-map {:symbol "ES" :sec-type "FUT" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20261218" :multiplier 50})
+(def ESZ6-map-kw {:symbol "ES" :sec-type :future :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20261218" :multiplier 50})
+(def ESZ6-contract (map-> com.ib.client.Contract ESZ6-map))
+(def ESZ6-contract-kw (map-> com.ib.client.Contract ESZ6-map-kw))
 
 (def ESU0C3000-map {:symbol "ES" :sec-type "FOP" :exchange "CME" :currency "USD" :last-trade-date-or-contract-month "20200918" :right :call :strike 3000 :multiplier 50})
 (def ESU0C3000-contract (map-> com.ib.client.Contract ESU0C3000-map))
 
 (def MSFT-map {:symbol "MSFT" :sec-type "STK" :currency "USD" :exchange "SMART" :primary-exch "NASDAQ"})
+(def MSFT-map-kw {:symbol "MSFT" :sec-type :equity :currency "USD" :exchange "SMART" :primary-exch "NASDAQ"})
 (def MSFT-contract (map-> com.ib.client.Contract MSFT-map))
 
-(def safe-limit-buy-order-map {:action :buy :quantity 2 :order-type :limit :limit-price 1})
+(def safe-limit-buy-order-map {:action :buy :total-quantity 2 :order-type :limit :lmt-price 1})
 (def safe-limit-buy-order-order (map-> com.ib.client.Order safe-limit-buy-order-map))
-
 
 ;Example calls - these should all print stuff - could be errors if you don't subscribe to the market daa
 
 (defn example-historical-request []
   (cs/request-historical-data
-    (:ecs connection)
-    (swap! requests inc)
-    ESH6-map
-    "20251031 00:00:00 US/Central"                                      ;the format is important. It defaults to TWS timezone if not specified. Having issues with US/Eastern
-    10 :days
-    1 :day
-    :trades
-    true
-    1
-    false))
+   (:ecs connection)
+   (swap! requests inc)
+   ESZ6-map
+   "20260506 00:00:00 US/Central"                                      ;the format is important. It defaults to TWS timezone if not specified. Having issues with US/Eastern
+   10 :days
+   1 :day
+   :trades
+   true
+   1
+   false))
 
 (defn example-historical-request-interop []
   (.reqHistoricalData
-    (:ecs connection)
-    (swap! requests inc)
-    ESH6-contract
-    "20251025 14:53:53 US/Central" ;the format is important. Having issues with US/Eastern
-    "10 D"
-    "1 day"
-    "TRADES"
-    1
-    1
-    false
-    nil))
+   (:ecs connection)
+   (swap! requests inc)
+   ESH6-contract
+   "20251025 14:53:53 US/Central" ;the format is important. Having issues with US/Eastern
+   "10 D"
+   "1 day"
+   "TRADES"
+   1
+   1
+   false
+   nil))
 
 (defn example-streaming-data-request []
   (cs/request-market-data
-    (:ecs connection)
-    (swap! requests inc)
-    ESH6-map
-    nil
-    false
-    false))
+   (:ecs connection)
+   (swap! requests inc)
+   ESZ6-map
+   nil
+   false
+   false))
 
 (defn example-contract-detail-request []
   (cs/request-contract-details (:ecs connection) (swap! requests inc) MSFT-map))

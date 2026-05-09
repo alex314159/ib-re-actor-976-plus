@@ -2,9 +2,8 @@
   (:require [ib-re-actor-976-plus.gateway :as gateway]
             [clojure.tools.logging :as log]
             [ib-re-actor-976-plus.translation :as translation]
-            [ib-re-actor-976-plus.mapping :refer [map->]]
-            [ib-re-actor-976-plus.client-socket :as cs]
-            )
+            [ib-re-actor-976-plus.mapping-auto :refer [map->]]
+            [ib-re-actor-976-plus.client-socket :as cs])
   (:import (com.ib.client Contract ContractDetails)
            (java.time ZonedDateTime)))
 
@@ -15,7 +14,6 @@
 ;This will be a more complex listener that also allows you to watch several accounts at the same time.
 ;You would need several gateways / TWS running at the same time.
 ;Call-backs that are interesting will be saved in atoms. Rest will be logged, so nothing is lost
-
 
 ;this atom will have all the data we want to keep.
 (def IB-state (atom {}))
@@ -32,14 +30,13 @@
   (let [{:keys [key value currency]} message
         avk (translation/translate :from-ib :account-value-key key)
         val (cond
-              (translation/integer-account-value? avk) (Integer/parseInt value)
-              (translation/numeric-account-value? avk) (Double/parseDouble value)
-              (translation/boolean-account-value? avk) (Boolean/parseBoolean value)
+              (translation/integer-account-value? avk) (parse-long value)
+              (translation/numeric-account-value? avk) (parse-double value)
+              (translation/boolean-account-value? avk) (parse-boolean value)
               :else value)]
     (if currency ;nil punning
       (swap! account-state assoc-in [:ib-account-data account (keyword (str (name avk) "-" currency))] [val currency])
-      (swap! account-state assoc-in [:ib-account-data account avk] val))
-    ))
+      (swap! account-state assoc-in [:ib-account-data account avk] val))))
 
 (defmethod listener :update-account-time [account message]
   (swap! account-state assoc-in [:ib-account-data account :last-updated] (:time-stamp message)))
@@ -100,23 +97,21 @@
 (defmethod listener :error [account message]
   (let [id (:id message) code (:code message) msg (:message message)]
     (if
-      (or
-        (and (= id -1) (= code 2100)) ;API client has been unsubscribed from account data.
-        (and (= id -1) (= code 2104)) ;Market data farm connection is OK:usfarm
-        (and (= id -1) (= code 2106))) ;HMDS data farm connection is OK:ushmds
+     (or
+      (and (= id -1) (= code 2100)) ;API client has been unsubscribed from account data.
+      (and (= id -1) (= code 2104)) ;Market data farm connection is OK:usfarm
+      (and (= id -1) (= code 2106))) ;HMDS data farm connection is OK:ushmds
       (log/trace  account " [API.msg2] " msg " {" id ", " code "}")
       (log/info   account " [API.msg2] " msg " {" id ", " code "}"))
     (when (or (= code 201) (= code 322))
       ; //Order rejected: do something!
-      (log/info   account " [API.msg2] ORDER REJECTTED " msg " {" id ", " code "}")
-      )))
+      (log/info   account " [API.msg2] ORDER REJECTTED " msg " {" id ", " code "}"))))
 
 (defmethod listener :default [account message] (log/info (name account) message))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;END LISTENER;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;Define accounts and static data
 (def accounts ["U1234567" "U9876543"])
@@ -131,10 +126,10 @@
   (swap! IB-state assoc-in
          [:connections account]
          (gateway/connect
-           (get-in portfolio-static [account :clientId]);adding one to clientId at this point
-           "localhost"
-           (get-in portfolio-static [account :port])
-           (fn [message] (listener account message))))
+          (get-in portfolio-static [account :clientId]);adding one to clientId at this point
+          "localhost"
+          (get-in portfolio-static [account :port])
+          (fn [message] (listener account message))))
   (Thread/sleep 1000)
   (log/info "Connected account " account))
 

@@ -31,7 +31,7 @@
   (:require
    [clojure.tools.logging :as log]
    [ib-re-actor-976-plus.client-socket :as cs]
-   [ib-re-actor-976-plus.mapping :refer [decode-protobuf-vals]]
+   [ib-re-actor-976-plus.protobuf :refer [decode-protobuf-vals]]
    [ib-re-actor-976-plus.wrapper :as wrapper :refer [error-end? matching-message? request-end?]])
   (:import (com.ib.client EJavaSignal)))
 

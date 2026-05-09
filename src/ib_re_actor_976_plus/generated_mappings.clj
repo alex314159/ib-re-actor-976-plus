@@ -7,7 +7,7 @@
   To regenerate, run: (require 'ib-re-actor-976-plus.mapping-generator)
                       (ib-re-actor-976-plus.mapping-generator/write-generated-mappings!)
 
-  Generated on: 2026-04-24T21:10:33.592293Z
+  Generated on: 2026-05-07T22:12:55.950936Z
 
   Usage:
     (require '[ib-re-actor-976-plus.mapping-auto :refer [->map map->]])
@@ -261,17 +261,17 @@
             [:oca-group ocaGroup]
             [:order-ref orderRef]
             [:rule80-a rule80A]
-            [:oca-type ocaType]
-            [:trigger-method triggerMethod]
+            [:oca-type ocaType :translation :oca-type]
+            [:trigger-method triggerMethod :translation :trigger-method]
             [:active-start-time activeStartTime]
             [:active-stop-time activeStopTime]
             [:fa-group faGroup]
             [:fa-method faMethod]
             [:fa-percentage faPercentage]
             [:volatility volatility]
-            [:volatility-type volatilityType]
+            [:volatility-type volatilityType :translation :volatility-type]
             [:continuous-update continuousUpdate]
-            [:reference-price-type referencePriceType]
+            [:reference-price-type referencePriceType :translation :reference-price-type]
             [:delta-neutral-order-type deltaNeutralOrderType :translation :order-type]
             [:delta-neutral-aux-price deltaNeutralAuxPrice]
             [:delta-neutral-con-id deltaNeutralConId]
@@ -290,7 +290,7 @@
             [:scale-init-fill-qty scaleInitFillQty]
             [:scale-random-percent scaleRandomPercent]
             [:scale-table scaleTable]
-            [:hedge-type hedgeType]
+            [:hedge-type hedgeType :translation :hedge-type]
             [:hedge-param hedgeParam]
             [:hedge-max-size hedgeMaxSize]
             [:algo-strategy algoStrategy]

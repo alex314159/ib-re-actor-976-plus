@@ -20,7 +20,7 @@ At the moment this has been tested with most versions between 9.76.01 and 10.46.
 
 ## Warning
 
-I've used ib-re-actor in live trading for many years, and I'm using this version now. I think it's stable, but I make no warranties, please test at length using a paper account.
+I've used this software in live trading for many years. I think it's stable, but I make no warranties, please test at length using a paper account.
 
 ## Usage
 

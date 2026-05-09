@@ -11,11 +11,11 @@
   https://www.interactivebrokers.com/en/software/api/api.htm
   "
   (:require
-    [ib-re-actor-976-plus.mapping :refer [map->]]
-    [ib-re-actor-976-plus.translation :refer [translate]])
+   [ib-re-actor-976-plus.mapping-auto :refer [map->]]
+   [ib-re-actor-976-plus.translation :refer [translate]])
   (:import
-    (com.ib.client EClientSocket EReader EJavaSignal OrderCancel ScannerSubscription TagValue)
-    (java.util ArrayList)))
+   (com.ib.client EClientSocket EReader EJavaSignal OrderCancel ScannerSubscription TagValue)
+   (java.util ArrayList)))
 
 ;;;
 ;;; Connection and Server
@@ -25,7 +25,6 @@
   (while (.isConnected client)
     (.waitForSignal signal)
     (.processMsgs reader)))
-
 
 (defn connect
   "This function must be called before any other. There is no feedback
@@ -50,19 +49,16 @@
        ;seems somewhat linked to https://github.com/clojure-emacs/cider/issues/1404
        ecs))))
 
-
 (defn disconnect
   "Call this function to terminate the connections with TWS.
    Calling this function does not cancel orders that have already been sent."
   [ecs]
   (.eDisconnect ecs))
 
-
 (defn is-connected?
   "Call this method to check if there is a connection with TWS."
   [ecs]
   (.isConnected ecs))
-
 
 (defn set-server-log-level
   "Call this function to set the log level used on the server. The default level
@@ -70,13 +66,11 @@
   [ecs log-level]
   (.setServerLogLevel ecs (translate :to-ib :log-level log-level)))
 
-
 (defn request-current-time
   "Returns the current system time on the server side via the currentTime()
   EWrapper method."
   [ecs]
   (.reqCurrentTime ecs))
-
 
 (defn server-version
   "Returns the version of the TWS instance to which the API application is
@@ -84,13 +78,11 @@
   [ecs]
   (.serverVersion ecs))
 
-
 (defn connection-time
   "Returns the time the API application made a connection to TWS."
   [ecs]
   ;(translate :from-ib :connection-time (.getTwsConnectionTime ecs))
   (.getTwsConnectionTime ecs))
-
 
 ;;;
 ;;; Market Data
@@ -138,13 +130,11 @@
                 regulatory-snapshot?
                 nil)))
 
-
 (defn cancel-market-data
   "After calling this method, market data for the specified Id will stop
   flowing."
   [ecs ticker-id]
   (.cancelMktData ecs ticker-id))
-
 
 (defn calculate-implied-volatility
   "Call this function to calculate volatility for a supplied option price and
@@ -156,13 +146,11 @@
                                (map-> com.ib.client.Contract option-contract)
                                option-price underlying-price nil))
 
-
 (defn cancel-calculate-implied-volatility
   "Call this function to cancel a request to calculate volatility for a supplied
   option price and underlying price."
   [ecs ticker-id]
   (.cancelCalculateImpliedVolatility ecs ticker-id))
-
 
 (defn calculate-option-price
   "Call this function to calculate option price and greek values for a supplied
@@ -172,18 +160,15 @@
                          (map-> com.ib.client.Contract option-contract)
                          volatility underlying-price nil))
 
-
 (defn cancel-calculate-option-price
   "Call this function to cancel a request to calculate the option price and
   greek values for a supplied volatility and underlying price."
   [ecs ticker-id]
   (.cancelCalculateOptionPrice ecs ticker-id))
 
-
 (defn request-sec-def-option-parameters
   [ecs reqId underlyingSymbol futFopExchange underlyingSecType underlyingConId]
-  (.reqSecDefOptParams ecs reqId underlyingSymbol futFopExchange underlyingSecType underlyingConId))
-
+  (.reqSecDefOptParams ecs reqId underlyingSymbol futFopExchange (translate :to-ib :security-type underlyingSecType) underlyingConId))
 
 (defn request-market-data-type
   "The API can receive frozen market data from Trader Workstation. Frozen market
@@ -198,7 +183,6 @@
   [ecs type]
   (.reqMarketDataType ecs (translate :to-ib :market-data-type type)))
 
-
 ;;;
 ;;; Orders
 ;;;
@@ -208,12 +192,10 @@
                 (map-> com.ib.client.Contract contract)
                 (map-> com.ib.client.Order order))))
 
-
 (defn cancel-order
   "Call this method to cancel an order."
   [ecs order-id]
   (.cancelOrder ecs order-id (OrderCancel.)))
-
 
 (defn request-open-orders
   "Call this method to request any open orders that were placed from this API
@@ -227,7 +209,6 @@
   [ecs]
   (.reqOpenOrders ecs))
 
-
 (defn request-all-open-orders
   "Call this method to request all open orders that were placed from all API
   clients linked to one TWS, and also from the TWS. Note that you can run up to
@@ -239,7 +220,6 @@
   [ecs]
   (.reqAllOpenOrders ecs))
 
-
 (defn request-auto-open-orders
   "Call this method to request that newly created TWS orders be implicitly
   associated with the client. When a new TWS order is created, the order will be
@@ -250,11 +230,9 @@
   [ecs auto-bind?]
   (.reqAutoOpenOrders ecs auto-bind?))
 
-
 (defn request-completed-orders
   [ecs api-only?]
   (.reqCompletedOrders ecs api-only?))
-
 
 (defn request-ids
   "Call this function to request the next valid ID that can be used when placing
@@ -264,7 +242,6 @@
   valid ID therein)."
   [ecs]
   (.reqIds ecs 1))
-
 
 (defn exercise-options
   "Call this funtion to exercise options.
@@ -290,7 +267,6 @@
                     account
                     (if override? 1 0)))
 
-
 (defn request-global-cancel
   "Use this method to cancel all open orders globally. It cancels both API and
   TWS open orders.
@@ -299,7 +275,6 @@
   initiated in the API, it also gets canceled."
   [ecs]
   (.reqGlobalCancel ecs))
-
 
 ;;;
 ;;; Histogram
@@ -311,7 +286,6 @@
 (defn cancel-histogram-data
   [ecs ticker-id]
   (.cancelHistogramData ecs ticker-id))
-
 
 ;;;
 ;;; Account and Portfolio
@@ -330,7 +304,6 @@
   [ecs subscribe? account-code]
   (.reqAccountUpdates ecs subscribe? account-code))
 
-
 (defn request-account-summary
   "Call this method to request and keep up to date the data that appears on the
   TWS Account Window Summary tab. The data is returned by accountSummary().
@@ -340,64 +313,52 @@
   [ecs request-id group tags]
   (.reqAccountSummary ecs request-id group tags))
 
-
 (defn cancel-account-summary
   "Cancels the request for Account Window Summary tab data."
   [ecs request-id]
   (.cancelAccountSummary ecs request-id))                   ;  (.cancelAccountSummary ecs 63 1 request-id))
-
 
 (defn request-positions
   "Requests real-time position data for all accounts."
   [ecs]
   (.reqPositions ecs))
 
-
 (defn cancel-positions
   "Cancels real-time position updates."
   [ecs]
   (.cancelPositions ecs))
 
-
 (defn request-account-updates-multi
   [ecs reqId account modelCode ledgerAndNLV?]
   (.reqAccountUpdatesMulti ecs reqId account modelCode ledgerAndNLV?))
-
 
 (defn cancel-account-updates-multi
   [ecs reqId]
   (.cancelAccountUpdatesMulti ecs reqId))
 
-
 (defn request-positions-multi
   [ecs reqId account modelCode]
   (.reqPositionsMulti ecs reqId account modelCode))
-
 
 (defn cancel-positions-multi
   [ecs reqId]
   (.cancelPositionsMulti ecs reqId))
 
-
 (defn request-pnl
   [ecs reqId account modelCode]
   (.reqPnL ecs reqId account modelCode))
-
 
 (defn cancel-pnl
   [ecs reqId]
   (.cancelPnL ecs reqId))
 
-
 (defn request-pnl-single
   [ecs reqId account modelCode conid]
   (.reqPnLSingle ecs reqId account modelCode conid))
 
-
 (defn cancel-pnl-single
   [ecs reqId]
   (.cancelPnLSingle ecs reqId))
-
 
 ;;;
 ;;; Executions
@@ -421,7 +382,6 @@
   ([ecs request-id contract]
    (.reqContractDetails ecs request-id (map-> com.ib.client.Contract contract))))
 
-
 ;;;
 ;;; Market Depth
 ;;;
@@ -435,18 +395,15 @@
   [ecs ticker-id contract rows is-smart-depth? mkt-depth-options]
   (.reqMktDepth ecs ticker-id (map-> com.ib.client.Contract contract) rows is-smart-depth? mkt-depth-options))
 
-
 (defn cancel-market-depth
   "After calling this method, market depth data for the specified Id will stop
   flowing."
   [ecs ticker-id is-smart-depth?]
   (.cancelMktDepth ecs ticker-id is-smart-depth?))
 
-
 (defn request-market-depth-exchanges
   [ecs]
   (.reqMktDepthExchanges ecs))
-
 
 (defn request-market-rule
   "Requests details about a given market rule
@@ -455,12 +412,10 @@
   [ecs req-id]
   (.reqMarketRule ecs req-id))
 
-
 (defn request-matching-symbols
   "Requests matching stock symbols."
   [ecs req-id pattern]
   (.reqMatchingSymbols ecs req-id pattern))
-
 
 (defn request-smart-components
   [ecs req-id bbo-exchange]
@@ -476,22 +431,18 @@
   ([ecs all-messages?]
    (.reqNewsBulletins ecs all-messages?)))
 
-
 (defn cancel-news-bulletins
   "Call this function to stop receiving news bulletins."
   [ecs]
   (.cancelNewsBulletins ecs))
 
-
 (defn request-news-providers
   [ecs]
   (.reqNewsProviders ecs))
 
-
 (defn request-news-article
   [ecs request-id provider-code article-id]
   (.reqNewsArticle ecs request-id provider-code article-id nil))
-
 
 (defn request-historical-news
   "conId contract id of ticker
@@ -500,9 +451,7 @@
   endDateTime\t- marks the (inclusive) end of the date range. The format is yyyy-MM-dd HH:mm:ss.0
   totalResults\t- the maximum number of headlines to fetch (1 - 300)"
   [ecs request-id conid provider-codes start-date-time end-date-time total-results]
-  (.reqHistoricalNews ecs request-id conid provider-codes start-date-time end-date-time total-results nil)
-  )
-
+  (.reqHistoricalNews ecs request-id conid provider-codes start-date-time end-date-time total-results nil))
 
 ;;;
 ;;; Financial Advisors
@@ -516,7 +465,6 @@
   [ecs]
   (.reqManagedAccts ecs))
 
-
 (defn request-financial-advisor-data
   "Call this method to request FA configuration information from TWS. The data
   returns in an XML string via the receiveFA() method.
@@ -528,22 +476,18 @@
   [ecs data-type]
   (.requestFA ecs (translate :to-ib :financial-advisor-data-type data-type)))
 
-
 (defn replace-financial-advisor-data
   "Call this method to replace FA data with new xml content."
   [ecs data-type xml]
   (.replaceFA ecs (translate :to-ib :financial-advisor-data-type data-type) xml))
 
-
 (defn request-soft-dollar-tiers
   [ecs reqId]
   (.reqSoftDollarTiers ecs reqId))
 
-
 (defn request-family-codes
   [ecs]
   (.reqFamilyCodes ecs))
-
 
 ;;;
 ;;; Market Scanners
@@ -553,7 +497,6 @@
   parameters that a scanner subscription can have."
   [ecs]
   (.reqScannerParameters ecs))
-
 
 (defn request-scanner-subscription
   "Call this method to start receiving market scanner results through the
@@ -565,12 +508,10 @@
                            subscription-options
                            subscription-filter-options))
 
-
 (defn cancel-scanner-subscription
   "Call this method to stop receiving market scanner results."
   [ecs ticker-id]
   (.cancelScannerSubscription ecs ticker-id))
-
 
 ;;;
 ;;; Historical Data
@@ -610,12 +551,10 @@
                         keep-up-to-date?
                         nil)))
 
-
 (defn cancel-historical-data
   "Call this method to stop receiving historical data results."
   [ecs request-id]
   (.cancelHistoricalData ecs request-id))
-
 
 (defn request-head-time-stamp
   "Returns the timestamp of earliest available historical data for a contract and data type"
@@ -627,11 +566,9 @@
                       (if use-regular-trading-hours? 1 0)
                       format-date))
 
-
 (defn cancel-head-time-stamp
   [ecs ticker-id]
   (.cancelHeadTimestamp ecs ticker-id))
-
 
 ;;;
 ;;; Real Time Bars
@@ -646,25 +583,21 @@
                     use-regular-trading-hours?
                     nil))
 
-
 (defn cancel-real-time-bars
   "Call this function to stop receiving real time bars for the passed in request-id"
   [ecs request-id]
   (.cancelRealTimeBars ecs request-id))
-
 
 ;;;
 ;;; Tick by tick
 ;;;
 (defn request-tick-by-tick-data
   [ecs reqId contract tickType numberOfTicks ignore-size?]
-  (.reqTickByTickData ecs reqId (map-> com.ib.client.Contract contract) tickType numberOfTicks ignore-size?))
-
+  (.reqTickByTickData ecs reqId (map-> com.ib.client.Contract contract) (translate :to-ib :tick-by-tick-type tickType) numberOfTicks ignore-size?))
 
 (defn cancel-tick-by-tick-data
   [ecs reqId]
   (.cancelTickByTickData ecs reqId))
-
 
 (defn request-historical-ticks
   [ecs reqId contract startDateTime endDateTime numberOfTicks what-to-show useRth ignoreSize]
@@ -677,7 +610,6 @@
                        useRth
                        ignoreSize
                        nil))
-
 
 ;;;
 ;;; Fundamental Data
@@ -692,12 +624,10 @@
                        (translate :to-ib :report-type report-type)
                        nil))
 
-
 (defn cancel-fundamental-data
   "Call this function to stop receiving Reuters global fundamental data."
   [ecs request-id]
   (.cancelFundamentalData ecs request-id))
-
 
 ;;;
 ;;; Display Groups
@@ -706,12 +636,10 @@
   [ecs request-id]
   (.queryDisplayGroups ecs request-id))
 
-
 (defn subscribe-to-group-events
   "group-id The ID of the group, currently it is a number from 1 to 7."
   [ecs request-id group-id]
   (.subscribeToGroupEvents ecs request-id group-id))
-
 
 (defn update-display-group
   "request-id The requestId specified in subscribeToGroupEvents().
@@ -727,7 +655,6 @@
   "
   [ecs request-id contract-info]
   (.updateDisplayGroup ecs request-id contract-info))
-
 
 (defn unsubscribe-from-group-events
   [ecs request-id]

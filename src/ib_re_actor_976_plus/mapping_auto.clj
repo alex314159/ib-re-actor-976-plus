@@ -17,7 +17,7 @@
   This is the ONLY file you need to import in production code.
   The generated_mappings.clj file will automatically register all implementations."
   (:require
-    [ib-re-actor-976-plus.translation :refer [translate]]))
+   [ib-re-actor-976-plus.translation :refer [translate]]))
 
 ;; ============================================================================
 ;; Public API - Import these in your code
@@ -156,3 +156,7 @@
        Mappable
        (->map [~this]
          (-> {} ~@(mapcat (partial emit-map<-field this) field-keys))))))
+
+; generated-mappings requires mapping-auto (circular if in ns :require), so we load it here
+; after the macros are defined. Callers then only need to require mapping-auto.
+(require 'ib-re-actor-976-plus.generated-mappings)

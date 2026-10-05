@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file. Note the underlying changelog at https://ibkrguides.com/releasenotes/prod-2026.htm
 
+## [0.3.10.51.01] - 2026-10-05
+### Update tws to 10.51.01
+- Per IB's release notes (2026-09-30) the only change is a fix to `reqPositions`, which returned incorrect `exchange` values for some instruments (commodities, CFDs). That fix is server-side: the Java client sources in `com/ib/client` are byte-identical to 10.50.01, `EWrapper` is unchanged, and regenerating the mappings produces no diff.
+- Depends on `[net.clojars.alex314159/twsapi "10.51.01"]`, published with `scripts/publish-twsapi.sh` as before.
+
 ## [0.3.10.50.01] - 2026-09-01
 ### twsapi is now a normal dependency - no manual .m2 install
 - IB's `TwsApi.jar` is published to Clojars as `[net.clojars.alex314159/twsapi "10.50.01"]` and is a plain `:dependencies` entry, so `lein deps` fetches it. The hand-install into `~/.m2/repository/twsapi/twsapi/<version>/` is no longer needed.

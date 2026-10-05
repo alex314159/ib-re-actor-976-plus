@@ -11,10 +11,10 @@ As of **10.50.01 there is no manual install** - IB's `TwsApi.jar` is on Clojars 
 in transitively. Add one dependency:
 
 ```clojure
-[ib-re-actor-976-plus "0.3.10.50.01-SNAPSHOT"]
+[ib-re-actor-976-plus "0.3.10.51.01-SNAPSHOT"]
 ```
 
-That pulls in `[net.clojars.alex314159/twsapi "10.50.01"]`, which is IB's own
+That pulls in `[net.clojars.alex314159/twsapi "10.51.01"]`, which is IB's own
 `TwsApi.jar` repackaged unmodified, with IB's `LICENSE`, `NOTICE` and
 `THIRD_PARTY_LICENSES/` inside it under `META-INF/`. Note the jar is GPLv3 as of
 10.49; by using it you are agreeing to IB's terms. If you'd rather publish it under
@@ -40,7 +40,7 @@ with `unzip [filename.zip]` or use another unarchiver.
 
 ### Version compatibility
 
-This has been tested with most versions between 9.76.01 and 10.50.01. The package version
+This has been tested with most versions between 9.76.01 and 10.51.01. The package version
 corresponds to the TWS API version - **as of 10.42.01, the wrapper no longer guarantees
 backwards compatibility**. If you are using TWS API 10.39.01, use that version of the wrapper.
 

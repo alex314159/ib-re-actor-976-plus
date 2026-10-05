@@ -7,7 +7,7 @@
   To regenerate, run: (require 'ib-re-actor-976-plus.mapping-generator)
                       (ib-re-actor-976-plus.mapping-generator/write-generated-mappings!)
 
-  Generated on: 2026-09-01T20:58:10.398870Z
+  Generated on: 2026-10-05T20:28:43.099766Z
 
   Usage:
     (require '[ib-re-actor-976-plus.mapping :refer [->map map->]])

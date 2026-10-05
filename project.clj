@@ -1,4 +1,4 @@
-(defproject ib-re-actor-976-plus "0.3.10.50.01-SNAPSHOT"
+(defproject ib-re-actor-976-plus "0.3.10.51.01-SNAPSHOT"
   :description "Clojure friendly wrapper for the Interactive Brokers Java API"
   :url "https://github.com/alex314159/ib-re-actor-976-plus"
   :license {:name "Eclipse Public License"
@@ -10,7 +10,7 @@
                  ;; com.google.protobuf directly, so this is an undeclared direct dependency
                  ;; on purpose: an explicit pin here would win over twsapi's (nearest-wins)
                  ;; and could silently hand IB's jar a protobuf it wasn't compiled against.
-                 [net.clojars.alex314159/twsapi "10.50.01"]
+                 [net.clojars.alex314159/twsapi "10.51.01"]
                  [org.clojure/tools.logging "1.3.1"]
                  [com.github.javaparser/javaparser-core "3.25.10"]]
   :plugins [[lein-marginalia "0.9.1"]]

@@ -11,7 +11,7 @@ As of **10.50.01 there is no manual install** - IB's `TwsApi.jar` is on Clojars 
 in transitively. Add one dependency:
 
 ```clojure
-[ib-re-actor-976-plus "0.3.10.51.01-SNAPSHOT"]
+[ib-re-actor-976-plus "0.3.10.51.01"]
 ```
 
 That pulls in `[net.clojars.alex314159/twsapi "10.51.01"]`, which is IB's own

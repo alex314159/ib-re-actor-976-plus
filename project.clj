@@ -1,9 +1,9 @@
-(defproject ib-re-actor-976-plus "0.3.10.51.01-SNAPSHOT"
+(defproject ib-re-actor-976-plus "0.3.10.51.01"
   :description "Clojure friendly wrapper for the Interactive Brokers Java API"
   :url "https://github.com/alex314159/ib-re-actor-976-plus"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.12.5"]
+  :dependencies [[org.clojure/clojure "1.12.6"]
                  ;; IB's TwsApi.jar, repackaged for Clojars by scripts/publish-twsapi.sh.
                  ;; GPLv3, pulled in as a plain Maven dependency - no manual .m2 install.
                  ;; protobuf-java comes in transitively from its pom. protobuf.clj imports
